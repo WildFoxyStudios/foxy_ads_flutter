@@ -10,6 +10,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../real-estate/presentation/widgets/re_attribute_form.dart';
 import 'listing_detail_screen.dart' show listingDetailProvider;
 import '../../../profile/presentation/screens/my_listings_screen.dart'
     show myListingsProvider;
@@ -46,6 +47,11 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   List<XFile> _selectedImages = [];
   bool _isNegotiable = false;
   bool _isLoading = false;
+
+  // Real-estate specific attributes. Populated by `ReAttributeForm.onChanged`
+  // when the user picks the real_estate category. Injected into the create
+  // / edit payload via `updates['attributes']` at submit time.
+  Map<String, dynamic>? _reAttributes;
 
   // Edit-mode only state. Left at their defaults (null / empty) on the
   // create path, so create behavior is unaffected.
@@ -201,7 +207,18 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           createdAt: DateTime.now(),
         );
 
-        await listingService.createListing(listing);
+        // Real-estate attributes (encoded JSONB map). Omit the key when
+        // the form hasn't been filled in (e.g. a non-RE category) so the
+        // database column stays NULL for other verticals.
+        final extraFields = <String, dynamic>{};
+        if (_reAttributes != null && _reAttributes!.isNotEmpty) {
+          extraFields['attributes'] = _reAttributes;
+        }
+
+        await listingService.createListing(
+          listing,
+          extraFields: extraFields.isEmpty ? null : extraFields,
+        );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -243,6 +260,13 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           'is_negotiable': _isNegotiable,
           'images': images,
         };
+
+        // Real-estate attributes — OVERWRITE the existing JSONB with the
+        // current form value. The trigger validates the new value against
+        // its constraints; the form's encoding rules are the spec.
+        if (_reAttributes != null && _reAttributes!.isNotEmpty) {
+          updates['attributes'] = _reAttributes;
+        }
 
         await listingService.updateListing(widget.existing!.id, updates);
 
@@ -684,6 +708,21 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               ),
             ),
             const SizedBox(height: 24),
+
+            // Real-estate attributes: rendered only when the user picks the
+            // real_estate category. The form encodes the values into a JSONB
+            // map and hands it back via `onChanged`; the submit step writes
+            // that map to `updates['attributes']` (create branch uses
+            // `extraFields` on the service call).
+            if (_selectedCategory?.id == 'real_estate') ...[
+              ReAttributeForm(
+                initialAttributes: widget.existing?.attributes,
+                onChanged: (m) {
+                  setState(() => _reAttributes = m);
+                },
+              ),
+              const SizedBox(height: 24),
+            ],
 
             // Contact Information
             const Text(

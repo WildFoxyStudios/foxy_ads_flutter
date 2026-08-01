@@ -183,11 +183,21 @@ class ListingService {
     }).toList();
   }
 
-  // Create listing
-  Future<Listing> createListing(Listing listing) async {
+  // Create listing. `extraFields` is merged into the insert payload
+  // after `toInsertJson()` — used to pass the `attributes` JSONB column
+  // for real-estate listings (the `Listing` model intentionally has no
+  // `attributes` field; the form encodes the map and hands it here).
+  Future<Listing> createListing(
+    Listing listing, {
+    Map<String, dynamic>? extraFields,
+  }) async {
+    final payload = <String, dynamic>{
+      ...listing.toInsertJson(),
+      if (extraFields != null) ...extraFields,
+    };
     final response = await _supabase
         .from('listings')
-        .insert(listing.toInsertJson())
+        .insert(payload)
         .select()
         .single();
 

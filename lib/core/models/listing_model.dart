@@ -28,6 +28,13 @@ class Listing {
   final String? categoryName;
   final String? subcategoryName;
 
+  // Real-estate attributes (JSONB column on the server). Loaded from
+  // `attributes` when present; NOT serialized by `toInsertJson`/`toJson`
+  // (the create path passes it through `extraFields` instead, the edit
+  // path through `updates['attributes']`). Kept here so edit mode can
+  // prefill the RE attribute form without a separate round-trip.
+  final Map<String, dynamic>? attributes;
+
   Listing({
     required this.id,
     required this.userId,
@@ -55,6 +62,7 @@ class Listing {
     this.userAvatar,
     this.categoryName,
     this.subcategoryName,
+    this.attributes,
   });
 
   factory Listing.fromJson(Map<String, dynamic> json) {
@@ -89,6 +97,9 @@ class Listing {
       userAvatar: json['user_avatar'] as String?,
       categoryName: json['category_name'] as String?,
       subcategoryName: json['subcategory_name'] as String?,
+      attributes: json['attributes'] is Map
+          ? Map<String, dynamic>.from(json['attributes'] as Map)
+          : null,
     );
   }
 
@@ -164,6 +175,7 @@ class Listing {
     String? userAvatar,
     String? categoryName,
     String? subcategoryName,
+    Map<String, dynamic>? attributes,
   }) {
     return Listing(
       id: id ?? this.id,
@@ -192,6 +204,7 @@ class Listing {
       userAvatar: userAvatar ?? this.userAvatar,
       categoryName: categoryName ?? this.categoryName,
       subcategoryName: subcategoryName ?? this.subcategoryName,
+      attributes: attributes ?? this.attributes,
     );
   }
 

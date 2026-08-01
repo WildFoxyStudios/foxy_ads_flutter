@@ -525,7 +525,9 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                         ),
                       );
                     }
-                    _seedFrom(listings);
+                    setState(() {
+                      _seedFrom(listings);
+                    });
                     return ListView.builder(
                       controller: controller,
                       itemCount: listings.length,

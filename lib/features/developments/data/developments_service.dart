@@ -105,7 +105,9 @@ class DevelopmentsService {
         if (priceFrom == null || price < priceFrom) priceFrom = price;
       }
 
-      final currency = rows.first['currency'] as String?;
+      final currency = rows
+          .map((row) => row['currency'] as String?)
+          .firstWhere((c) => c != null, orElse: () => null);
 
       return DevelopmentCardData(
         development: dev,

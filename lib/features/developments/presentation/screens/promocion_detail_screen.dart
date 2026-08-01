@@ -76,10 +76,28 @@ class PromocionDetailScreen extends ConsumerWidget {
   }
 }
 
-class _PromocionDetailBody extends ConsumerWidget {
+class _PromocionDetailBody extends ConsumerStatefulWidget {
   final Development development;
 
   const _PromocionDetailBody({required this.development});
+
+  @override
+  ConsumerState<_PromocionDetailBody> createState() =>
+      _PromocionDetailBodyState();
+}
+
+class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
+  late final PageController _galleryController = PageController(
+    viewportFraction: 0.92,
+  );
+
+  Development get development => widget.development;
+
+  @override
+  void dispose() {
+    _galleryController.dispose();
+    super.dispose();
+  }
 
   static String _statusLabel(String status) {
     switch (status) {
@@ -95,7 +113,7 @@ class _PromocionDetailBody extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final unitsAsync = ref.watch(developmentUnitsProvider(development.id));
 
     return ListView(
@@ -130,12 +148,13 @@ class _PromocionDetailBody extends ConsumerWidget {
           ),
           data: (units) {
             final typologies = aggregateTypologies(units);
+            final currency = units.isNotEmpty ? units.first.currency : null;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (typologies.isNotEmpty) ...[
                   const SizedBox(height: 20),
-                  _buildTypologyTable(typologies),
+                  _buildTypologyTable(typologies, currency),
                 ],
                 const SizedBox(height: 20),
                 _buildUnitsGrid(context, units),
@@ -277,7 +296,7 @@ class _PromocionDetailBody extends ConsumerWidget {
       height: 220,
       child: PageView.builder(
         itemCount: development.images.length,
-        controller: PageController(viewportFraction: 0.92),
+        controller: _galleryController,
         itemBuilder: (context, index) {
           final url = development.images[index];
           return Padding(
@@ -429,7 +448,7 @@ class _PromocionDetailBody extends ConsumerWidget {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
-  Widget _buildTypologyTable(List<Typology> typologies) {
+  Widget _buildTypologyTable(List<Typology> typologies, String? currency) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -467,7 +486,7 @@ class _PromocionDetailBody extends ConsumerWidget {
                   _TypologyCell('${typology.count}'),
                   _TypologyCell(
                     typology.priceFrom != null
-                        ? _money(typology.priceFrom!)
+                        ? _money(typology.priceFrom!, currency)
                         : '-',
                   ),
                   _TypologyCell(_m2Range(typology.m2Min, typology.m2Max)),
@@ -479,10 +498,11 @@ class _PromocionDetailBody extends ConsumerWidget {
     );
   }
 
-  String _money(double amount) {
-    return amount.toStringAsFixed(
+  String _money(double amount, String? currency) {
+    final formatted = amount.toStringAsFixed(
       amount.truncateToDouble() == amount ? 0 : 2,
     );
+    return currency != null ? '$formatted $currency' : formatted;
   }
 
   String _m2Range(int? min, int? max) {

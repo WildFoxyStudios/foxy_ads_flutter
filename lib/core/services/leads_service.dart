@@ -121,4 +121,64 @@ class LeadsService {
       return LeadSubmitOutcome.err(LeadSubmitError.databaseError);
     }
   }
+
+  /// Submit a lead (contact request) on a development. Mirrors [submitLead]
+  /// exactly (same honeypot short-circuit, same client-side [validate], same
+  /// error-code mapping) but calls `submit_development_lead(development_id,
+  /// name, email, phone, message)` instead.
+  Future<LeadSubmitOutcome> submitDevelopmentLead({
+    required String developmentId,
+    required String name,
+    required String email,
+    required String message,
+    String? phone,
+    String honeypot = '',
+  }) async {
+    // Honeypot: silently no-op with {ok:true}. Real users never fill this.
+    if (honeypot.trim().isNotEmpty) return const LeadSubmitOutcome.ok();
+
+    // Client-side validation — saves a round-trip on bad input. The RPC
+    // re-validates server-side so a bypass here doesn't matter.
+    final validationError = validate(
+      name: name,
+      email: email,
+      message: message,
+      phone: phone,
+    );
+    if (validationError != null) {
+      return LeadSubmitOutcome.err(LeadSubmitError.invalidInput);
+    }
+
+    try {
+      await _supabase.rpc(
+        'submit_development_lead',
+        params: {
+          'p_development_id': developmentId,
+          'p_name': name.trim(),
+          'p_email': email.trim(),
+          'p_phone': phone?.trim() ?? '',
+          'p_message': message.trim(),
+        },
+      );
+      return const LeadSubmitOutcome.ok();
+    } on PostgrestException catch (e) {
+      // Map RPC error codes to stable UI codes:
+      //   P0002 -> development gone/inactive -> LISTING_UNAVAILABLE
+      //   P0001 -> owner is the buyer        -> SELF_LEAD
+      //   42501 -> auth required (rare — RPC is anon) -> UNAUTHORIZED
+      //   anything else                    -> DATABASE_ERROR
+      switch (e.code) {
+        case 'P0002':
+          return LeadSubmitOutcome.err(LeadSubmitError.listingUnavailable);
+        case 'P0001':
+          return LeadSubmitOutcome.err(LeadSubmitError.selfLead);
+        case '42501':
+          return LeadSubmitOutcome.err(LeadSubmitError.unauthorized);
+        default:
+          return LeadSubmitOutcome.err(LeadSubmitError.databaseError);
+      }
+    } catch (_) {
+      return LeadSubmitOutcome.err(LeadSubmitError.databaseError);
+    }
+  }
 }

@@ -684,7 +684,18 @@ class ListingService {
   String listingsToCsv(List<Listing> rows) {
     String escape(Object? value) {
       if (value == null) return '';
-      final text = value.toString();
+      // CSV-injection hardening (mirror web csv.ts): any string field starting
+      // with a formula trigger gets a leading apostrophe so spreadsheet apps
+      // treat it as text, not a formula. Applied BEFORE the RFC escaping so the
+      // quoting check sees the modified field.
+      var text = value.toString();
+      if (text.isNotEmpty) {
+        final first = text[0];
+        if (first == '=' || first == '+' || first == '-' || first == '@' ||
+            first == '\t' || first == '\r') {
+          text = "'$text";
+        }
+      }
       if (!text.contains(RegExp(r'[",\r\n]'))) return text;
       return '"${text.replaceAll('"', '""')}"';
     }

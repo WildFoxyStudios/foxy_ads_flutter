@@ -382,16 +382,19 @@ class ListingService {
         .toList();
   }
 
-  /// Real-estate search via the `search_real_estate` RPC. Returns a list of
-  /// `Listing`s for the requested page; the caller (T4 search screen) reads
-  /// `total` from the parallel head-count query if it needs pagination. The
-  /// RPC returns `{items: [...], total: <n>}` — same shape as `searchListings`
-  /// uses, and `Listing.fromJson` already tolerates the missing `user_name` /
-  /// `category_name` joins that the RPC omits.
+  /// Real-estate search via the `search_real_estate` RPC. Returns the page of
+  /// `Listing`s plus the unpaginated head-count `total` so the caller (T4
+  /// search screen) can render "showing N of M" and drive pagination. The RPC
+  /// returns `{items: [...], total: <n>}` — same envelope shape as
+  /// `searchListings` exposes, and `Listing.fromJson` already tolerates the
+  /// missing `user_name` / `category_name` joins that the RPC omits.
+  ///
+  /// `total` falls back to `items.length` if the RPC omits or nulls the count
+  /// key (matches the web's defensive `Number(rows[0].total_count) || 0`).
   ///
   /// `offset` is 0-based (matches `searchListings`). `limit` defaults to 24
   /// (the web's `RE_SEARCH_DEFAULT_PAGE_SIZE`).
-  Future<List<Listing>> searchRealEstate(
+  Future<({List<Listing> items, int total})> searchRealEstate(
     ReFilters f, {
     int offset = 0,
     int limit = 24,
@@ -404,11 +407,20 @@ class ListingService {
     final body = response is Map<String, dynamic>
         ? response
         : (response as List).firstOrNull as Map<String, dynamic>?;
-    if (body == null) return const [];
+    if (body == null) return (items: <Listing>[], total: 0);
     final items = (body['items'] as List<dynamic>?) ?? const [];
-    return items
+    final listingList = items
         .map((json) => Listing.fromJson(json as Map<String, dynamic>))
         .toList();
+    final totalRaw = body['total'];
+    int total = listingList.length;
+    if (totalRaw is num) {
+      total = totalRaw.toInt();
+    } else if (totalRaw is String) {
+      final parsed = int.tryParse(totalRaw);
+      if (parsed != null) total = parsed;
+    }
+    return (items: listingList, total: total);
   }
 
   /// Per-facet result counts for the real-estate filter drawer. Calls the

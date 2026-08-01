@@ -283,9 +283,23 @@ class _DashboardScaffold extends ConsumerWidget {
               ),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(
-                  'No se pudieron cargar los anuncios: $e',
-                  style: const TextStyle(color: AppColors.error),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'No se pudieron cargar los anuncios: $e',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: AppColors.error),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        ref.invalidate(myPanelListingsProvider);
+                        ref.invalidate(panelFavoritesProvider);
+                      },
+                      child: const Text('Reintentar'),
+                    ),
+                  ],
                 ),
               ),
               data: (rows) {

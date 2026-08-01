@@ -19,6 +19,7 @@ import '../../data/agency_service.dart';
 import '../../data/panel_stats.dart';
 import '../widgets/agency_verified_badge.dart';
 import '../widgets/panel_stats_cards.dart';
+import '../widgets/panel_views_chart.dart';
 
 class PanelScreen extends ConsumerWidget {
   const PanelScreen({super.key});
@@ -309,10 +310,17 @@ class _DashboardScaffold extends ConsumerWidget {
                   favs,
                   DateTime.now(),
                 );
-                return PanelStatsCards(stats: stats);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    PanelStatsCards(stats: stats),
+                    const SizedBox(height: 16),
+                    const _ViewsChartSection(),
+                  ],
+                );
               },
             ),
-            // === Sections added by later tasks: views chart (T6), leads (T7), developments (T10), bulk (T12) ===
+            // === Sections added by later tasks: leads (T7), developments (T10), bulk (T12) ===
           ],
         ),
       ),
@@ -381,6 +389,68 @@ class _DashboardHeader extends StatelessWidget {
                 const AgencyVerifiedBadge(verified: true),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Views-over-time chart section for the verified dashboard (Task 6). A
+/// `Card` mirroring the visual style of the Stats grid above it: same
+/// surface fill, border, and 12dp radius. The chart itself is rendered by
+/// `PanelViewsChart`; loading and error fall back to muted placeholders so
+/// a transient RPC hiccup doesn't lock the user out of `/panel`.
+class _ViewsChartSection extends ConsumerWidget {
+  const _ViewsChartSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewsAsync = ref.watch(viewsSeriesProvider);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Vistas (últimos 30 días)',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          viewsAsync.when(
+            loading: () => const SizedBox(
+              height: PanelViewsChart.height,
+              child: Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            ),
+            error: (e, _) => const SizedBox(
+              height: PanelViewsChart.height,
+              child: Center(
+                child: Text(
+                  'Sin datos',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+            data: (series) => PanelViewsChart(series: series),
           ),
         ],
       ),

@@ -26,6 +26,7 @@ import 'package:foxy_ads/core/models/listing_model.dart';
 import 'package:foxy_ads/core/services/auth_service.dart';
 import 'package:foxy_ads/features/agency/data/agency_model.dart';
 import 'package:foxy_ads/features/agency/data/agency_service.dart';
+import 'package:foxy_ads/features/agency/data/panel_stats.dart';
 import 'package:foxy_ads/features/agency/presentation/screens/panel_screen.dart';
 
 AgencyProfile _verifiedProfile() {
@@ -55,6 +56,7 @@ Widget _buildTestApp({
   User? signedInUser,
   List<Listing> panelListings = const [],
   Map<String, int> panelFavorites = const {},
+  List<DayPoint> viewsSeries = const [],
 }) {
   final overrides = [
     myAgencyProfileProvider.overrideWith(
@@ -62,6 +64,10 @@ Widget _buildTestApp({
     ),
     myPanelListingsProvider.overrideWith((ref) async => panelListings),
     panelFavoritesProvider.overrideWith((ref) async => panelFavorites),
+    // Override so the new views chart (Task 6) doesn't try to hit the
+    // RPC during tests. `const []` triggers the chart's "Sin datos"
+    // placeholder, which is fine for the gate test.
+    viewsSeriesProvider.overrideWith((ref) async => viewsSeries),
   ];
   if (signedInUser != null) {
     overrides.add(

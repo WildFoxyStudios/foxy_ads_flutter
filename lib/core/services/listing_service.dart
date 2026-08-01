@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/listing_model.dart';
 import '../models/category_model.dart';
 import '../providers/supabase_provider.dart';
+import '../../features/agency/data/panel_stats.dart';
 import '../../features/real-estate/data/re_models.dart';
 import '../../features/real-estate/data/re_pricing.dart';
 
@@ -537,6 +538,32 @@ class ListingService {
       return (avgPricePerM2: avg.toDouble(), sampleSize: perM2.length);
     } catch (_) {
       return null;
+    }
+  }
+
+  /// Per-day view counts for the signed-in user's listings via the
+  /// `agency_daily_views` RPC (one row per day, with `day` and `views`).
+  /// Returns `const []` when no user is signed in OR the RPC throws — the
+  /// panel treats both as "Sin datos" rather than crashing. Mirrors the
+  /// web's `fetchAgencyViewsSeries`.
+  Future<List<DayPoint>> getAgencyViewsSeries({int days = 30}) async {
+    final uid = _supabase.auth.currentUser?.id;
+    if (uid == null) return const <DayPoint>[];
+    try {
+      final data = await _supabase.rpc(
+        'agency_daily_views',
+        params: {'p_user_id': uid, 'p_days': days},
+      );
+      return (data as List)
+          .map(
+            (e) => DayPoint(
+              (e['day'] ?? '').toString(),
+              int.tryParse((e['views'] ?? 0).toString()) ?? 0,
+            ),
+          )
+          .toList();
+    } catch (_) {
+      return const <DayPoint>[];
     }
   }
 }

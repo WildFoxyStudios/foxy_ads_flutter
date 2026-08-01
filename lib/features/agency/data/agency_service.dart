@@ -7,6 +7,7 @@ import '../../../core/providers/supabase_provider.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/listing_service.dart';
 import 'agency_model.dart';
+import 'panel_stats.dart';
 
 const _agencySelect =
     'user_id, name, logo_url, description, website, phone, location, is_verified, created_at';
@@ -189,4 +190,12 @@ final panelFavoritesProvider = FutureProvider<Map<String, int>>((ref) async {
   } catch (_) {
     return const <String, int>{};
   }
+});
+
+/// Per-day view-count series for the Pro Dashboard chart (Task 6). Wraps
+/// `ListingService.getAgencyViewsSeries` so the panel screen stays
+/// declarative — it `watch`es this `FutureProvider` instead of issuing the
+/// RPC directly. Resolves to a fixed 30-day window.
+final viewsSeriesProvider = FutureProvider<List<DayPoint>>((ref) async {
+  return ref.watch(listingServiceProvider).getAgencyViewsSeries(days: 30);
 });

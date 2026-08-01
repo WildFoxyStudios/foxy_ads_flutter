@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,9 +66,16 @@ class SavedSearchesScreen extends ConsumerWidget {
 
     if (confirmed != true) return;
 
-    final service = ref.read(savedSearchesServiceProvider);
-    await service.delete(search.id);
-    ref.invalidate(savedSearchesProvider);
+    try {
+      final service = ref.read(savedSearchesServiceProvider);
+      await service.delete(search.id);
+      ref.invalidate(savedSearchesProvider);
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo eliminar la búsqueda')),
+      );
+    }
   }
 
   Future<void> _openSearch(
@@ -76,7 +85,8 @@ class SavedSearchesScreen extends ConsumerWidget {
   ) async {
     ref.read(searchFiltersProvider.notifier).setAll(search.filters);
     final service = ref.read(savedSearchesServiceProvider);
-    await service.touchSeen(search.id);
+    // Non-essential bookkeeping: must never block re-running the search.
+    unawaited(service.touchSeen(search.id).catchError((_) {}));
     if (context.mounted) context.go('/search');
   }
 

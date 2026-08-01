@@ -76,19 +76,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             country.name,
           ].join(' · ');
 
-    final service = ref.read(savedSearchesServiceProvider);
-    await service.create(
-      label: label,
-      filters: filters,
-      countryCode: country.code,
-      categoryId: filters.categoryId,
-    );
-    ref.invalidate(savedSearchesProvider);
+    try {
+      final service = ref.read(savedSearchesServiceProvider);
+      await service.create(
+        label: label,
+        filters: filters,
+        countryCode: country.code,
+        categoryId: filters.categoryId,
+      );
+      ref.invalidate(savedSearchesProvider);
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Búsqueda guardada')),
-    );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Búsqueda guardada')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo guardar la búsqueda')),
+      );
+    }
   }
 
   @override

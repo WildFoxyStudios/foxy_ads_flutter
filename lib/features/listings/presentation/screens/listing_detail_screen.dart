@@ -111,7 +111,10 @@ class ListingDetailScreen extends ConsumerWidget {
                       if (value == 'report') {
                         await showReportListingSheet(context, ref, listing);
                       } else if (value == 'edit') {
-                        context.push(AppRoutes.editListing(listing.id));
+                        await context.push(AppRoutes.editListing(listing.id));
+                        if (context.mounted) {
+                          ref.invalidate(listingDetailProvider(listing.id));
+                        }
                       }
                     },
                     itemBuilder: (context) => [

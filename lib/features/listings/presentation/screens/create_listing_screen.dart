@@ -10,6 +10,9 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
+import 'listing_detail_screen.dart' show listingDetailProvider;
+import '../../../profile/presentation/screens/my_listings_screen.dart'
+    show myListingsProvider;
 
 // Provider para categorías en crear anuncio
 final createListingCategoriesProvider = FutureProvider<List<Category>>((
@@ -242,6 +245,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
         };
 
         await listingService.updateListing(widget.existing!.id, updates);
+
+        ref.invalidate(listingDetailProvider(widget.existing!.id));
+        ref.invalidate(myListingsProvider);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

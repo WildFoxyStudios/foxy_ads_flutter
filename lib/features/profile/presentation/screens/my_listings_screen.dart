@@ -243,7 +243,12 @@ class MyListingsScreen extends ConsumerWidget {
                             context.push('/promote/${listing.id}');
                             break;
                           case 'edit':
-                            context.push(AppRoutes.editListing(listing.id));
+                            await context.push(
+                              AppRoutes.editListing(listing.id),
+                            );
+                            if (context.mounted) {
+                              ref.invalidate(myListingsProvider);
+                            }
                             break;
                           case 'delete':
                             _showDeleteDialog(context, ref, listing);

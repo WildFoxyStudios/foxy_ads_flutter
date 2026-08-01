@@ -66,6 +66,22 @@ class SearchFilters {
 
   @override
   int get hashCode => Object.hash(query, categoryId, minPrice, maxPrice, sort);
+
+  Map<String, dynamic> toJson() => {
+        'query': query,
+        'categoryId': categoryId,
+        'minPrice': minPrice,
+        'maxPrice': maxPrice,
+        'sort': sort,
+      };
+
+  factory SearchFilters.fromJson(Map<String, dynamic> json) => SearchFilters(
+        query: (json['query'] as String?) ?? '',
+        categoryId: json['categoryId'] as String?,
+        minPrice: (json['minPrice'] as num?)?.toDouble(),
+        maxPrice: (json['maxPrice'] as num?)?.toDouble(),
+        sort: (json['sort'] as String?) ?? 'newest',
+      );
 }
 
 /// Single source of truth for search filter state. Replaces four separate

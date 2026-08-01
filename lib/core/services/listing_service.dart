@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/listing_model.dart';
 import '../models/category_model.dart';
 import '../providers/supabase_provider.dart';
+import '../../features/real-estate/data/re_models.dart';
+import '../../features/real-estate/data/re_pricing.dart';
 
 final listingServiceProvider = Provider<ListingService>((ref) {
   return ListingService(ref.watch(supabaseClientProvider));
@@ -379,4 +381,162 @@ class ListingService {
         .toSet()
         .toList();
   }
+
+  /// Real-estate search via the `search_real_estate` RPC. Returns a list of
+  /// `Listing`s for the requested page; the caller (T4 search screen) reads
+  /// `total` from the parallel head-count query if it needs pagination. The
+  /// RPC returns `{items: [...], total: <n>}` — same shape as `searchListings`
+  /// uses, and `Listing.fromJson` already tolerates the missing `user_name` /
+  /// `category_name` joins that the RPC omits.
+  ///
+  /// `offset` is 0-based (matches `searchListings`). `limit` defaults to 24
+  /// (the web's `RE_SEARCH_DEFAULT_PAGE_SIZE`).
+  Future<List<Listing>> searchRealEstate(
+    ReFilters f, {
+    int offset = 0,
+    int limit = 24,
+  }) async {
+    final response = await _supabase.rpc(
+      'search_real_estate',
+      params: buildReRpcArgs(f, offset, limit),
+    );
+
+    final body = response is Map<String, dynamic>
+        ? response
+        : (response as List).firstOrNull as Map<String, dynamic>?;
+    if (body == null) return const [];
+    final items = (body['items'] as List<dynamic>?) ?? const [];
+    return items
+        .map((json) => Listing.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Per-facet result counts for the real-estate filter drawer. Calls the
+  /// `real_estate_facet_counts` RPC with the same filter args as the search
+  /// RPC (the facet RPC ignores `p_sort`/`p_limit`/`p_offset`). Returns an
+  /// empty `ReFacetCounts` on any RPC error so callers render their fallback
+  /// facet list instead of crashing — same convention as the web's
+  /// `fetchRealEstateFacetCounts`.
+  Future<ReFacetCounts> reFacetCounts(ReFilters f) async {
+    try {
+      final response = await _supabase.rpc(
+        'real_estate_facet_counts',
+        params: buildReRpcArgs(f, 0, 0),
+      );
+      final row = response is Map<String, dynamic>
+          ? response
+          : (response as List).firstOrNull as Map<String, dynamic>?;
+      if (row == null) return const ReFacetCounts();
+      return ReFacetCounts(
+        propertyType: (row['property_type_counts'] as Map?)?.cast<String, int>() ?? const {},
+        condition: (row['condition_counts'] as Map?)?.cast<String, int>() ?? const {},
+      );
+    } catch (_) {
+      return const ReFacetCounts();
+    }
+  }
+
+  /// City-level average €/m² for the "zone price" widget on the listing
+  /// detail. Mirrors the web's `fetchCityPriceStats`: queries `listings`
+  /// where `category_id='real_estate'`, `status='active'`, same
+  /// `country_code`/`city`, optionally same `attributes->>operation`, and
+  /// computes the per-m² avg over up to 2000 active rows.
+  ///
+  /// Returns `null` when fewer than `minSample` rows produce a usable
+  /// per-m² value (the web uses 3 as the default — below that, the avg is
+  /// too noisy to display). `null` is also returned on RPC error so the
+  /// listing-detail widget can hide the badge.
+  Future<({double avgPricePerM2, int sampleSize})?> estimateFromCityStats({
+    required String countryCode,
+    required String city,
+    String? operation,
+    required int minSample,
+  }) async {
+    if (city.isEmpty) return null;
+    try {
+      // Filter first (returns PostgrestFilterBuilder with .eq available),
+      // then apply .limit at the end — `.limit()` returns a
+      // PostgrestTransformBuilder which has no `.eq`, so chaining the
+      // operation filter after `.limit()` would fail to compile. Mirrors
+      // the web's `fetchCityPriceStats` ordering.
+      var query = _supabase
+          .from('listings')
+          .select('price, attributes')
+          .eq('category_id', 'real_estate')
+          .eq('status', 'active')
+          .eq('country_code', countryCode)
+          .eq('city', city);
+
+      if (operation != null && operation.isNotEmpty) {
+        query = query.eq('attributes->>operation', operation);
+      }
+
+      final response = await query.limit(2000);
+      final rows = response as List<dynamic>? ?? const [];
+      final perM2 = <num>[];
+      for (final raw in rows) {
+        final row = raw as Map<String, dynamic>;
+        final price = row['price'] as num?;
+        final attrs = row['attributes'] as Map<String, dynamic>?;
+        final m2 = attrs?['m2'] as num?;
+        final v = pricePerM2(price ?? double.nan, m2);
+        if (v != null) perM2.add(v);
+      }
+      if (perM2.length < minSample) return null;
+      final avg = perM2.fold<num>(0, (s, v) => s + v) / perM2.length;
+      return (avgPricePerM2: avg.toDouble(), sampleSize: perM2.length);
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+/// Maps a typed `ReFilters` + page into the exact `p_*` argument names the
+/// `search_real_estate` RPC expects (see the web's `buildRpcArgs` in
+/// `src/lib/real-estate/search.ts` for the canonical mapping). Empty
+/// multi-selects and unset scalars become `null` (Postgres "no filter"),
+/// never `[]` — supabase-js drops `undefined` keys and an empty array
+/// would filter out every row instead of meaning "any".
+///
+/// `energyLetter` is translated into a single-element `p_energy_bands`
+/// array via `energyBandForLetter` so the UI's letter selection
+/// (A..G) and the search RPC's band buckets (`alta`/`media`/`baja`) stay
+/// decoupled.
+///
+/// Exported as a TOP-LEVEL function (not a method on `ListingService`) so
+/// it can be unit-tested without a `SupabaseClient` instance.
+Map<String, dynamic> buildReRpcArgs(
+  ReFilters f,
+  int offset,
+  int limit,
+) {
+  final safeLimit = limit < 1 ? 1 : limit;
+  final safeOffset = offset < 0 ? 0 : offset;
+  final energyBands = <String>[
+    ...f.energyBands,
+    if (energyBandForLetter(f.energyLetter) case final band?) band,
+  ];
+  return {
+    'p_country_code': f.countryCode,
+    'p_state': f.state,
+    'p_city': f.city,
+    'p_operation': f.operation,
+    'p_property_types': f.propertyTypes.isEmpty ? null : f.propertyTypes,
+    'p_price_min': f.priceMin,
+    'p_price_max': f.priceMax,
+    'p_m2_min': f.m2Min,
+    'p_m2_max': f.m2Max,
+    'p_rooms': f.rooms.isEmpty ? null : f.rooms,
+    'p_bathrooms': f.bathrooms.isEmpty ? null : f.bathrooms,
+    'p_condition': f.conditions.isEmpty ? null : f.conditions,
+    'p_features': f.features.isEmpty ? null : f.features,
+    'p_floor_buckets': f.floorBuckets.isEmpty ? null : f.floorBuckets,
+    'p_energy_bands': energyBands.isEmpty ? null : energyBands,
+    'p_orientation': f.orientation.isEmpty ? null : f.orientation,
+    'p_pets_allowed': f.petsAllowed,
+    'p_posted_within_days': f.postedWithinDays,
+    'p_sort': f.sort.toRpcString(),
+    'p_limit': safeLimit,
+    'p_offset': safeOffset,
+  };
 }

@@ -1,0 +1,18 @@
+{
+  "@@locale": "it",
+  "appName": "Foxy Ads",
+  "commonSave": "Salva",
+  "commonCancel": "Annulla",
+  "commonYes": "Sì",
+  "commonNo": "No",
+  "commonBack": "Indietro",
+  "commonLoading": "Caricamento...",
+  "commonErrorGeneric": "Qualcosa è andato storto. Riprova.",
+  "commonRetry": "Riprova",
+  "commonClose": "Chiudi",
+  "commonSearch": "Cerca",
+  "commonContinue": "Continua",
+  "commonDelete": "Elimina",
+  "commonEdit": "Modifica",
+  "localeSwitcherAriaLabel": "Seleziona lingua"
+}

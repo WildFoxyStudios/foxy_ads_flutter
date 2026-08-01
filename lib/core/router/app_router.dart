@@ -15,6 +15,7 @@ import '../../features/real-estate/presentation/screens/city_landing_screen.dart
 import '../../features/real-estate/presentation/screens/valuation_screen.dart';
 import '../../features/developments/presentation/screens/promociones_screen.dart';
 import '../../features/developments/presentation/screens/promocion_detail_screen.dart';
+import '../../features/developments/presentation/screens/development_form_screen.dart';
 import '../../features/agency/presentation/screens/agency_profile_edit_screen.dart';
 import '../../features/agency/presentation/screens/agency_profile_screen.dart';
 import '../../features/agency/presentation/screens/panel_screen.dart';
@@ -196,6 +197,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return PromocionDetailScreen(developmentId: id);
         },
       ),
+      // Agency create/edit form for a development (obra nueva). Auth +
+      // verified-agency gate lives inside the screen.
+      // MUST be declared before `/promocion-editar/:id` so the static path
+      // isn't shadowed by the dynamic `:id` route (same lesson as T4's
+      // `/agencia/editar` vs `/agencia/:id`).
+      GoRoute(
+        path: '/promocion-editar',
+        name: 'developmentCreate',
+        builder: (context, state) => const DevelopmentFormScreen(),
+      ),
+      GoRoute(
+        path: '/promocion-editar/:id',
+        name: 'developmentEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DevelopmentFormScreen(developmentId: id);
+        },
+      ),
       // Edit the caller's own agency profile (auth-gated internally).
       // MUST be declared before `/agencia/:id` so `editar` isn't consumed
       // as an `id` path parameter by the dynamic route.
@@ -251,6 +270,8 @@ class AppRoutes {
   static String cityLanding(String city) => '/inmuebles-en/$city';
   static String valuation() => '/valorar';
   static String promocionDetail(String id) => '/promocion/$id';
+  static const String developmentCreate = '/promocion-editar';
+  static String developmentEdit(String id) => '/promocion-editar/$id';
   static String agencyProfile(String id) => '/agencia/$id';
   static const String agencyEdit = '/agencia/editar';
   static const String panel = '/panel';

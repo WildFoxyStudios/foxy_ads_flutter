@@ -116,9 +116,18 @@ final agencyServiceProvider = Provider<AgencyService>((ref) {
 /// signed-out OR when the user has no profile yet (no row in
 /// `agency_profiles`). Watches `authStateProvider` so it re-resolves on
 /// login/logout automatically.
+///
+/// Treats `AsyncLoading` + `AsyncError` on the auth stream as "no current
+/// user" (matches `currentUserProvider`'s resilience): a transient SDK
+/// failure must NOT lock the user out of `/panel` — the gate degrades to
+/// the explainer, which is the correct UX while auth recovers.
 final myAgencyProfileProvider = FutureProvider<AgencyProfile?>((ref) async {
   final auth = ref.watch(authStateProvider);
-  final user = auth.value; // StreamProvider<User?>.value
+  final user = auth.when(
+    loading: () => null,
+    error: (_, _) => null,
+    data: (u) => u,
+  );
   if (user == null) return null;
   return ref.watch(agencyServiceProvider).fetchAgencyProfile(user.id);
 });

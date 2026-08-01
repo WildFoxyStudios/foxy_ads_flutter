@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
@@ -97,17 +97,17 @@ class SettingsScreen extends ConsumerWidget {
           _SettingsTile(
             icon: Icons.description_outlined,
             title: l10n.settingsTerms,
-            onTap: () => _openUrl(context, '$_webBaseUrl/terminos'),
+            onTap: () => context.push(AppRoutes.terminos),
           ),
           _SettingsTile(
             icon: Icons.privacy_tip_outlined,
             title: l10n.settingsPrivacyPolicy,
-            onTap: () => _openUrl(context, '$_webBaseUrl/privacidad'),
+            onTap: () => context.push(AppRoutes.privacidad),
           ),
           _SettingsTile(
             icon: Icons.help_outline,
             title: l10n.settingsHelpSupport,
-            onTap: () => _openUrl(context, '$_webBaseUrl/ayuda'),
+            onTap: () => context.push(AppRoutes.ayuda),
           ),
 
           const SizedBox(height: 32),
@@ -166,27 +166,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  static const String _webBaseUrl = 'https://foxyads.vercel.app';
-
   void _comingSoon(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.settingsComingSoon)),
     );
-  }
-
-  Future<void> _openUrl(BuildContext context, String url) async {
-    final l10n = AppLocalizations.of(context)!;
-    final messenger = ScaffoldMessenger.of(context);
-    final ok = await launchUrl(
-      Uri.parse(url),
-      mode: LaunchMode.externalApplication,
-    );
-    if (!ok) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.settingsCannotOpenUrl(url))),
-      );
-    }
   }
 
   void _showChangePasswordDialog(BuildContext context, WidgetRef ref) {

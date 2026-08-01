@@ -205,9 +205,7 @@ class AuthService {
     final res = await _supabase.functions.invoke('delete-account');
     if (res.status != 200) {
       final error = (res.data is Map) ? res.data['error'] as String? : null;
-      throw Exception(
-        error ?? 'No se pudo eliminar la cuenta (código ${res.status})',
-      );
+      throw Exception(error ?? '${res.status}');
     }
 
     await signOut();

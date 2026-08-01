@@ -35,6 +35,13 @@ class Listing {
   // prefill the RE attribute form without a separate round-trip.
   final Map<String, dynamic>? attributes;
 
+  // Foreign key to `developments.id` (obra-nueva). Read by the panel's
+  // assign-listings sheet (T10) to pre-check rows already in this
+  // development. Nullable: a listing is normally NOT part of a
+  // development; the agencies may opt in to bundling their units under
+  // a single promotion via `assignListingsToDevelopment`.
+  final String? developmentId;
+
   Listing({
     required this.id,
     required this.userId,
@@ -63,6 +70,7 @@ class Listing {
     this.categoryName,
     this.subcategoryName,
     this.attributes,
+    this.developmentId,
   });
 
   factory Listing.fromJson(Map<String, dynamic> json) {
@@ -100,6 +108,7 @@ class Listing {
       attributes: json['attributes'] is Map
           ? Map<String, dynamic>.from(json['attributes'] as Map)
           : null,
+      developmentId: json['development_id'] as String?,
     );
   }
 
@@ -176,6 +185,7 @@ class Listing {
     String? categoryName,
     String? subcategoryName,
     Map<String, dynamic>? attributes,
+    String? developmentId,
   }) {
     return Listing(
       id: id ?? this.id,
@@ -205,6 +215,7 @@ class Listing {
       categoryName: categoryName ?? this.categoryName,
       subcategoryName: subcategoryName ?? this.subcategoryName,
       attributes: attributes ?? this.attributes,
+      developmentId: developmentId ?? this.developmentId,
     );
   }
 

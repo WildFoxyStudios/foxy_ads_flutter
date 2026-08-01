@@ -18,6 +18,7 @@ import '../../data/agency_model.dart';
 import '../../data/agency_service.dart';
 import '../../data/panel_stats.dart';
 import '../widgets/agency_verified_badge.dart';
+import '../widgets/developments_panel.dart';
 import '../widgets/leads_panel.dart';
 import '../widgets/panel_stats_cards.dart';
 import '../widgets/panel_views_chart.dart';
@@ -323,7 +324,9 @@ class _DashboardScaffold extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             const LeadsPanel(),
-            // === Sections added by later tasks: developments (T10), bulk (T12) ===
+            const SizedBox(height: 16),
+            const DevelopmentsPanel(),
+            // === Sections added by later tasks: bulk (T12) ===
           ],
         ),
       ),

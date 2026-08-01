@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "306853215674",
+    "project_id": "foxyads-66291",
+    "storage_bucket": "foxyads-66291.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306853215674:android:9624a2a8ce4fef15acf183",
+        "android_client_info": {
+          "package_name": "com.wildfoxy.foxy_ads"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306853215674-r4d0tl2sol50k1chms3jssk6742pe6md.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXmBPHt3vVeZvx84S-i7MERkF7Rt5VVkQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306853215674-r4d0tl2sol50k1chms3jssk6742pe6md.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

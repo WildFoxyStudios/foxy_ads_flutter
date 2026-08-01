@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generador de Icono Foxy Ads</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid #FF6B35;
+            margin: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #e55a2b;
+        }
+        .instructions {
+            max-width: 600px;
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🦊 Generador de Icono Foxy Ads</h1>
+    
+    <h3>Icono Principal (1024x1024)</h3>
+    <canvas id="mainIcon" width="1024" height="1024"></canvas>
+    <button onclick="downloadMain()">Descargar app_icon.png</button>
+    
+    <h3>Icono Foreground para Android Adaptive (1024x1024)</h3>
+    <canvas id="foregroundIcon" width="1024" height="1024"></canvas>
+    <button onclick="downloadForeground()">Descargar app_icon_foreground.png</button>
+    
+    <div class="instructions">
+        <h3>Instrucciones:</h3>
+        <ol style="text-align: left;">
+            <li>Descarga ambos archivos PNG</li>
+            <li>Guárdalos en: <code>assets/icons/</code></li>
+            <li>Ejecuta: <code>flutter pub get</code></li>
+            <li>Ejecuta: <code>dart run flutter_launcher_icons</code></li>
+        </ol>
+    </div>
+
+    <script>
+        function drawIcon(canvasId, withBackground) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            
+            // Clear
+            ctx.clearRect(0, 0, size, size);
+            
+            if (withBackground) {
+                // Background gradient
+                const gradient = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+                gradient.addColorStop(0, '#FF8C5A');
+                gradient.addColorStop(1, '#FF6B35');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw fox emoji
+            ctx.font = `${size * 0.65}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🦊', size/2, size/2 + size * 0.05);
+        }
+        
+        function downloadMain() {
+            const canvas = document.getElementById('mainIcon');
+            const link = document.createElement('a');
+            link.download = 'app_icon.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function downloadForeground() {
+            const canvas = document.getElementById('foregroundIcon');
+            const link = document.createElement('a');
+            link.download = 'app_icon_foreground.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Draw icons on load
+        window.onload = function() {
+            drawIcon('mainIcon', true);
+            drawIcon('foregroundIcon', false);
+        };
+    </script>
+</body>
+</html>

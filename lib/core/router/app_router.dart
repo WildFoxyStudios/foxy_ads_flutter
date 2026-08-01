@@ -14,6 +14,7 @@ import '../../features/real-estate/presentation/screens/inmuebles_en_screen.dart
 import '../../features/real-estate/presentation/screens/city_landing_screen.dart';
 import '../../features/real-estate/presentation/screens/valuation_screen.dart';
 import '../../features/developments/presentation/screens/promociones_screen.dart';
+import '../../features/developments/presentation/screens/promocion_detail_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/search/presentation/screens/saved_searches_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
@@ -177,12 +178,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'valuation',
         builder: (context, state) => const ValuationScreen(),
       ),
-      // Developments (obra nueva) index — detail route (/promocion/:id) is
-      // registered in T4, once its screen exists.
+      // Developments (obra nueva) index.
       GoRoute(
         path: '/promociones',
         name: 'promociones',
         builder: (context, state) => const PromocionesScreen(),
+      ),
+      // Development (obra nueva) detail.
+      GoRoute(
+        path: '/promocion/:id',
+        name: 'promocionDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return PromocionDetailScreen(developmentId: id);
+        },
       ),
     ],
     errorBuilder: (context, state) =>

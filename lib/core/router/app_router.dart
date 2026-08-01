@@ -28,6 +28,10 @@ import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/settings/presentation/screens/country_selection_screen.dart';
 import '../../features/payments/presentation/screens/promote_listing_screen.dart';
+import '../../features/static/screens/help_screen.dart';
+import '../../features/static/screens/contact_screen.dart';
+import '../../features/static/screens/privacy_screen.dart';
+import '../../features/static/screens/terms_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../widgets/main_navigation_shell.dart';
@@ -240,6 +244,30 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'panel',
         builder: (context, state) => const PanelScreen(),
       ),
+
+      // Static pages (Sprint 5 Task 6): ported verbatim from the web's
+      // /ayuda, /contacto, /privacidad, /terminos. No shadowing concerns —
+      // all four are static paths.
+      GoRoute(
+        path: AppRoutes.ayuda,
+        name: 'ayuda',
+        builder: (context, state) => const HelpScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contacto,
+        name: 'contacto',
+        builder: (context, state) => const ContactScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.privacidad,
+        name: 'privacidad',
+        builder: (context, state) => const PrivacyScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.terminos,
+        name: 'terminos',
+        builder: (context, state) => const TermsScreen(),
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -276,6 +304,12 @@ class AppRoutes {
   static String agencyProfile(String id) => '/agencia/$id';
   static const String agencyEdit = '/agencia/editar';
   static const String panel = '/panel';
+
+  // Static pages (Sprint 5 Task 6).
+  static const String ayuda = '/ayuda';
+  static const String contacto = '/contacto';
+  static const String privacidad = '/privacidad';
+  static const String terminos = '/terminos';
 }
 
 /// Loads the listing by [listingId] and, if the current user is its owner,

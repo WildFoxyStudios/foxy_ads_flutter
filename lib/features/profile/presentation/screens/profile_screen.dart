@@ -252,7 +252,34 @@ class ProfileScreen extends ConsumerWidget {
                     color: AppColors.primary,
                   ),
                   title: l10n.profileHelp,
-                  onTap: () {},
+                  onTap: () => context.push(AppRoutes.ayuda),
+                ),
+                const SizedBox(height: 12),
+                _ProfileTile(
+                  icon: const Icon(
+                    Icons.mail_outline,
+                    color: AppColors.primary,
+                  ),
+                  title: l10n.profileContactTile,
+                  onTap: () => context.push(AppRoutes.contacto),
+                ),
+                const SizedBox(height: 12),
+                _ProfileTile(
+                  icon: const Icon(
+                    Icons.privacy_tip_outlined,
+                    color: AppColors.primary,
+                  ),
+                  title: l10n.profilePrivacyTile,
+                  onTap: () => context.push(AppRoutes.privacidad),
+                ),
+                const SizedBox(height: 12),
+                _ProfileTile(
+                  icon: const Icon(
+                    Icons.description_outlined,
+                    color: AppColors.primary,
+                  ),
+                  title: l10n.profileTermsTile,
+                  onTap: () => context.push(AppRoutes.terminos),
                 ),
                 const SizedBox(height: 12),
 

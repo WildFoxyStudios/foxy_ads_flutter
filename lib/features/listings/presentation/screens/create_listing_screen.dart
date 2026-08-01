@@ -10,6 +10,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../real-estate/presentation/widgets/re_attribute_form.dart';
 import 'listing_detail_screen.dart' show listingDetailProvider;
@@ -806,7 +807,27 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                           : l10n.listingCreateSaveChangesButton,
                     ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
+
+            // Footer links to the static pages (Sprint 5 Task 6) — mirrors
+            // the web's publish-form footer.
+            Center(
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 16,
+                children: [
+                  TextButton(
+                    onPressed: () => context.push(AppRoutes.privacidad),
+                    child: Text(l10n.privacyPageTitle),
+                  ),
+                  TextButton(
+                    onPressed: () => context.push(AppRoutes.terminos),
+                    child: Text(l10n.termsPageTitle),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),

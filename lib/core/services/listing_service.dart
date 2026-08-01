@@ -7,6 +7,15 @@ import '../../features/agency/data/panel_stats.dart';
 import '../../features/real-estate/data/re_models.dart';
 import '../../features/real-estate/data/re_pricing.dart';
 
+enum PanelActionError { unauthenticated, forbidden, invalidInput, databaseError }
+
+class PanelActionOutcome {
+  final bool ok;
+  final PanelActionError? error;
+  const PanelActionOutcome.ok() : ok = true, error = null;
+  const PanelActionOutcome.err(this.error) : ok = false;
+}
+
 /// Top-level UUID v4 matcher used by `parseIds`. Exposed file-private (no
 /// leading underscore on the const is fine — the leading underscore on the
 /// identifier keeps it library-internal). Case-insensitive so callers can
@@ -541,6 +550,158 @@ class ListingService {
     }
   }
 
+  /// Bulk panel operations require every selected listing to belong to the user.
+  Future<bool> _assertAllOwned(String uid, List<String> ids) async {
+    final rows = await _supabase
+        .from('listings')
+        .select('id')
+        .eq('user_id', uid)
+        .inFilter('id', ids)
+        .neq('status', 'deleted');
+    return (rows as List).length == ids.length;
+  }
+
+  Future<PanelActionOutcome> bulkSetStatus(
+    List<String> rawIds,
+    String status,
+  ) async {
+    final uid = _supabase.auth.currentUser?.id;
+    if (uid == null) {
+      return const PanelActionOutcome.err(PanelActionError.unauthenticated);
+    }
+    if (!['active', 'inactive', 'sold'].contains(status)) {
+      return const PanelActionOutcome.err(PanelActionError.invalidInput);
+    }
+    final ids = parseIds(rawIds);
+    if (ids == null) {
+      return const PanelActionOutcome.err(PanelActionError.invalidInput);
+    }
+    try {
+      if (!await _assertAllOwned(uid, ids)) {
+        return const PanelActionOutcome.err(PanelActionError.forbidden);
+      }
+      await _supabase
+          .from('listings')
+          .update({'status': status})
+          .inFilter('id', ids)
+          .eq('user_id', uid);
+      return const PanelActionOutcome.ok();
+    } catch (_) {
+      return const PanelActionOutcome.err(PanelActionError.databaseError);
+    }
+  }
+
+  Future<PanelActionOutcome> bulkDelete(List<String> rawIds) async {
+    final uid = _supabase.auth.currentUser?.id;
+    if (uid == null) {
+      return const PanelActionOutcome.err(PanelActionError.unauthenticated);
+    }
+    final ids = parseIds(rawIds);
+    if (ids == null) {
+      return const PanelActionOutcome.err(PanelActionError.invalidInput);
+    }
+    try {
+      if (!await _assertAllOwned(uid, ids)) {
+        return const PanelActionOutcome.err(PanelActionError.forbidden);
+      }
+      await _supabase
+          .from('listings')
+          .update({'status': 'deleted'})
+          .inFilter('id', ids)
+          .eq('user_id', uid);
+      return const PanelActionOutcome.ok();
+    } catch (_) {
+      return const PanelActionOutcome.err(PanelActionError.databaseError);
+    }
+  }
+
+  Future<PanelActionOutcome> bulkRenew(List<String> rawIds) async {
+    final uid = _supabase.auth.currentUser?.id;
+    if (uid == null) {
+      return const PanelActionOutcome.err(PanelActionError.unauthenticated);
+    }
+    final ids = parseIds(rawIds);
+    if (ids == null) {
+      return const PanelActionOutcome.err(PanelActionError.invalidInput);
+    }
+    try {
+      if (!await _assertAllOwned(uid, ids)) {
+        return const PanelActionOutcome.err(PanelActionError.forbidden);
+      }
+      await _supabase
+          .from('listings')
+          .update({'created_at': DateTime.now().toUtc().toIso8601String()})
+          .inFilter('id', ids)
+          .eq('user_id', uid);
+      return const PanelActionOutcome.ok();
+    } catch (_) {
+      return const PanelActionOutcome.err(PanelActionError.databaseError);
+    }
+  }
+
+  Future<PanelActionOutcome> bulkSetPrice(
+    List<String> rawIds,
+    String mode,
+    double value,
+  ) async {
+    final uid = _supabase.auth.currentUser?.id;
+    if (uid == null) {
+      return const PanelActionOutcome.err(PanelActionError.unauthenticated);
+    }
+    if (!['set', 'pct'].contains(mode) || !value.isFinite ||
+        (mode == 'set' && value < 0)) {
+      return const PanelActionOutcome.err(PanelActionError.invalidInput);
+    }
+    final ids = parseIds(rawIds);
+    if (ids == null) {
+      return const PanelActionOutcome.err(PanelActionError.invalidInput);
+    }
+    try {
+      final rows = await _supabase
+          .from('listings')
+          .select('id, price')
+          .eq('user_id', uid)
+          .inFilter('id', ids)
+          .neq('status', 'deleted');
+      if ((rows as List).length != ids.length) {
+        return const PanelActionOutcome.err(PanelActionError.forbidden);
+      }
+      for (final raw in rows) {
+        final row = raw as Map<String, dynamic>;
+        final current = (row['price'] as num).toDouble();
+        await _supabase
+            .from('listings')
+            .update({'price': applyPriceMode(current, mode, value)})
+            .eq('id', row['id'])
+            .eq('user_id', uid);
+      }
+      return const PanelActionOutcome.ok();
+    } catch (_) {
+      return const PanelActionOutcome.err(PanelActionError.databaseError);
+    }
+  }
+
+  String listingsToCsv(List<Listing> rows) {
+    String escape(Object? value) {
+      if (value == null) return '';
+      final text = value.toString();
+      if (!text.contains(RegExp(r'[",\r\n]'))) return text;
+      return '"${text.replaceAll('"', '""')}"';
+    }
+
+    const header = 'title,price,currency,status,views,favorites,city,created_at';
+    final lines = rows.map((row) => [
+          escape(row.title),
+          escape(row.price),
+          escape(row.currency),
+          escape(row.status),
+          escape(row.views),
+          escape(null),
+          escape(row.city),
+          escape(row.createdAt.toIso8601String()),
+        ].join(','));
+    return [header, ...lines].join('\r\n');
+  }
   /// Per-day view counts for the signed-in user's listings via the
   /// `agency_daily_views` RPC (one row per day, with `day` and `views`).
   /// Returns `const []` when no user is signed in OR the RPC throws — the

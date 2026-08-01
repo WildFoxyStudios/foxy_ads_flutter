@@ -19,6 +19,7 @@ import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/settings/presentation/screens/country_selection_screen.dart';
 import '../../features/payments/presentation/screens/promote_listing_screen.dart';
+import '../services/auth_service.dart';
 import '../widgets/main_navigation_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -85,6 +86,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/create-listing',
         name: 'createListing',
         builder: (context, state) => const CreateListingScreen(),
+      ),
+      GoRoute(
+        path: '/edit-listing/:id',
+        name: 'editListing',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return _EditListingRoute(listingId: id);
+        },
       ),
       GoRoute(
         path: '/category/:categoryId',
@@ -164,7 +173,38 @@ class AppRoutes {
   static const String selectCountry = '/select-country';
 
   static String listingDetail(String id) => '/listing/$id';
+  static String editListing(String id) => '/edit-listing/$id';
   static String categoryListings(String categoryId, String name) =>
       '/category/$categoryId?name=$name';
   static String promoteListing(String listingId) => '/promote/$listingId';
+}
+
+/// Loads the listing by [listingId] and, if the current user is its owner,
+/// hands it to [CreateListingScreen] in edit mode. Defense-in-depth only —
+/// RLS enforces ownership server-side regardless of this check.
+class _EditListingRoute extends ConsumerWidget {
+  final String listingId;
+
+  const _EditListingRoute({required this.listingId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final listingAsync = ref.watch(listingDetailProvider(listingId));
+
+    return listingAsync.when(
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
+      data: (listing) {
+        final currentUserId = ref.watch(authStateProvider).value?.id;
+        if (listing == null || listing.userId != currentUserId) {
+          return Scaffold(
+            appBar: AppBar(),
+            body: const Center(child: Text('No autorizado para editar')),
+          );
+        }
+        return CreateListingScreen(existing: listing);
+      },
+    );
+  }
 }

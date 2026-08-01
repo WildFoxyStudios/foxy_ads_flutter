@@ -9,6 +9,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/favorite_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/router/app_router.dart';
 import '../widgets/contact_sheet.dart';
 import '../widgets/report_sheet.dart';
 
@@ -109,10 +110,21 @@ class ListingDetailScreen extends ConsumerWidget {
                     onSelected: (value) async {
                       if (value == 'report') {
                         await showReportListingSheet(context, ref, listing);
+                      } else if (value == 'edit') {
+                        context.push(AppRoutes.editListing(listing.id));
                       }
                     },
-                    itemBuilder: (context) => const [
-                      PopupMenuItem<String>(
+                    itemBuilder: (context) => [
+                      if (authState.value?.id == listing.userId)
+                        const PopupMenuItem<String>(
+                          value: 'edit',
+                          child: ListTile(
+                            dense: true,
+                            leading: Icon(Icons.edit_outlined),
+                            title: Text('Editar anuncio'),
+                          ),
+                        ),
+                      const PopupMenuItem<String>(
                         value: 'report',
                         child: ListTile(
                           dense: true,

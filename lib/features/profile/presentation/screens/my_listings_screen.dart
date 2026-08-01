@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/router/app_router.dart';
 
 final myListingsProvider = FutureProvider<List<Listing>>((ref) async {
   final authState = ref.watch(authStateProvider);
@@ -242,13 +243,7 @@ class MyListingsScreen extends ConsumerWidget {
                             context.push('/promote/${listing.id}');
                             break;
                           case 'edit':
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'La edición de anuncios estará disponible pronto',
-                                ),
-                              ),
-                            );
+                            context.push(AppRoutes.editListing(listing.id));
                             break;
                           case 'delete':
                             _showDeleteDialog(context, ref, listing);

@@ -23,6 +23,7 @@ import 'package:foxy_ads/features/agency/data/agency_model.dart';
 import 'package:foxy_ads/features/agency/data/agency_service.dart';
 import 'package:foxy_ads/features/agency/presentation/screens/agency_profile_screen.dart';
 import 'package:foxy_ads/features/home/presentation/widgets/listing_card.dart';
+import 'package:foxy_ads/l10n/app_localizations.dart';
 
 /// Fake `AgencyService` that ignores Supabase entirely and returns whatever
 /// the test set up. Overrides `fetchAgencyProfile` + `fetchAgencyListings`;
@@ -92,6 +93,9 @@ Widget _buildTestApp(FakeAgencyService fake) {
       agencyServiceProvider.overrideWithValue(fake),
     ],
     child: const MaterialApp(
+      locale: Locale('es'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: AgencyProfileScreen(agencyId: 'agency-1'),
     ),
   );

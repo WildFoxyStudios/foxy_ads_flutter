@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/models/saved_search_model.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../providers/saved_searches_provider.dart';
 import '../providers/search_filters_provider.dart';
 
@@ -23,16 +24,16 @@ class SavedSearchesScreen extends ConsumerWidget {
     return category.nameEs.isNotEmpty ? category.nameEs : category.name;
   }
 
-  String _filterSummary(SearchFilters filters) {
+  String _filterSummary(SearchFilters filters, AppLocalizations l10n) {
     final parts = <String>[];
     if (filters.query.isNotEmpty) parts.add('"${filters.query}"');
     if (filters.categoryId != null) parts.add(_categoryLabel(filters.categoryId!));
     if (filters.minPrice != null || filters.maxPrice != null) {
       final min = filters.minPrice?.toStringAsFixed(0) ?? '0';
       final max = filters.maxPrice?.toStringAsFixed(0) ?? '∞';
-      parts.add('$min€ - $max€');
+      parts.add(l10n.savedSearchesPriceRange(min, max));
     }
-    if (parts.isEmpty) return 'Sin filtros';
+    if (parts.isEmpty) return l10n.savedSearchesNoFilters;
     return parts.join(' · ');
   }
 
@@ -41,22 +42,24 @@ class SavedSearchesScreen extends ConsumerWidget {
     WidgetRef ref,
     SavedSearch search,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final label = search.label?.isNotEmpty == true
+        ? search.label!
+        : l10n.savedSearchesDeleteFallback;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar búsqueda'),
-        content: Text(
-          '¿Eliminar "${search.label?.isNotEmpty == true ? search.label : 'esta búsqueda guardada'}"?',
-        ),
+        title: Text(l10n.savedSearchesDeleteDialogTitle),
+        content: Text(l10n.savedSearchesDeleteConfirm(label)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text(
-              'Eliminar',
+            child: Text(
+              l10n.commonDelete,
               style: TextStyle(color: AppColors.error),
             ),
           ),
@@ -73,7 +76,7 @@ class SavedSearchesScreen extends ConsumerWidget {
     } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudo eliminar la búsqueda')),
+        SnackBar(content: Text(l10n.savedSearchesDeleteFailed)),
       );
     }
   }
@@ -92,10 +95,11 @@ class SavedSearchesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final savedSearchesAsync = ref.watch(savedSearchesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Búsquedas guardadas')),
+      appBar: AppBar(title: Text(l10n.savedSearchesTitle)),
       body: savedSearchesAsync.when(
         data: (searches) {
           if (searches.isEmpty) {
@@ -107,16 +111,16 @@ class SavedSearchesScreen extends ConsumerWidget {
                   children: [
                     const Text('🔖', style: TextStyle(fontSize: 64)),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Sin búsquedas guardadas',
-                      style: TextStyle(
+                    Text(
+                      l10n.savedSearchesEmptyTitle,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Guarda una búsqueda desde el buscador para encontrarla aquí después',
+                      l10n.savedSearchesEmptyHint,
                       style: TextStyle(color: AppColors.textSecondary),
                       textAlign: TextAlign.center,
                     ),
@@ -153,7 +157,7 @@ class SavedSearchesScreen extends ConsumerWidget {
                                 Text(
                                   search.label?.isNotEmpty == true
                                       ? search.label!
-                                      : 'Búsqueda guardada',
+                                      : l10n.savedSearchesDefaultLabel,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16,
@@ -161,7 +165,7 @@ class SavedSearchesScreen extends ConsumerWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  _filterSummary(search.filters),
+                                  _filterSummary(search.filters, l10n),
                                   style: TextStyle(
                                     color: AppColors.textSecondary,
                                     fontSize: 13,
@@ -194,11 +198,11 @@ class SavedSearchesScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               const SizedBox(height: 16),
-              Text('Error: $e'),
+              Text(l10n.commonErrorWithMessage(e.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(savedSearchesProvider),
-                child: const Text('Reintentar'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),

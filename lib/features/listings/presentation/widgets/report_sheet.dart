@@ -5,17 +5,31 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/reports_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
-/// Human labels for the canonical report reasons (see [kListingReportReasons]).
-const Map<String, String> _reasonLabels = {
-  'spam': 'Spam o publicidad engañosa',
-  'fraud': 'Fraude o estafa',
-  'prohibited_content': 'Contenido prohibido',
-  'harassment': 'Acoso o abuso',
-  'duplicate': 'Anuncio duplicado',
-  'wrong_category': 'Categoría incorrecta',
-  'other': 'Otro',
-};
+/// Resolves the human label for a report-reason code using the active
+/// locale's localizations. Kept as a method (not a const map) because the
+/// values come from `AppLocalizations` which is constructed at runtime.
+String _reasonLabel(String reason, AppLocalizations l10n) {
+  switch (reason) {
+    case 'spam':
+      return l10n.reportReasonSpam;
+    case 'fraud':
+      return l10n.reportReasonFraud;
+    case 'prohibited_content':
+      return l10n.reportReasonProhibitedContent;
+    case 'harassment':
+      return l10n.reportReasonHarassment;
+    case 'duplicate':
+      return l10n.reportReasonDuplicate;
+    case 'wrong_category':
+      return l10n.reportReasonWrongCategory;
+    case 'other':
+      return l10n.reportReasonOther;
+    default:
+      return reason;
+  }
+}
 
 /// Opens the "Reportar anuncio" bottom sheet. Requires an authenticated user
 /// (the report RPC enforces `reporter_user_id = auth.uid()`); if the user is
@@ -60,9 +74,10 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_reason == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona un motivo.')),
+        SnackBar(content: Text(l10n.reportSheetSelectReason)),
       );
       return;
     }
@@ -82,40 +97,41 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
     if (outcome.ok) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Reporte enviado. Gracias por ayudarnos.'),
+        SnackBar(
+          content: Text(l10n.reportSheetSuccess),
           backgroundColor: AppColors.success,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_errorMessage(outcome.error!)),
+          content: Text(_errorMessage(outcome.error!, l10n)),
           backgroundColor: AppColors.error,
         ),
       );
     }
   }
 
-  String _errorMessage(ReportSubmitError error) {
+  String _errorMessage(ReportSubmitError error, AppLocalizations l10n) {
     switch (error) {
       case ReportSubmitError.invalidInput:
-        return 'Revisa el motivo y los detalles.';
+        return l10n.reportSheetErrorInvalidInput;
       case ReportSubmitError.unauthenticated:
-        return 'Inicia sesión para reportar.';
+        return l10n.reportSheetErrorUnauthenticated;
       case ReportSubmitError.listingUnavailable:
-        return 'Este anuncio ya no está disponible.';
+        return l10n.reportSheetErrorListingUnavailable;
       case ReportSubmitError.selfReport:
-        return 'No puedes reportar tu propio anuncio.';
+        return l10n.reportSheetErrorSelfReport;
       case ReportSubmitError.alreadyReported:
-        return 'Ya reportaste este anuncio.';
+        return l10n.reportSheetErrorAlreadyReported;
       case ReportSubmitError.databaseError:
-        return 'No se pudo enviar el reporte. Inténtalo de nuevo.';
+        return l10n.reportSheetErrorDatabase;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
@@ -141,19 +157,25 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
                   ),
                 ),
               ),
-              const Text(
-                'Reportar anuncio',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                l10n.reportSheetTitle,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
-              const Text('Motivo', style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                l10n.reportSheetReasonHeading,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               ...kListingReportReasons.map(
                 (reason) => RadioListTile<String>(
                   value: reason,
                   groupValue: _reason,
                   onChanged: (v) => setState(() => _reason = v),
-                  title: Text(_reasonLabels[reason] ?? reason),
+                  title: Text(_reasonLabel(reason, l10n)),
                   contentPadding: EdgeInsets.zero,
                   dense: true,
                 ),
@@ -163,8 +185,8 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
                 controller: _detailsController,
                 maxLines: 3,
                 maxLength: 2000,
-                decoration: const InputDecoration(
-                  labelText: 'Detalles (opcional)',
+                decoration: InputDecoration(
+                  labelText: l10n.reportSheetDetailsLabel,
                   alignLabelWithHint: true,
                 ),
               ),
@@ -180,7 +202,11 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.flag),
-                  label: Text(_submitting ? 'Enviando...' : 'Enviar reporte'),
+                  label: Text(
+                    _submitting
+                        ? l10n.reportSheetSending
+                        : l10n.reportSheetSendButton,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.error,
                     padding: const EdgeInsets.symmetric(vertical: 14),

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 
 final categoryListingsProvider = FutureProvider.family<List<Listing>, String>((
@@ -32,6 +33,7 @@ class CategoryListingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final listingsAsync = ref.watch(categoryListingsProvider(categoryId));
 
     return Scaffold(
@@ -57,20 +59,23 @@ class CategoryListingsScreen extends ConsumerWidget {
                 children: [
                   const Text('🦊', style: TextStyle(fontSize: 64)),
                   const SizedBox(height: 16),
-                  const Text(
-                    'No hay anuncios',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Text(
+                    l10n.categoryDetailNoListings,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Sé el primero en publicar en $categoryName',
+                    l10n.categoryDetailBeFirst(categoryName),
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () => context.push('/create-listing'),
                     icon: const Icon(Icons.add),
-                    label: const Text('Publicar Anuncio'),
+                    label: Text(l10n.listingCreateTitle),
                   ),
                 ],
               ),
@@ -102,12 +107,12 @@ class CategoryListingsScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               const SizedBox(height: 16),
-              Text('Error: $e'),
+              Text(l10n.commonErrorWithMessage(e.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () =>
                     ref.invalidate(categoryListingsProvider(categoryId)),
-                child: const Text('Reintentar'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),

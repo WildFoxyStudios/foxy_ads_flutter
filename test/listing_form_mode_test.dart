@@ -2,8 +2,9 @@
 // - Create mode (`const CreateListingScreen()`): AppBar + submit button show
 //   the create copy.
 // - Edit mode (`CreateListingScreen(existing: fakeListing)`): AppBar shows
-//   "Editar anuncio", the submit button shows "Guardar cambios", and the
-//   title field is prefilled with the listing's title.
+//   the localized "Editar anuncio", the submit button shows the localized
+//   "Guardar cambios", and the title field is prefilled with the listing's
+//   title.
 //
 // The screen reads several providers during build/initState
 // (createListingCategoriesProvider, authStateProvider, selectedCountryProvider,
@@ -22,6 +23,7 @@ import 'package:foxy_ads/core/models/listing_model.dart';
 import 'package:foxy_ads/core/providers/selected_country_provider.dart';
 import 'package:foxy_ads/core/services/auth_service.dart';
 import 'package:foxy_ads/features/listings/presentation/screens/create_listing_screen.dart';
+import 'package:foxy_ads/l10n/app_localizations.dart';
 
 // A logged-in fake user so the screen renders the form instead of the
 // "Inicia sesión para publicar" gate.
@@ -78,7 +80,12 @@ Widget _buildTestApp(Widget child) {
       ),
       selectedCountryProvider.overrideWith(() => _FakeCountryNotifier()),
     ],
-    child: MaterialApp(home: child),
+    child: MaterialApp(
+      locale: const Locale('es'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: child,
+    ),
   );
 }
 
@@ -99,9 +106,12 @@ void main() {
       await tester.pumpWidget(_buildTestApp(const CreateListingScreen()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Publicar Anuncio'), findsWidgets);
-      expect(find.text('Editar anuncio'), findsNothing);
-      expect(find.text('Guardar cambios'), findsNothing);
+      // Resolve the locale AppLocalizations that's active in the test app
+      // (default = 'es', matching the app's first-run locale).
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+      expect(find.text(l10n.listingCreateTitle), findsWidgets);
+      expect(find.text(l10n.listingEditTitle), findsNothing);
+      expect(find.text(l10n.listingCreateSaveChangesButton), findsNothing);
     },
   );
 
@@ -116,9 +126,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Editar anuncio'), findsOneWidget);
-      expect(find.text('Guardar cambios'), findsOneWidget);
-      expect(find.text('Publicar Anuncio'), findsNothing);
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+      expect(find.text(l10n.listingEditTitle), findsOneWidget);
+      expect(find.text(l10n.listingCreateSaveChangesButton), findsOneWidget);
+      expect(find.text(l10n.listingCreateTitle), findsNothing);
       expect(
         find.widgetWithText(TextFormField, 'Piso de prueba'),
         findsOneWidget,

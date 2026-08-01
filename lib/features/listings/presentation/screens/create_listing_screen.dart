@@ -10,6 +10,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../real-estate/presentation/widgets/re_attribute_form.dart';
 import 'listing_detail_screen.dart' show listingDetailProvider;
 import '../../../profile/presentation/screens/my_listings_screen.dart'
@@ -111,8 +112,10 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               .take(maxNewImages < 0 ? 0 : maxNewImages)
               .toList();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Máximo 10 imágenes permitidas'),
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)!.listingCreateMaxImages,
+              ),
               backgroundColor: AppColors.warning,
             ),
           );
@@ -135,11 +138,12 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
   Future<void> _submitListing() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
 
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Selecciona una categoría'),
+        SnackBar(
+          content: Text(l10n.listingCreateSelectCategoryHint),
           backgroundColor: AppColors.error,
         ),
       );
@@ -156,8 +160,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
         _phoneController.text.isEmpty &&
         _emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Agrega al menos un método de contacto'),
+        SnackBar(
+          content: Text(l10n.listingCreateContactMethodRequired),
           backgroundColor: AppColors.error,
         ),
       );
@@ -222,8 +226,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('¡Anuncio publicado con éxito!'),
+            SnackBar(
+              content: Text(l10n.listingCreatePublishedSuccess),
               backgroundColor: AppColors.success,
             ),
           );
@@ -275,8 +279,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Cambios guardados'),
+            SnackBar(
+              content: Text(l10n.listingCreateChangesSaved),
               backgroundColor: AppColors.success,
             ),
           );
@@ -287,7 +291,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.commonErrorWithMessage(e.toString()),
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -301,6 +307,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authStateProvider);
     final categoriesAsync = ref.watch(createListingCategoriesProvider);
     final country = ref.watch(selectedCountryProvider);
@@ -309,7 +316,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
     if (authState.value == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Publicar Anuncio'),
+          title: Text(l10n.listingCreateTitle),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.pop(),
@@ -323,14 +330,17 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               children: [
                 const Text('🦊', style: TextStyle(fontSize: 64)),
                 const SizedBox(height: 24),
-                const Text(
-                  'Inicia sesión para publicar',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.listingCreateSignInTitle,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Necesitas una cuenta para publicar anuncios en Foxy Ads',
+                  l10n.listingCreateSignInSubtitle,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 16,
@@ -340,12 +350,12 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () => context.push('/login'),
-                  child: const Text('Iniciar Sesión'),
+                  child: Text(l10n.authSignIn),
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton(
                   onPressed: () => context.push('/register'),
-                  child: const Text('Crear Cuenta'),
+                  child: Text(l10n.authCreateAccountButton),
                 ),
               ],
             ),
@@ -357,7 +367,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.existing == null ? 'Publicar Anuncio' : 'Editar anuncio',
+          widget.existing == null
+              ? l10n.listingCreateTitle
+              : l10n.listingEditTitle,
         ),
         leading: IconButton(
           icon: const Icon(Icons.close),
@@ -370,9 +382,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             // Images Section
-            const Text(
-              'Fotos',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Text(
+              l10n.listingCreatePhotosHeading,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             SizedBox(
@@ -404,7 +416,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Agregar',
+                            l10n.listingCreateAddImage,
                             style: TextStyle(
                               color: AppColors.primary,
                               fontSize: 12,
@@ -463,9 +475,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                                   color: AppColors.primary,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Text(
-                                  'Principal',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.listingCreatePrimaryBadge,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 10,
                                   ),
@@ -525,9 +537,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                                   color: AppColors.primary,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Text(
-                                  'Principal',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.listingCreatePrimaryBadge,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 10,
                                   ),
@@ -543,15 +555,15 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Máximo 10 fotos. La primera será la principal.',
+              l10n.listingCreateMaxPhotosHint,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
             const SizedBox(height: 24),
 
             // Category
-            const Text(
-              'Categoría *',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Text(
+              l10n.listingCreateCategoryLabel,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             categoriesAsync.when(
@@ -562,7 +574,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 ),
               ),
               error: (error, stack) => Text(
-                'Error al cargar categorías',
+                l10n.listingCreateCategoriesError,
                 style: TextStyle(color: AppColors.error),
               ),
               data: (categories) {
@@ -571,7 +583,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 value: _selectedCategory,
                 isExpanded: true,
                 decoration: InputDecoration(
-                  hintText: 'Selecciona una categoría',
+                  hintText: l10n.listingCreateSelectCategoryHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -610,7 +622,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 },
                 validator: (value) {
                   if (value == null) {
-                    return 'Selecciona una categoría';
+                    return l10n.listingCreateSelectCategoryHint;
                   }
                   return null;
                 },
@@ -622,16 +634,16 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
             // Title
             TextFormField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Título del anuncio *',
-                hintText: 'Ej: iPhone 13 Pro Max 256GB',
+              decoration: InputDecoration(
+                labelText: l10n.listingCreateTitleLabel,
+                hintText: l10n.listingCreateTitleHint,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'El título es obligatorio';
+                  return l10n.listingCreateTitleRequired;
                 }
                 if (value.length < 10) {
-                  return 'El título debe tener al menos 10 caracteres';
+                  return l10n.listingCreateTitleTooShort;
                 }
                 return null;
               },
@@ -642,17 +654,17 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
             TextFormField(
               controller: _descriptionController,
               maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Descripción *',
-                hintText: 'Describe tu producto o servicio...',
+              decoration: InputDecoration(
+                labelText: l10n.listingCreateDescriptionLabel,
+                hintText: l10n.listingCreateDescriptionHint,
                 alignLabelWithHint: true,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'La descripción es obligatoria';
+                  return l10n.listingCreateDescriptionRequired;
                 }
                 if (value.length < 20) {
-                  return 'La descripción debe tener al menos 20 caracteres';
+                  return l10n.listingCreateDescriptionTooShort;
                 }
                 return null;
               },
@@ -667,15 +679,15 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                     controller: _priceController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: 'Precio *',
+                      labelText: l10n.listingCreatePriceLabel,
                       prefixText: '${_priceCurrencySymbol(country)} ',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'El precio es obligatorio';
+                        return l10n.listingCreatePriceRequired;
                       }
                       if (double.tryParse(value) == null) {
-                        return 'Ingresa un precio válido';
+                        return l10n.listingCreatePriceInvalid;
                       }
                       return null;
                     },
@@ -685,7 +697,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Negociable'),
+                    Text(l10n.listingCreateNegotiable),
                     Switch(
                       value: _isNegotiable,
                       onChanged: (value) {
@@ -702,10 +714,10 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
             // City
             TextFormField(
               controller: _cityController,
-              decoration: const InputDecoration(
-                labelText: 'Ciudad',
-                hintText: 'Ej: Madrid, Ciudad de México...',
-                prefixIcon: Icon(Icons.location_on_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.listingCreateCityLabel,
+                hintText: l10n.listingCreateCityHint,
+                prefixIcon: const Icon(Icons.location_on_outlined),
               ),
             ),
             const SizedBox(height: 24),
@@ -726,13 +738,13 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
             ],
 
             // Contact Information
-            const Text(
-              'Información de Contacto',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l10n.listingCreateContactInfoHeading,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'Agrega al menos un método de contacto',
+              l10n.listingCreateContactMethodRequired,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 16),
@@ -741,10 +753,13 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
             TextFormField(
               controller: _whatsappController,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'WhatsApp',
-                hintText: '+34 612 345 678',
-                prefixIcon: Icon(Icons.chat, color: Color(0xFF25D366)),
+              decoration: InputDecoration(
+                labelText: l10n.listingCreateWhatsappLabel,
+                hintText: l10n.listingCreatePhoneHint,
+                prefixIcon: const Icon(
+                  Icons.chat,
+                  color: Color(0xFF25D366),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -753,10 +768,10 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Teléfono',
-                hintText: '+34 612 345 678',
-                prefixIcon: Icon(Icons.phone_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.listingCreatePhoneLabel,
+                hintText: l10n.listingCreatePhoneHint,
+                prefixIcon: const Icon(Icons.phone_outlined),
               ),
             ),
             const SizedBox(height: 16),
@@ -765,10 +780,10 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'tu@email.com',
-                prefixIcon: Icon(Icons.email_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.listingCreateEmailLabel,
+                hintText: l10n.listingCreateEmailHint,
+                prefixIcon: const Icon(Icons.email_outlined),
               ),
             ),
             const SizedBox(height: 32),
@@ -787,8 +802,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                     )
                   : Text(
                       widget.existing == null
-                          ? 'Publicar Anuncio'
-                          : 'Guardar cambios',
+                          ? l10n.listingCreateSubmitButton
+                          : l10n.listingCreateSaveChangesButton,
                     ),
             ),
             const SizedBox(height: 32),

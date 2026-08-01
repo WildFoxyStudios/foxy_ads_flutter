@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -43,7 +44,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.commonErrorWithMessage(e.toString()),
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -68,7 +71,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.commonErrorWithMessage(e.toString()),
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -81,14 +86,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _forgotPassword() async {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Escribe tu email arriba y pulsa de nuevo para recibir el enlace de recuperación',
-          ),
-        ),
+        SnackBar(content: Text(l10n.authForgotEmailEmpty)),
       );
       return;
     }
@@ -98,7 +100,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Te enviamos un correo para restablecer tu contraseña a $email'),
+            content: Text(l10n.authForgotEmailSent(email)),
             backgroundColor: AppColors.success,
           ),
         );
@@ -107,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(l10n.commonErrorWithMessage(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -117,6 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -150,9 +153,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
                 // Title
-                const Text(
-                  '¡Bienvenido de vuelta!',
-                  style: TextStyle(
+                Text(
+                  l10n.authWelcomeBack,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -161,7 +164,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Inicia sesión para publicar tus anuncios',
+                  l10n.authLoginSubtitle,
                   style: TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
@@ -173,16 +176,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Correo electrónico',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.authEmailLabel,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Ingresa tu correo';
+                      return l10n.authEmailRequired;
                     }
                     if (!value.contains('@')) {
-                      return 'Ingresa un correo válido';
+                      return l10n.authEmailInvalid;
                     }
                     return null;
                   },
@@ -193,7 +196,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: 'Contraseña',
+                    labelText: l10n.authPasswordLabel,
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -208,10 +211,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Ingresa tu contraseña';
+                      return l10n.authPasswordRequired;
                     }
                     if (value.length < 6) {
-                      return 'La contraseña debe tener al menos 6 caracteres';
+                      return l10n.authPasswordTooShort;
                     }
                     return null;
                   },
@@ -222,7 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: _isLoading ? null : _forgotPassword,
-                    child: const Text('¿Olvidaste tu contraseña?'),
+                    child: Text(l10n.authForgotPassword),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -240,7 +243,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                         )
-                      : const Text('Iniciar Sesión'),
+                      : Text(l10n.authSignIn),
                 ),
                 const SizedBox(height: 24),
                 // Divider
@@ -250,7 +253,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'O continúa con',
+                        l10n.authOrContinueWith,
                         style: TextStyle(color: AppColors.textSecondary),
                       ),
                     ),
@@ -267,7 +270,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     errorBuilder: (context, error, stackTrace) =>
                         const Icon(Icons.g_mobiledata, size: 24),
                   ),
-                  label: const Text('Continuar con Google'),
+                  label: Text(l10n.authContinueWithGoogle),
                 ),
                 const SizedBox(height: 32),
                 // Register Link
@@ -275,12 +278,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '¿No tienes cuenta? ',
+                      l10n.authNoAccountPrompt,
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
                     TextButton(
                       onPressed: () => context.push('/register'),
-                      child: const Text('Regístrate'),
+                      child: Text(l10n.authRegisterLink),
                     ),
                   ],
                 ),
@@ -289,7 +292,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 TextButton(
                   onPressed: () => context.go('/'),
                   child: Text(
-                    'Continuar sin iniciar sesión',
+                    l10n.authContinueWithoutLogin,
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                 ),

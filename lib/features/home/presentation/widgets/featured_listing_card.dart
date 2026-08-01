@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class FeaturedListingCard extends StatelessWidget {
   final Listing listing;
@@ -15,6 +16,7 @@ class FeaturedListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -91,14 +93,14 @@ class FeaturedListingCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.star, color: Colors.white, size: 14),
-                      SizedBox(width: 4),
+                      const Icon(Icons.star, color: Colors.white, size: 14),
+                      const SizedBox(width: 4),
                       Text(
-                        'DESTACADO',
-                        style: TextStyle(
+                        l10n.listingCardFeaturedBadge,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 11,
                           fontWeight: FontWeight.bold,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -33,11 +34,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
 
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes aceptar los términos y condiciones'),
+        SnackBar(
+          content: Text(l10n.authAcceptTermsRequired),
           backgroundColor: AppColors.error,
         ),
       );
@@ -55,8 +57,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Cuenta creada! Revisa tu correo para verificar.'),
+          SnackBar(
+            content: Text(l10n.authAccountCreatedVerify),
             backgroundColor: AppColors.success,
           ),
         );
@@ -66,7 +68,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(l10n.commonErrorWithMessage(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -91,7 +93,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)!.commonErrorWithMessage(e.toString()),
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -105,6 +109,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -143,9 +148,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
                 // Title
-                const Text(
-                  'Crear cuenta',
-                  style: TextStyle(
+                Text(
+                  l10n.authCreateAccountTitle,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -154,7 +159,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Únete a Foxy Ads y comienza a publicar',
+                  l10n.authRegisterSubtitle,
                   style: TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
@@ -166,13 +171,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 TextFormField(
                   controller: _nameController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre completo',
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.authFullNameLabel,
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Ingresa tu nombre';
+                      return l10n.authFullNameRequired;
                     }
                     return null;
                   },
@@ -182,16 +187,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Correo electrónico',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.authEmailLabel,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Ingresa tu correo';
+                      return l10n.authEmailRequired;
                     }
                     if (!value.contains('@')) {
-                      return 'Ingresa un correo válido';
+                      return l10n.authEmailInvalid;
                     }
                     return null;
                   },
@@ -202,7 +207,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: 'Contraseña',
+                    labelText: l10n.authPasswordLabel,
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -217,10 +222,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Ingresa una contraseña';
+                      return l10n.authPasswordRequiredNew;
                     }
                     if (value.length < 6) {
-                      return 'La contraseña debe tener al menos 6 caracteres';
+                      return l10n.authPasswordTooShort;
                     }
                     return null;
                   },
@@ -231,7 +236,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
-                    labelText: 'Confirmar contraseña',
+                    labelText: l10n.authConfirmPasswordLabel,
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -249,7 +254,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   validator: (value) {
                     if (value != _passwordController.text) {
-                      return 'Las contraseñas no coinciden';
+                      return l10n.authPasswordsDoNotMatch;
                     }
                     return null;
                   },
@@ -280,18 +285,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 fontSize: 14,
                               ),
                               children: [
-                                const TextSpan(text: 'Acepto los '),
+                                TextSpan(text: l10n.authTermsIntro),
                                 TextSpan(
-                                  text: 'Términos y Condiciones',
-                                  style: TextStyle(
+                                  text: l10n.authTermsLink,
+                                  style: const TextStyle(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                const TextSpan(text: ' y la '),
+                                TextSpan(text: l10n.authTermsAnd),
                                 TextSpan(
-                                  text: 'Política de Privacidad',
-                                  style: TextStyle(
+                                  text: l10n.authPrivacyLink,
+                                  style: const TextStyle(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -319,7 +324,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             ),
                           ),
                         )
-                      : const Text('Crear Cuenta'),
+                      : Text(l10n.authCreateAccountButton),
                 ),
                 const SizedBox(height: 24),
                 // Divider
@@ -329,7 +334,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'O regístrate con',
+                        l10n.authOrRegisterWith,
                         style: TextStyle(color: AppColors.textSecondary),
                       ),
                     ),
@@ -346,7 +351,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     errorBuilder: (context, error, stackTrace) =>
                         const Icon(Icons.g_mobiledata, size: 24),
                   ),
-                  label: const Text('Continuar con Google'),
+                  label: Text(l10n.authContinueWithGoogle),
                 ),
                 const SizedBox(height: 32),
                 // Login Link
@@ -354,12 +359,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '¿Ya tienes cuenta? ',
+                      l10n.authHasAccountPrompt,
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
                     TextButton(
                       onPressed: () => context.pop(),
-                      child: const Text('Inicia Sesión'),
+                      child: Text(l10n.authSignIn),
                     ),
                   ],
                 ),

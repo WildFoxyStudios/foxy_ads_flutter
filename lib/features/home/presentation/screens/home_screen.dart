@@ -7,6 +7,7 @@ import '../../../../core/models/category_model.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../widgets/category_card.dart';
 import '../widgets/listing_card.dart';
 import '../widgets/featured_listing_card.dart';
@@ -41,6 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final categories = ref.watch(categoriesProvider);
     final featuredListings = ref.watch(featuredListingsProvider);
     final recentListings = ref.watch(recentListingsProvider);
@@ -82,9 +84,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     style: TextStyle(fontSize: 32),
                                   ),
                                   const SizedBox(width: 8),
-                                  const Text(
-                                    'Foxy Ads',
-                                    style: TextStyle(
+                                  Text(
+                                    l10n.appName,
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
@@ -157,7 +159,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                   const SizedBox(width: 12),
                                   Text(
-                                    '¿Qué estás buscando?',
+                                    l10n.homeSearchHint,
                                     style: TextStyle(
                                       color: AppColors.textSecondary,
                                       fontSize: 16,
@@ -185,16 +187,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Categorías',
-                          style: TextStyle(
+                        Text(
+                          l10n.homeCategoriesHeading,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextButton(
                           onPressed: () => context.push('/categories'),
-                          child: const Text('Ver todas'),
+                          child: Text(l10n.homeViewAll),
                         ),
                       ],
                     ),
@@ -226,7 +228,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         height: 100,
                         child: Center(child: CircularProgressIndicator()),
                       ),
-                      error: (e, _) => Text('Error: $e'),
+                      error: (e, _) => Text(
+                        l10n.commonErrorWithMessage(e.toString()),
+                      ),
                     ),
                   ],
                 ),
@@ -254,18 +258,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 gradient: AppColors.foxGradient,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.star,
                                     color: Colors.white,
                                     size: 16,
                                   ),
-                                  SizedBox(width: 4),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    'DESTACADOS',
-                                    style: TextStyle(
+                                    l10n.homeFeaturedLabel,
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
@@ -311,16 +315,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Publicaciones recientes',
-                      style: TextStyle(
+                    Text(
+                      l10n.homeRecentListingsHeading,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextButton(
                       onPressed: () => context.go('/search'),
-                      child: const Text('Ver más'),
+                      child: Text(l10n.homeViewMore),
                     ),
                   ],
                 ),
@@ -367,13 +371,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           color: AppColors.error,
                         ),
                         const SizedBox(height: 16),
-                        Text('Error al cargar: $e'),
+                        Text(l10n.homeErrorLoading(e.toString())),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
                             ref.invalidate(recentListingsProvider);
                           },
-                          child: const Text('Reintentar'),
+                          child: Text(l10n.commonRetry),
                         ),
                       ],
                     ),

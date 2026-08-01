@@ -10,6 +10,7 @@ import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/favorite_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
 import '../widgets/contact_sheet.dart';
 import '../widgets/report_sheet.dart';
@@ -29,6 +30,7 @@ class ListingDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final listingAsync = ref.watch(listingDetailProvider(listingId));
     final authState = ref.watch(authStateProvider);
     final favorites = ref.watch(userFavoritesProvider);
@@ -38,7 +40,7 @@ class ListingDetailScreen extends ConsumerWidget {
         if (listing == null) {
           return Scaffold(
             appBar: AppBar(),
-            body: const Center(child: Text('Anuncio no encontrado')),
+            body: Center(child: Text(l10n.listingDetailNotFound)),
           );
         }
 
@@ -120,20 +122,20 @@ class ListingDetailScreen extends ConsumerWidget {
                     },
                     itemBuilder: (context) => [
                       if (authState.value?.id == listing.userId)
-                        const PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: 'edit',
                           child: ListTile(
                             dense: true,
-                            leading: Icon(Icons.edit_outlined),
-                            title: Text('Editar anuncio'),
+                            leading: const Icon(Icons.edit_outlined),
+                            title: Text(l10n.listingDetailEdit),
                           ),
                         ),
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'report',
                         child: ListTile(
                           dense: true,
-                          leading: Icon(Icons.flag_outlined),
-                          title: Text('Reportar anuncio'),
+                          leading: const Icon(Icons.flag_outlined),
+                          title: Text(l10n.listingDetailReport),
                         ),
                       ),
                     ],
@@ -152,7 +154,10 @@ class ListingDetailScreen extends ConsumerWidget {
                     ),
                     onPressed: () {
                       Share.share(
-                        '${listing.title} - ${listing.formattedPrice}\n\nMira este anuncio en Foxy Ads',
+                        l10n.listingDetailShareMessage(
+                          listing.title,
+                          listing.formattedPrice,
+                        ),
                       );
                     },
                   ),
@@ -208,14 +213,18 @@ class ListingDetailScreen extends ConsumerWidget {
                             gradient: AppColors.foxGradient,
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.star, color: Colors.white, size: 16),
-                              SizedBox(width: 4),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 4),
                               Text(
-                                'ANUNCIO DESTACADO',
-                                style: TextStyle(
+                                l10n.listingDetailFeaturedBadge,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
@@ -238,7 +247,7 @@ class ListingDetailScreen extends ConsumerWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            'Precio negociable',
+                            l10n.listingDetailNegotiable,
                             style: TextStyle(
                               color: AppColors.success,
                               fontWeight: FontWeight.w500,
@@ -288,7 +297,7 @@ class ListingDetailScreen extends ConsumerWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '${listing.views} visualizaciones',
+                            l10n.listingDetailViews(listing.views),
                             style: TextStyle(color: AppColors.textSecondary),
                           ),
                         ],
@@ -296,9 +305,9 @@ class ListingDetailScreen extends ConsumerWidget {
                       const Divider(height: 32),
 
                       // Description
-                      const Text(
-                        'Descripción',
-                        style: TextStyle(
+                      Text(
+                        l10n.listingDetailDescriptionHeading,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -315,9 +324,9 @@ class ListingDetailScreen extends ConsumerWidget {
                       const Divider(height: 32),
 
                       // Seller Info
-                      const Text(
-                        'Vendedor',
-                        style: TextStyle(
+                      Text(
+                        l10n.listingDetailSellerHeading,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -349,14 +358,16 @@ class ListingDetailScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  listing.userName ?? 'Usuario',
+                                  listing.userName ?? l10n.listingDetailDefaultUser,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16,
                                   ),
                                 ),
                                 Text(
-                                  'Miembro desde ${_formatDate(listing.createdAt)}',
+                                  l10n.listingDetailMemberSince(
+                                    _formatDate(listing.createdAt, l10n),
+                                  ),
                                   style: TextStyle(
                                     color: AppColors.textSecondary,
                                     fontSize: 13,
@@ -406,7 +417,7 @@ class ListingDetailScreen extends ConsumerWidget {
                                               ),
                                               const SizedBox(width: 4),
                                               Text(
-                                                'Ver agencia',
+                                                l10n.listingDetailViewAgency,
                                                 style: TextStyle(
                                                   color: AppColors.primary,
                                                   fontSize: 13,
@@ -455,7 +466,7 @@ class ListingDetailScreen extends ConsumerWidget {
                       onPressed: () =>
                           showContactSellerSheet(context, ref, listing),
                       icon: const Icon(Icons.message_outlined),
-                      label: const Text('Mensaje'),
+                      label: Text(l10n.listingDetailContactMessage),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                       ),
@@ -472,7 +483,7 @@ class ListingDetailScreen extends ConsumerWidget {
                           }
                         },
                         icon: const Icon(Icons.phone),
-                        label: const Text('Llamar'),
+                        label: Text(l10n.listingDetailCall),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondary,
                         ),
@@ -485,7 +496,7 @@ class ListingDetailScreen extends ConsumerWidget {
                       child: ElevatedButton.icon(
                         onPressed: () {
                           final message = Uri.encodeComponent(
-                            'Hola, me interesa tu anuncio: ${listing.title}',
+                            l10n.listingDetailWhatsappGreeting(listing.title),
                           );
                           launchUrl(
                             Uri.parse(
@@ -495,7 +506,7 @@ class ListingDetailScreen extends ConsumerWidget {
                           );
                         },
                         icon: const Icon(Icons.chat),
-                        label: const Text('WhatsApp'),
+                        label: Text(l10n.listingDetailWhatsApp),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF25D366),
                         ),
@@ -508,7 +519,7 @@ class ListingDetailScreen extends ConsumerWidget {
                       child: OutlinedButton.icon(
                         onPressed: () {
                           final subject = Uri.encodeComponent(
-                            'Interesado en: ${listing.title}',
+                            l10n.listingDetailEmailSubject(listing.title),
                           );
                           launchUrl(
                             Uri.parse(
@@ -517,7 +528,7 @@ class ListingDetailScreen extends ConsumerWidget {
                           );
                         },
                         icon: const Icon(Icons.email),
-                        label: const Text('Email'),
+                        label: Text(l10n.listingDetailEmail),
                       ),
                     ),
                   ],
@@ -531,25 +542,25 @@ class ListingDetailScreen extends ConsumerWidget {
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('Error: $e')),
+        body: Center(child: Text(l10n.commonErrorWithMessage(e.toString()))),
       ),
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, AppLocalizations l10n) {
     final months = [
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun',
-      'Jul',
-      'Ago',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dic',
+      l10n.listingDetailMonthJan,
+      l10n.listingDetailMonthFeb,
+      l10n.listingDetailMonthMar,
+      l10n.listingDetailMonthApr,
+      l10n.listingDetailMonthMay,
+      l10n.listingDetailMonthJun,
+      l10n.listingDetailMonthJul,
+      l10n.listingDetailMonthAug,
+      l10n.listingDetailMonthSep,
+      l10n.listingDetailMonthOct,
+      l10n.listingDetailMonthNov,
+      l10n.listingDetailMonthDec,
     ];
     return '${months[date.month - 1]} ${date.year}';
   }

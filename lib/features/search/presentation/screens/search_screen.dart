@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../providers/saved_searches_provider.dart';
 import '../providers/search_filters_provider.dart';
@@ -53,6 +54,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Future<void> _saveSearch() async {
+    final l10n = AppLocalizations.of(context)!;
     if (ref.read(authStateProvider).value == null) {
       context.push('/login');
       return;
@@ -88,25 +90,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Búsqueda guardada')),
+        SnackBar(content: Text(l10n.searchSavedToast)),
       );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudo guardar la búsqueda')),
+        SnackBar(content: Text(l10n.searchSaveFailed)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final searchResults = ref.watch(searchResultsProvider);
     final filters = ref.watch(searchFiltersProvider);
     final selectedCategory = filters.categoryId;
     final categories = Category.defaultCategories;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Buscar')),
+      appBar: AppBar(title: Text(l10n.searchTitle)),
       body: Column(
         children: [
           // Search Bar
@@ -118,7 +121,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: '¿Qué estás buscando?',
+                      hintText: l10n.searchHint,
                       prefixIcon: const Icon(Icons.search),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
@@ -154,7 +157,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   IconButton(
                     onPressed: _saveSearch,
                     icon: const Icon(Icons.bookmark_add_outlined),
-                    tooltip: 'Guardar búsqueda',
+                    tooltip: l10n.searchSaveTooltip,
                     style: IconButton.styleFrom(
                       backgroundColor: AppColors.surface,
                       padding: const EdgeInsets.all(12),
@@ -186,29 +189,29 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Filtros',
-                        style: TextStyle(
+                      Text(
+                        l10n.searchFiltersHeading,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       TextButton(
                         onPressed: _clearFilters,
-                        child: const Text('Limpiar'),
+                        child: Text(l10n.searchClearFilters),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   // Category Filter
-                  const Text('Categoría'),
+                  Text(l10n.searchCategoryFilter),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [
                       FilterChip(
-                        label: const Text('Todas'),
+                        label: Text(l10n.searchAllCategories),
                         selected: selectedCategory == null,
                         onSelected: (_) {
                           ref
@@ -233,7 +236,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ),
                   const SizedBox(height: 16),
                   // Price Range
-                  const Text('Rango de precio'),
+                  Text(l10n.searchPriceRange),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -241,8 +244,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         child: TextField(
                           controller: _minPriceController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            hintText: 'Mín',
+                          decoration: InputDecoration(
+                            hintText: l10n.searchMinPrice,
                             prefixText: '\$ ',
                           ),
                         ),
@@ -255,8 +258,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         child: TextField(
                           controller: _maxPriceController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            hintText: 'Máx',
+                          decoration: InputDecoration(
+                            hintText: l10n.searchMaxPrice,
                             prefixText: '\$ ',
                           ),
                         ),
@@ -268,7 +271,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _applyFilters,
-                      child: const Text('Aplicar Filtros'),
+                      child: Text(l10n.searchApplyFilters),
                     ),
                   ),
                 ],
@@ -288,8 +291,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         const SizedBox(height: 16),
                         Text(
                           _searchController.text.isEmpty
-                              ? 'Busca lo que necesitas'
-                              : 'No se encontraron resultados',
+                              ? l10n.searchEmptyStateTitle
+                              : l10n.searchNoResults,
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,
@@ -298,8 +301,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         const SizedBox(height: 8),
                         Text(
                           _searchController.text.isEmpty
-                              ? 'Escribe en el buscador o selecciona una categoría'
-                              : 'Intenta con otros términos',
+                              ? l10n.searchEmptyStateHint
+                              : l10n.searchNoResultsHint,
                           style: TextStyle(color: AppColors.textSecondary),
                         ),
                       ],
@@ -326,7 +329,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Error: $e')),
+              error: (e, _) => Center(
+                child: Text(l10n.commonErrorWithMessage(e.toString())),
+              ),
             ),
           ),
         ],

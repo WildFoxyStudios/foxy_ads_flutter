@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ListingCard extends StatelessWidget {
   final Listing listing;
@@ -19,6 +20,7 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -96,14 +98,18 @@ class ListingCard extends StatelessWidget {
                           gradient: AppColors.foxGradient,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.star, color: Colors.white, size: 12),
-                            SizedBox(width: 2),
+                            const Icon(
+                              Icons.star,
+                              color: Colors.white,
+                              size: 12,
+                            ),
+                            const SizedBox(width: 2),
                             Text(
-                              'TOP',
-                              style: TextStyle(
+                              l10n.listingCardTopBadge,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,

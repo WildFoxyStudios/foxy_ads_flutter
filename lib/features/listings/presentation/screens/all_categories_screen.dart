@@ -5,17 +5,19 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class AllCategoriesScreen extends ConsumerWidget {
   const AllCategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final categoriesAsync = ref.watch(categoriesWithSubcategoriesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todas las Categorías'),
+        title: Text(l10n.allCategoriesTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
@@ -29,12 +31,12 @@ class AllCategoriesScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-              Text('Error: $error'),
+              Text(l10n.commonErrorWithMessage(error.toString())),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () =>
                     ref.invalidate(categoriesWithSubcategoriesProvider),
-                child: const Text('Reintentar'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),
@@ -61,16 +63,16 @@ class AllCategoriesScreen extends ConsumerWidget {
                       child: Text('🏠', style: TextStyle(fontSize: 24)),
                     ),
                   ),
-                  title: const Text(
-                    'Inmuebles',
-                    style: TextStyle(
+                  title: Text(
+                    l10n.allCategoriesRealEstate,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
                   ),
-                  subtitle: const Text(
-                    'Búsqueda avanzada de pisos, casas y más',
-                    style: TextStyle(fontSize: 12),
+                  subtitle: Text(
+                    l10n.allCategoriesRealEstateSubtitle,
+                    style: const TextStyle(fontSize: 12),
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => context.push('/inmuebles-en'),
@@ -95,16 +97,16 @@ class AllCategoriesScreen extends ConsumerWidget {
                       child: Text('🏗️', style: TextStyle(fontSize: 24)),
                     ),
                   ),
-                  title: const Text(
-                    'Promociones / Obra nueva',
-                    style: TextStyle(
+                  title: Text(
+                    l10n.allCategoriesPromotions,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
                   ),
-                  subtitle: const Text(
-                    'Nuevas construcciones y desarrollos',
-                    style: TextStyle(fontSize: 12),
+                  subtitle: Text(
+                    l10n.allCategoriesPromotionsSubtitle,
+                    style: const TextStyle(fontSize: 12),
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => context.push(AppRoutes.promociones),
@@ -149,7 +151,9 @@ class AllCategoriesScreen extends ConsumerWidget {
                         ),
                       ),
                       subtitle: Text(
-                        '${category.subcategories!.length} subcategorías',
+                        l10n.allCategoriesSubcategoriesCount(
+                          category.subcategories!.length,
+                        ),
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,

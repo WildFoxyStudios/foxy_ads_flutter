@@ -4,6 +4,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/leads_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Opens the "Contactar al vendedor" bottom sheet — a server-tracked lead
 /// (goes to the seller's inbox via the `submit_lead` RPC), distinct from the
@@ -41,6 +42,7 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
   final _honeypotController = TextEditingController();
 
   bool _submitting = false;
+  bool _messagePrefilled = false;
 
   @override
   void initState() {
@@ -52,8 +54,18 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
       final name = user.userMetadata?['name'];
       if (name is String) _nameController.text = name;
     }
-    _messageController.text =
-        'Hola, me interesa tu anuncio "${widget.listing.title}". ¿Sigue disponible?';
+    // Default message body is set in didChangeDependencies — initState
+    // runs before `context` is fully mounted for AppLocalizations lookup.
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_messagePrefilled) {
+      _messageController.text = AppLocalizations.of(context)!
+          .contactSheetDefaultMessage(widget.listing.title);
+      _messagePrefilled = true;
+    }
   }
 
   @override
@@ -68,6 +80,7 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _submitting = true);
 
     final outcome = await ref.read(leadsServiceProvider).submitLead(
@@ -87,39 +100,40 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
     if (outcome.ok) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('¡Mensaje enviado! El vendedor te contactará pronto.'),
+        SnackBar(
+          content: Text(l10n.contactSheetSuccess),
           backgroundColor: AppColors.success,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_errorMessage(outcome.error!)),
+          content: Text(_errorMessage(outcome.error!, l10n)),
           backgroundColor: AppColors.error,
         ),
       );
     }
   }
 
-  String _errorMessage(LeadSubmitError error) {
+  String _errorMessage(LeadSubmitError error, AppLocalizations l10n) {
     switch (error) {
       case LeadSubmitError.invalidInput:
-        return 'Revisa los datos del formulario.';
+        return l10n.contactSheetErrorInvalidInput;
       case LeadSubmitError.listingUnavailable:
-        return 'Este anuncio ya no está disponible.';
+        return l10n.contactSheetErrorListingUnavailable;
       case LeadSubmitError.selfLead:
-        return 'No puedes contactarte a ti mismo.';
+        return l10n.contactSheetErrorSelfLead;
       case LeadSubmitError.notAuthenticated:
       case LeadSubmitError.unauthorized:
-        return 'Inicia sesión para enviar un mensaje.';
+        return l10n.contactSheetErrorNotAuthenticated;
       case LeadSubmitError.databaseError:
-        return 'No se pudo enviar el mensaje. Inténtalo de nuevo.';
+        return l10n.contactSheetErrorDatabase;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
@@ -147,9 +161,12 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
                     ),
                   ),
                 ),
-                const Text(
-                  'Contactar al vendedor',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.contactSheetTitle,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -161,27 +178,27 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Tu nombre',
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.contactSheetNameLabel,
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                   textCapitalization: TextCapitalization.words,
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Ingresa tu nombre'
+                      ? l10n.contactSheetNameRequired
                       : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Tu email',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.contactSheetEmailLabel,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   validator: (v) {
                     final s = v?.trim() ?? '';
                     if (s.length < 3 || !s.contains('@')) {
-                      return 'Ingresa un email válido';
+                      return l10n.contactSheetEmailInvalid;
                     }
                     return null;
                   },
@@ -190,9 +207,9 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Tu teléfono (opcional)',
-                    prefixIcon: Icon(Icons.phone_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.contactSheetPhoneLabel,
+                    prefixIcon: const Icon(Icons.phone_outlined),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -200,12 +217,12 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
                   controller: _messageController,
                   maxLines: 4,
                   maxLength: 2000,
-                  decoration: const InputDecoration(
-                    labelText: 'Mensaje',
+                  decoration: InputDecoration(
+                    labelText: l10n.contactSheetMessageLabel,
                     alignLabelWithHint: true,
                   ),
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Escribe un mensaje'
+                      ? l10n.contactSheetMessageRequired
                       : null,
                 ),
                 // Honeypot — visually hidden (0 height, transparent). Real
@@ -219,8 +236,8 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
                       autofocus: false,
                       enableSuggestions: false,
                       autocorrect: false,
-                      decoration: const InputDecoration(
-                        labelText: 'No rellenar',
+                      decoration: InputDecoration(
+                        labelText: l10n.contactSheetHoneypot,
                       ),
                     ),
                   ),
@@ -237,7 +254,11 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.send),
-                    label: Text(_submitting ? 'Enviando...' : 'Enviar mensaje'),
+                    label: Text(
+                      _submitting
+                          ? l10n.contactSheetSending
+                          : l10n.contactSheetSendButton,
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 14),

@@ -15,6 +15,7 @@ import '../../features/real-estate/presentation/screens/city_landing_screen.dart
 import '../../features/real-estate/presentation/screens/valuation_screen.dart';
 import '../../features/developments/presentation/screens/promociones_screen.dart';
 import '../../features/developments/presentation/screens/promocion_detail_screen.dart';
+import '../../features/agency/presentation/screens/agency_profile_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/search/presentation/screens/saved_searches_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
@@ -193,6 +194,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return PromocionDetailScreen(developmentId: id);
         },
       ),
+      // Public agency profile.
+      GoRoute(
+        path: '/agencia/:id',
+        name: 'agencyProfile',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AgencyProfileScreen(agencyId: id);
+        },
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -224,6 +234,7 @@ class AppRoutes {
   static String cityLanding(String city) => '/inmuebles-en/$city';
   static String valuation() => '/valorar';
   static String promocionDetail(String id) => '/promocion/$id';
+  static String agencyProfile(String id) => '/agencia/$id';
 }
 
 /// Loads the listing by [listingId] and, if the current user is its owner,

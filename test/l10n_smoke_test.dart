@@ -20,6 +20,7 @@ void main() {
         'settingsSelectCountryTitle',
         'paymentsPromoteTitle',
         'paymentsDaysCount',
+        'paymentsPerDayRate',
         'paymentsPayButtonLabel',
         'paymentsPromoteError',
         'realEstatePetsAllowedSwitchLabel',
@@ -122,6 +123,8 @@ dynamic _callByName(AppLocalizations l, String name) {
       return l.paymentsPromoteTitle;
     case 'paymentsDaysCount':
       return l.paymentsDaysCount(3);
+    case 'paymentsPerDayRate':
+      return l.paymentsPerDayRate('€0.67');
     case 'paymentsPayButtonLabel':
       return l.paymentsPayButtonLabel('€12.00');
     case 'paymentsPromoteError':

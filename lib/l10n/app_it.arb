@@ -626,6 +626,7 @@
   "paymentsCardMethod": "Carta di credito/debito",
   "paymentsGooglePay": "Google Pay",
   "paymentsTotalLabel": "Totale da pagare",
+  "paymentsPerDayRate": "{amount}/giorno",
   "paymentsPayButtonLabel": "Paga {amount}",
   "paymentsPromoteSuccess": "Annuncio promosso con successo!",
   "paymentsPromoteError": "Errore durante la promozione: {error}",

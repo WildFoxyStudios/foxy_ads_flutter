@@ -292,7 +292,9 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                                   ],
                                 ),
                                 Text(
-                                  '${country.currencySymbol}${(price / days).toStringAsFixed(2)}/día',
+                                  l10n.paymentsPerDayRate(
+                                    '${country.currencySymbol}${(price / days).toStringAsFixed(2)}',
+                                  ),
                                   style: TextStyle(
                                     color: AppColors.textSecondary,
                                     fontSize: 12,

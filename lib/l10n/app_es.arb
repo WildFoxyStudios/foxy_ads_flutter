@@ -865,6 +865,11 @@
     "description": "Duration label, e.g. '3 días' or '1 día'. ICU plural.",
     "placeholders": { "days": { "type": "int" } }
   },
+  "paymentsPerDayRate": "{amount}/día",
+  "@paymentsPerDayRate": {
+    "description": "Per-day rate shown under the duration option. {amount} is the pre-formatted currency amount, e.g. '€0.67'.",
+    "placeholders": { "amount": { "type": "String" } }
+  },
   "paymentsMethodHeading": "Método de pago",
   "paymentsCardMethod": "Tarjeta de crédito/débito",
   "paymentsGooglePay": "Google Pay",

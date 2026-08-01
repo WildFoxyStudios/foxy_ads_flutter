@@ -40,8 +40,42 @@ class AllCategoriesScreen extends ConsumerWidget {
         ),
         data: (categories) => ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: categories.length,
+          itemCount: categories.length + 1,
           itemBuilder: (context, index) {
+            if (index == categories.length) {
+              return Card(
+                margin: const EdgeInsets.only(top: 4, bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.properties.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Text('🏠', style: TextStyle(fontSize: 24)),
+                    ),
+                  ),
+                  title: const Text(
+                    'Inmuebles',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  subtitle: const Text(
+                    'Búsqueda avanzada de pisos, casas y más',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => context.push('/inmuebles-en'),
+                ),
+              );
+            }
             final category = categories[index];
             final hasSubcategories =
                 category.subcategories != null &&

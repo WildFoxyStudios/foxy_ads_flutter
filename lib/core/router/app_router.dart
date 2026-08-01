@@ -10,6 +10,7 @@ import '../../features/listings/presentation/screens/listing_detail_screen.dart'
 import '../../features/listings/presentation/screens/create_listing_screen.dart';
 import '../../features/listings/presentation/screens/category_listings_screen.dart';
 import '../../features/listings/presentation/screens/all_categories_screen.dart';
+import '../../features/real-estate/presentation/screens/inmuebles_en_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/search/presentation/screens/saved_searches_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
@@ -151,6 +152,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return PromoteListingScreen(listingId: listingId);
         },
       ),
+
+      // Real-estate faceted search
+      GoRoute(
+        path: '/inmuebles-en',
+        name: 'realEstateSearch',
+        builder: (context, state) => const InmueblesEnScreen(),
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -171,6 +179,7 @@ class AppRoutes {
   static const String savedSearches = '/saved-searches';
   static const String settings = '/settings';
   static const String selectCountry = '/select-country';
+  static const String realEstateSearch = '/inmuebles-en';
 
   static String listingDetail(String id) => '/listing/$id';
   static String editListing(String id) => '/edit-listing/$id';

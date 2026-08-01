@@ -41,7 +41,12 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    if (_city == null || _operation == null) return;
+    if (_city == null || _operation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona Venta o Alquiler')),
+      );
+      return;
+    }
 
     final country = ref.read(selectedCountryProvider);
     final m2 = double.parse(_m2Controller.text.trim());
@@ -408,9 +413,8 @@ class _ResultCard extends StatelessWidget {
         final est = stats.avgPricePerM2 * m2;
         final opLabel =
             operation == 'venta' ? 'venta' : 'alquiler';
-        final operationNote = operation == 'alquiler'
-            ? 'Valor mensual estimado para un inmueble tipo en $city.'
-            : 'Valor orientativo para un inmueble tipo en $city.';
+        final operationNote =
+            'Valor orientativo para un inmueble tipo en $city.';
 
         return Container(
           padding: const EdgeInsets.all(20),

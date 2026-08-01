@@ -15,6 +15,7 @@ import '../../features/real-estate/presentation/screens/city_landing_screen.dart
 import '../../features/real-estate/presentation/screens/valuation_screen.dart';
 import '../../features/developments/presentation/screens/promociones_screen.dart';
 import '../../features/developments/presentation/screens/promocion_detail_screen.dart';
+import '../../features/agency/presentation/screens/agency_profile_edit_screen.dart';
 import '../../features/agency/presentation/screens/agency_profile_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/search/presentation/screens/saved_searches_screen.dart';
@@ -203,6 +204,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return AgencyProfileScreen(agencyId: id);
         },
       ),
+      // Edit the caller's own agency profile (auth-gated internally).
+      GoRoute(
+        path: '/agencia/editar',
+        name: 'agencyEdit',
+        builder: (context, state) => const AgencyProfileEditScreen(),
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -235,6 +242,7 @@ class AppRoutes {
   static String valuation() => '/valorar';
   static String promocionDetail(String id) => '/promocion/$id';
   static String agencyProfile(String id) => '/agencia/$id';
+  static const String agencyEdit = '/agencia/editar';
 }
 
 /// Loads the listing by [listingId] and, if the current user is its owner,

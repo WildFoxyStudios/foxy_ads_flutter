@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/leads_service.dart';
@@ -475,12 +476,18 @@ class _LeadCard extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  // mailto: link. Without url_launcher here the test
-                  // environment won't navigate, but the link is
-                  // copy-pastable in the rare case a tester taps it.
-                  // (url_launcher would be a separate concern.)
-                  // ignore: avoid_print
-                  debugPrint('mailto:${lead.buyerEmail}');
+                  // mailto: link — hand off to the platform's default
+                  // mail handler via url_launcher. Falls back to a debug
+                  // log if the OS can't open the URI (e.g. no mail app
+                  // installed on the device).
+                  launchUrl(
+                    Uri.parse('mailto:${lead.buyerEmail}'),
+                    mode: LaunchMode.externalApplication,
+                  ).catchError((_) {
+                    // ignore: avoid_print
+                    debugPrint('mailto failed');
+                    return false;
+                  });
                 },
                 child: Text(
                   lead.buyerEmail,
@@ -494,8 +501,17 @@ class _LeadCard extends StatelessWidget {
               if (lead.buyerPhone != null && lead.buyerPhone!.isNotEmpty)
                 InkWell(
                   onTap: () {
-                    // ignore: avoid_print
-                    debugPrint('tel:${lead.buyerPhone}');
+                    // tel: link — hand off to the platform's dialer via
+                    // url_launcher. Falls back to a debug log if the OS
+                    // can't open the URI.
+                    launchUrl(
+                      Uri.parse('tel:${lead.buyerPhone}'),
+                      mode: LaunchMode.externalApplication,
+                    ).catchError((_) {
+                      // ignore: avoid_print
+                      debugPrint('tel failed');
+                      return false;
+                    });
                   },
                   child: Text(
                     lead.buyerPhone!,

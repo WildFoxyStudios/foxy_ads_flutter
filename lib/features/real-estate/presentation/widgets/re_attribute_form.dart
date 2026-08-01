@@ -178,16 +178,16 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
       children: [
         // Section heading so the parent form has a visual divider for the
         // RE-specific block (the parent renders this widget conditionally).
-        const Text(
-          'Datos del inmueble',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Text(
+          l10n.realEstateFormPropertyData,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
 
         // operation (segmented).
-        const Text(
-          'Operación *',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Text(
+          l10n.realEstateFormOperation,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -210,9 +210,9 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         DropdownButtonFormField<String>(
           initialValue: _propertyType,
           isExpanded: true,
-          decoration: const InputDecoration(
-            labelText: 'Tipo de propiedad',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.realEstatePropertyTypeLabel,
+            border: const OutlineInputBorder(),
           ),
           items: RE_PROPERTY_TYPES
               .map((t) => DropdownMenuItem<String>(value: t, child: Text(t)))
@@ -229,10 +229,10 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
           controller: _m2Controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: false),
           textCapitalization: TextCapitalization.none,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: 'm²',
-            hintText: 'Ej: 80',
-            border: OutlineInputBorder(),
+            hintText: l10n.realEstateFormM2Hint,
+            border: const OutlineInputBorder(),
           ),
           onChanged: (_) => _emit(),
         ),
@@ -246,10 +246,10 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
                 controller: _roomsController,
                 keyboardType: TextInputType.number,
                 textCapitalization: TextCapitalization.none,
-                decoration: const InputDecoration(
-                  labelText: 'Habitaciones',
-                  hintText: 'Ej: 3',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.realEstateRoomsLabel,
+                  hintText: l10n.realEstateFormRoomsHint,
+                  border: const OutlineInputBorder(),
                 ),
                 onChanged: (_) => _emit(),
               ),
@@ -260,10 +260,10 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
                 controller: _bathroomsController,
                 keyboardType: TextInputType.number,
                 textCapitalization: TextCapitalization.none,
-                decoration: const InputDecoration(
-                  labelText: 'Baños',
-                  hintText: 'Ej: 2',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.realEstateBathroomsLabel,
+                  hintText: l10n.realEstateFormBathsHint,
+                  border: const OutlineInputBorder(),
                 ),
                 onChanged: (_) => _emit(),
               ),
@@ -276,9 +276,9 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         DropdownButtonFormField<String>(
           initialValue: _condition,
           isExpanded: true,
-          decoration: const InputDecoration(
-            labelText: 'Estado',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.realEstateConditionLabel,
+            border: const OutlineInputBorder(),
           ),
           items: RE_CONDITIONS
               .map(
@@ -296,9 +296,9 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         const SizedBox(height: 16),
 
         // features (multi-select chips).
-        const Text(
-          'Características',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Text(
+          l10n.realEstateFeaturesLabel,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -325,9 +325,9 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         const SizedBox(height: 16),
 
         // floorBucket (segmented).
-        const Text(
-          'Planta',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Text(
+          l10n.realEstateFloorLabel,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -360,9 +360,9 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         DropdownButtonFormField<String>(
           initialValue: _energyCert,
           isExpanded: true,
-          decoration: const InputDecoration(
-            labelText: 'Certificado energético',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.realEstateEnergyBandLabel,
+            border: const OutlineInputBorder(),
           ),
           items: [
             DropdownMenuItem<String>(
@@ -384,9 +384,9 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         DropdownButtonFormField<String>(
           initialValue: _orientation,
           isExpanded: true,
-          decoration: const InputDecoration(
-            labelText: 'Orientación',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.realEstateOrientationLabel,
+            border: const OutlineInputBorder(),
           ),
           items: [
             DropdownMenuItem<String>(

@@ -569,6 +569,11 @@
   "listingCreateUnauthorizedEdit": "Not authorized to edit",
 
   "realEstatePetsAllowedSwitchLabel": "Pets allowed",
+  "realEstateFormPropertyData": "Property details",
+  "realEstateFormOperation": "Operation *",
+  "realEstateFormM2Hint": "e.g. 80",
+  "realEstateFormRoomsHint": "e.g. 3",
+  "realEstateFormBathsHint": "e.g. 2",
 
   "settingsTitle": "Settings",
   "settingsSectionGeneral": "General",

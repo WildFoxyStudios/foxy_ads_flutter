@@ -569,6 +569,11 @@
   "listingCreateUnauthorizedEdit": "Non autorizzato a modificare",
 
   "realEstatePetsAllowedSwitchLabel": "Animali ammessi",
+  "realEstateFormPropertyData": "Dati dell'immobile",
+  "realEstateFormOperation": "Operazione *",
+  "realEstateFormM2Hint": "Es: 80",
+  "realEstateFormRoomsHint": "Es: 3",
+  "realEstateFormBathsHint": "Es: 2",
 
   "settingsTitle": "Impostazioni",
   "settingsSectionGeneral": "Generale",

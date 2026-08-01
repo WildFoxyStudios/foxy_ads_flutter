@@ -44,20 +44,30 @@ class _DevelopmentContactSheetState
   final _honeypotController = TextEditingController();
 
   bool _submitting = false;
+  bool _messagePrefilled = false;
 
   @override
   void initState() {
     super.initState();
     // Prefill from the signed-in profile when available.
     final user = ref.read(authStateProvider).value;
-    final l10n = AppLocalizations.of(context)!;
     if (user != null) {
       _emailController.text = user.email ?? '';
       final name = user.userMetadata?['name'];
       if (name is String) _nameController.text = name;
     }
-    _messageController.text =
-        l10n.developmentContactSheetDefaultMessage(widget.development.name);
+    // Default message body is set in didChangeDependencies — initState
+    // runs before `context` is fully mounted for AppLocalizations lookup.
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_messagePrefilled) {
+      _messageController.text = AppLocalizations.of(context)!
+          .developmentContactSheetDefaultMessage(widget.development.name);
+      _messagePrefilled = true;
+    }
   }
 
   @override

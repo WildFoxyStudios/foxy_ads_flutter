@@ -231,12 +231,6 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
           _Header(
             newCountAsync: newCountAsync,
             currentStatus: _status,
-            statusLabels: const {
-              'all': null,
-              'new': null,
-              'contacted': null,
-              'closed': null,
-            },
             onStatusChanged: (v) {
               // The filter dropdown uses 'all' as the sentinel for the
               // "Todas" option; the service treats null/'all' identically.
@@ -308,16 +302,11 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
 class _Header extends StatelessWidget {
   final AsyncValue<int> newCountAsync;
   final String? currentStatus;
-  // Marker map so the call-site can pass through without an empty body;
-  // unused — the labels are read from the AppLocalizations inside _Header.
-  // Kept for API symmetry with future per-call overrides.
-  final Map<String, String?> statusLabels;
   final ValueChanged<String?> onStatusChanged;
 
   const _Header({
     required this.newCountAsync,
     required this.currentStatus,
-    required this.statusLabels,
     required this.onStatusChanged,
   });
 

@@ -674,7 +674,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
                     ),
                   )
                 : Text(_isEdit
-                    ? l10n.commonSave
+                    ? l10n.developmentFormSubmitEdit
                     : l10n.developmentFormSubmitCreate),
           ),
           const SizedBox(height: 24),

@@ -195,6 +195,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return PromocionDetailScreen(developmentId: id);
         },
       ),
+      // Edit the caller's own agency profile (auth-gated internally).
+      // MUST be declared before `/agencia/:id` so `editar` isn't consumed
+      // as an `id` path parameter by the dynamic route.
+      GoRoute(
+        path: '/agencia/editar',
+        name: 'agencyEdit',
+        builder: (context, state) => const AgencyProfileEditScreen(),
+      ),
       // Public agency profile.
       GoRoute(
         path: '/agencia/:id',
@@ -203,12 +211,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = state.pathParameters['id']!;
           return AgencyProfileScreen(agencyId: id);
         },
-      ),
-      // Edit the caller's own agency profile (auth-gated internally).
-      GoRoute(
-        path: '/agencia/editar',
-        name: 'agencyEdit',
-        builder: (context, state) => const AgencyProfileEditScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

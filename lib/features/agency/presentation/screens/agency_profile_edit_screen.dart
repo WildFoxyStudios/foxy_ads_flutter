@@ -70,6 +70,7 @@ class _AgencyProfileEditScreenState
 
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (!mounted) return;
     if (picked == null) return;
 
     setState(() => _uploadingLogo = true);
@@ -131,10 +132,22 @@ class _AgencyProfileEditScreenState
 
     setState(() => _saving = true);
     try {
-      await ref
+      final saved = await ref
           .read(agencyServiceProvider)
           .upsertAgencyProfile(userId, input);
       if (!mounted) return;
+      if (saved == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'No se pudo guardar el perfil. Inténtalo de nuevo.',
+            ),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        setState(() => _saving = false);
+        return;
+      }
       ref.invalidate(myAgencyProfileProvider);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

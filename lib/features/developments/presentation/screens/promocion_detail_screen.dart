@@ -10,11 +10,12 @@ import '../../../../core/models/listing_model.dart';
 import '../../data/development_model.dart';
 import '../../data/developments_service.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
+import '../widgets/development_contact_sheet.dart';
 
 /// Public `/promocion/:id` detail screen for a single development (obra
 /// nueva). Renders sections 1-7 (hero, gallery, description, amenities,
-/// location, typology, units); section 8 (contact/lead capture) is added by
-/// T5, appended below the units grid.
+/// location, typology, units) plus section 8 (contact/lead capture) below
+/// the units grid.
 class PromocionDetailScreen extends ConsumerWidget {
   final String developmentId;
 
@@ -142,7 +143,25 @@ class _PromocionDetailBody extends ConsumerWidget {
             );
           },
         ),
+        const SizedBox(height: 24),
+        _buildContactButton(context, ref),
       ],
+    );
+  }
+
+  Widget _buildContactButton(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () => showDevelopmentContactSheet(context, ref, development),
+        icon: const Icon(Icons.mail_outline),
+        label: const Text('Contactar con la promotora'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+        ),
+      ),
     );
   }
 

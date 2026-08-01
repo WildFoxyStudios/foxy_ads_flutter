@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/category_model.dart';
+import '../../../../core/providers/selected_country_provider.dart';
+import '../../../../core/services/auth_service.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
+import '../providers/saved_searches_provider.dart';
 import '../providers/search_filters_provider.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -47,6 +50,45 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     _minPriceController.clear();
     _maxPriceController.clear();
     setState(() => _showFilters = false);
+  }
+
+  Future<void> _saveSearch() async {
+    if (ref.read(authStateProvider).value == null) {
+      context.push('/login');
+      return;
+    }
+
+    final filters = ref.read(searchFiltersProvider);
+    final country = ref.read(selectedCountryProvider);
+    final matchingCategories = filters.categoryId != null
+        ? Category.defaultCategories.where((c) => c.id == filters.categoryId)
+        : const Iterable<Category>.empty();
+    final category = matchingCategories.isEmpty
+        ? null
+        : matchingCategories.first;
+    final categoryLabel = category != null
+        ? (category.nameEs.isNotEmpty ? category.nameEs : category.name)
+        : filters.categoryId;
+    final label = filters.query.isNotEmpty
+        ? filters.query
+        : [
+            if (categoryLabel != null) categoryLabel,
+            country.name,
+          ].join(' · ');
+
+    final service = ref.read(savedSearchesServiceProvider);
+    await service.create(
+      label: label,
+      filters: filters,
+      countryCode: country.code,
+      categoryId: filters.categoryId,
+    );
+    ref.invalidate(savedSearchesProvider);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Búsqueda guardada')),
+    );
   }
 
   @override
@@ -100,6 +142,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     padding: const EdgeInsets.all(12),
                   ),
                 ),
+                if (filters.isActive) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: _saveSearch,
+                    icon: const Icon(Icons.bookmark_add_outlined),
+                    tooltip: 'Guardar búsqueda',
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.surface,
+                      padding: const EdgeInsets.all(12),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

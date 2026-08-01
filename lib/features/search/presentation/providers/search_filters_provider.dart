@@ -104,6 +104,10 @@ class SearchFiltersNotifier extends Notifier<SearchFilters> {
       state = state.copyWith(maxPrice: value);
   void setSort(String value) => state = state.copyWith(sort: value);
 
+  /// Replaces the entire filter state at once (e.g. re-running a saved
+  /// search), instead of chaining individual setters.
+  void setAll(SearchFilters filters) => state = filters;
+
   void clear() => state = const SearchFilters();
 }
 

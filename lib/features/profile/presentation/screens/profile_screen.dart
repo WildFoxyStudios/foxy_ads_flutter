@@ -210,6 +210,15 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 _ProfileTile(
                   icon: const Icon(
+                    Icons.bookmark_outline,
+                    color: AppColors.primary,
+                  ),
+                  title: 'Búsquedas guardadas',
+                  onTap: () => context.push('/saved-searches'),
+                ),
+                const SizedBox(height: 12),
+                _ProfileTile(
+                  icon: const Icon(
                     Icons.star_outline,
                     color: AppColors.primary,
                   ),

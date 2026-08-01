@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/services/listing_service.dart';
+import '../../../../core/router/app_router.dart';
 
 class AllCategoriesScreen extends ConsumerWidget {
   const AllCategoriesScreen({super.key});
@@ -40,7 +41,7 @@ class AllCategoriesScreen extends ConsumerWidget {
         ),
         data: (categories) => ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: categories.length + 1,
+          itemCount: categories.length + 2,
           itemBuilder: (context, index) {
             if (index == categories.length) {
               return Card(
@@ -73,6 +74,40 @@ class AllCategoriesScreen extends ConsumerWidget {
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => context.push('/inmuebles-en'),
+                ),
+              );
+            }
+            if (index == categories.length + 1) {
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.properties.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Text('🏗️', style: TextStyle(fontSize: 24)),
+                    ),
+                  ),
+                  title: const Text(
+                    'Promociones / Obra nueva',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  subtitle: const Text(
+                    'Nuevas construcciones y desarrollos',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => context.push(AppRoutes.promociones),
                 ),
               );
             }

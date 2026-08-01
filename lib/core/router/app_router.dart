@@ -13,6 +13,7 @@ import '../../features/listings/presentation/screens/all_categories_screen.dart'
 import '../../features/real-estate/presentation/screens/inmuebles_en_screen.dart';
 import '../../features/real-estate/presentation/screens/city_landing_screen.dart';
 import '../../features/real-estate/presentation/screens/valuation_screen.dart';
+import '../../features/developments/presentation/screens/promociones_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/search/presentation/screens/saved_searches_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
@@ -176,6 +177,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'valuation',
         builder: (context, state) => const ValuationScreen(),
       ),
+      // Developments (obra nueva) index — detail route (/promocion/:id) is
+      // registered in T4, once its screen exists.
+      GoRoute(
+        path: '/promociones',
+        name: 'promociones',
+        builder: (context, state) => const PromocionesScreen(),
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -197,6 +205,7 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String selectCountry = '/select-country';
   static const String realEstateSearch = '/inmuebles-en';
+  static const String promociones = '/promociones';
 
   static String listingDetail(String id) => '/listing/$id';
   static String editListing(String id) => '/edit-listing/$id';
@@ -205,6 +214,7 @@ class AppRoutes {
   static String promoteListing(String listingId) => '/promote/$listingId';
   static String cityLanding(String city) => '/inmuebles-en/$city';
   static String valuation() => '/valorar';
+  static String promocionDetail(String id) => '/promocion/$id';
 }
 
 /// Loads the listing by [listingId] and, if the current user is its owner,

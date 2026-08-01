@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/agency_model.dart';
 import '../../data/agency_service.dart';
 
@@ -64,6 +65,7 @@ class _AgencyProfileEditScreenState
 
   Future<void> _pickAndUploadLogo() async {
     if (_uploadingLogo) return;
+    final l10n = AppLocalizations.of(context)!;
     final auth = ref.read(authStateProvider);
     final user = auth.value?.id;
     if (user == null) return;
@@ -84,7 +86,7 @@ class _AgencyProfileEditScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al subir el logo: $e'),
+          content: Text(l10n.agencyEditLogoUploadError(e.toString())),
           backgroundColor: AppColors.error,
         ),
       );
@@ -94,18 +96,20 @@ class _AgencyProfileEditScreenState
   }
 
   String _errorMessage(AgencyValidationError error) {
+    final l10n = AppLocalizations.of(context)!;
     switch (error) {
       case AgencyValidationError.name:
-        return 'Introduce un nombre (2–120 caracteres).';
+        return l10n.agencyEditErrorName;
       case AgencyValidationError.website:
-        return 'La web debe empezar por http:// o https://';
+        return l10n.agencyEditErrorWebsite;
       case AgencyValidationError.length:
-        return 'Uno de los campos supera la longitud máxima';
+        return l10n.agencyEditErrorLength;
     }
   }
 
   Future<void> _save() async {
     if (_saving) return;
+    final l10n = AppLocalizations.of(context)!;
     final auth = ref.read(authStateProvider);
     final userId = auth.value?.id;
     if (userId == null) return;
@@ -138,10 +142,8 @@ class _AgencyProfileEditScreenState
       if (!mounted) return;
       if (saved == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'No se pudo guardar el perfil. Inténtalo de nuevo.',
-            ),
+          SnackBar(
+            content: Text(l10n.agencyEditSaveError),
             backgroundColor: AppColors.error,
           ),
         );
@@ -150,8 +152,8 @@ class _AgencyProfileEditScreenState
       }
       ref.invalidate(myAgencyProfileProvider);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Perfil de agencia guardado'),
+        SnackBar(
+          content: Text(l10n.agencyEditSavedToast),
           backgroundColor: AppColors.success,
         ),
       );
@@ -160,7 +162,7 @@ class _AgencyProfileEditScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al guardar: $e'),
+          content: Text(l10n.agencyEditSaveFailed(e.toString())),
           backgroundColor: AppColors.error,
         ),
       );
@@ -171,6 +173,7 @@ class _AgencyProfileEditScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final auth = ref.watch(authStateProvider);
     final userId = auth.when(
       loading: () => null,
@@ -196,7 +199,7 @@ class _AgencyProfileEditScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar agencia'),
+        title: Text(l10n.agencyEditTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
@@ -220,7 +223,7 @@ class _AgencyProfileEditScreenState
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'No se pudo cargar la agencia: $e',
+                  l10n.agencyEditLoadError(e.toString()),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 14,
@@ -231,7 +234,7 @@ class _AgencyProfileEditScreenState
                 ElevatedButton(
                   onPressed: () =>
                       ref.invalidate(myAgencyProfileProvider),
-                  child: const Text('Reintentar'),
+                  child: Text(l10n.agencyEditRetry),
                 ),
               ],
             ),
@@ -243,6 +246,7 @@ class _AgencyProfileEditScreenState
   }
 
   Widget _form(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Form(
       key: _formKey,
       child: ListView(
@@ -256,9 +260,9 @@ class _AgencyProfileEditScreenState
           const SizedBox(height: 24),
           TextFormField(
             controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Nombre *',
-              prefixIcon: Icon(Icons.business_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.agencyEditFieldName,
+              prefixIcon: const Icon(Icons.business_outlined),
             ),
             maxLength: 120,
           ),
@@ -267,10 +271,10 @@ class _AgencyProfileEditScreenState
             controller: _descriptionController,
             maxLines: 4,
             minLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Descripción',
+            decoration: InputDecoration(
+              labelText: l10n.agencyEditFieldDescription,
               alignLabelWithHint: true,
-              hintText: 'Cuéntales a tus clientes quién eres',
+              hintText: l10n.agencyEditFieldDescriptionHint,
             ),
             maxLength: 2000,
           ),
@@ -278,10 +282,10 @@ class _AgencyProfileEditScreenState
           TextFormField(
             controller: _websiteController,
             keyboardType: TextInputType.url,
-            decoration: const InputDecoration(
-              labelText: 'Web',
-              prefixIcon: Icon(Icons.link),
-              hintText: 'https://...',
+            decoration: InputDecoration(
+              labelText: l10n.agencyEditFieldWebsite,
+              prefixIcon: const Icon(Icons.link),
+              hintText: l10n.agencyEditFieldWebsiteHint,
             ),
             maxLength: 300,
           ),
@@ -289,18 +293,18 @@ class _AgencyProfileEditScreenState
           TextFormField(
             controller: _phoneController,
             keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
-              labelText: 'Teléfono',
-              prefixIcon: Icon(Icons.phone_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.agencyEditFieldPhone,
+              prefixIcon: const Icon(Icons.phone_outlined),
             ),
             maxLength: 40,
           ),
           const SizedBox(height: 12),
           TextFormField(
             controller: _locationController,
-            decoration: const InputDecoration(
-              labelText: 'Ubicación',
-              prefixIcon: Icon(Icons.location_on_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.agencyEditFieldLocation,
+              prefixIcon: const Icon(Icons.location_on_outlined),
             ),
             maxLength: 200,
           ),
@@ -322,7 +326,7 @@ class _AgencyProfileEditScreenState
                           AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : const Text('Guardar'),
+                : Text(l10n.commonSave),
           ),
         ],
       ),
@@ -343,6 +347,7 @@ class _LogoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         children: [
@@ -389,7 +394,9 @@ class _LogoSection extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.camera_alt_outlined, size: 18),
-            label: Text(uploading ? 'Subiendo…' : 'Cambiar logo'),
+            label: Text(uploading
+                ? l10n.agencyEditLogoUploading
+                : l10n.agencyEditLogoChange),
           ),
         ],
       ),
@@ -400,12 +407,12 @@ class _LogoSection extends StatelessWidget {
 class _NotSignedInScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar agencia'),
+        title: Text(l10n.agencyEditTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
-        elevation: 0,
       ),
       body: Center(
         child: Padding(
@@ -419,10 +426,10 @@ class _NotSignedInScaffold extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Inicia sesión para editar tu agencia',
+              Text(
+                l10n.agencyEditNotSignedInTitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -435,7 +442,7 @@ class _NotSignedInScaffold extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Inicia sesión'),
+                child: Text(l10n.agencyEditNotSignedInCta),
               ),
             ],
           ),

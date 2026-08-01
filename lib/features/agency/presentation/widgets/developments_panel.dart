@@ -34,6 +34,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../developments/data/development_model.dart';
 import '../../../developments/data/developments_service.dart';
 import '../../data/agency_service.dart';
@@ -43,6 +44,7 @@ class DevelopmentsPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final devAsync = ref.watch(myDevelopmentsProvider);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -64,17 +66,17 @@ class DevelopmentsPanel extends ConsumerWidget {
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (e, _) => _ErrorBlock(
-              message: 'No se pudieron cargar las promociones: $e',
+              message: l10n.developmentsPanelLoadError(e.toString()),
               onRetry: () => ref.invalidate(myDevelopmentsProvider),
             ),
             data: (devs) {
               if (devs.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
                   child: Center(
                     child: Text(
-                      'Aún no has creado ninguna promoción.',
-                      style: TextStyle(
+                      l10n.developmentsPanelEmpty,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -105,11 +107,12 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        const Text(
-          'Promociones',
-          style: TextStyle(
+        Text(
+          l10n.developmentsPanelHeader,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -119,7 +122,7 @@ class _Header extends StatelessWidget {
         TextButton.icon(
           onPressed: onCreate,
           icon: const Icon(Icons.add, size: 18),
-          label: const Text('Crear promoción'),
+          label: Text(l10n.developmentsPanelCreate),
           style: TextButton.styleFrom(
             foregroundColor: AppColors.primary,
           ),
@@ -136,6 +139,7 @@ class _ErrorBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -149,7 +153,7 @@ class _ErrorBlock extends StatelessWidget {
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Reintentar'),
+            child: Text(l10n.commonRetry),
           ),
         ],
       ),
@@ -157,17 +161,17 @@ class _ErrorBlock extends StatelessWidget {
   }
 }
 
-/// Spanish labels for [DEVELOPMENT_STATUSES] — mirrors the form's dropdown
-/// (T9) so the badge and the form share the same copy. English codes are
-/// the wire contract; the UI copy is Spanish.
-String _statusLabel(String s) {
+/// Localized status label map — wire codes stay English, UI strings come
+/// from AppLocalizations.
+String _statusLabel(BuildContext context, String s) {
+  final l10n = AppLocalizations.of(context)!;
   switch (s) {
     case 'planning':
-      return 'En planos';
+      return l10n.promocionStatusPlanning;
     case 'building':
-      return 'En construcción';
+      return l10n.promocionStatusBuilding;
     case 'ready':
-      return 'Lista para entrar';
+      return l10n.promocionStatusReady;
   }
   return s;
 }
@@ -178,6 +182,7 @@ class _DevRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -223,18 +228,18 @@ class _DevRow extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip: 'Editar',
+                    tooltip: l10n.developmentsPanelEdit,
                     icon: const Icon(Icons.edit_outlined, size: 20),
                     onPressed: () =>
                         context.push(AppRoutes.developmentEdit(dev.id)),
                   ),
                   IconButton(
-                    tooltip: 'Borrar',
+                    tooltip: l10n.developmentsPanelDelete,
                     icon: const Icon(Icons.delete_outline, size: 20),
                     onPressed: () => _confirmDelete(context, ref),
                   ),
                   IconButton(
-                    tooltip: 'Asignar anuncios',
+                    tooltip: l10n.developmentsPanelAssign,
                     icon: const Icon(Icons.list_alt_outlined, size: 20),
                     onPressed: () => _openAssignSheet(context),
                   ),
@@ -248,22 +253,21 @@ class _DevRow extends ConsumerWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Borrar promoción'),
-        content: Text(
-          '¿Borrar "${dev.name}"? Esta acción no se puede deshacer.',
-        ),
+        title: Text(l10n.developmentsPanelDeleteDialogTitle),
+        content: Text(l10n.developmentsPanelDeleteDialogBody(dev.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Borrar'),
+            child: Text(l10n.developmentsPanelDelete),
           ),
         ],
       ),
@@ -276,8 +280,8 @@ class _DevRow extends ConsumerWidget {
     if (!context.mounted) return;
     if (!outcome.ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se pudo borrar la promoción.'),
+        SnackBar(
+          content: Text(l10n.developmentsPanelDeleteFailed),
           backgroundColor: AppColors.error,
         ),
       );
@@ -290,7 +294,7 @@ class _DevRow extends ConsumerWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Promoción "${dev.name}" borrada.'),
+        content: Text(l10n.developmentsPanelDeleted(dev.name)),
         backgroundColor: AppColors.success,
       ),
     );
@@ -341,7 +345,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        _statusLabel(status),
+        _statusLabel(context, status),
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
@@ -385,6 +389,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
 
   Future<void> _save() async {
     if (_saving) return;
+    final l10n = AppLocalizations.of(context)!;
     final service = ref.read(developmentsServiceProvider);
     final listingsAsync = ref.read(myPanelListingsProvider);
     final listings = listingsAsync.value ?? const <Listing>[];
@@ -414,7 +419,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
         );
         if (!mounted) return;
         if (!r.ok) {
-          _showError();
+          _showError(l10n);
           return;
         }
       }
@@ -422,7 +427,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
         final r = await service.assignListingsToDevelopment(null, toClear);
         if (!mounted) return;
         if (!r.ok) {
-          _showError();
+          _showError(l10n);
           return;
         }
       }
@@ -434,17 +439,17 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
     if (!mounted) return;
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Asignación guardada.'),
+      SnackBar(
+        content: Text(l10n.developmentsPanelAssignSaved),
         backgroundColor: AppColors.success,
       ),
     );
   }
 
-  void _showError() {
+  void _showError(AppLocalizations l10n) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('No se pudo guardar la asignación.'),
+      SnackBar(
+        content: Text(l10n.developmentsPanelAssignSaveError),
         backgroundColor: AppColors.error,
       ),
     );
@@ -452,6 +457,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dev = widget.dev;
     final listingsAsync = ref.watch(myPanelListingsProvider);
 
@@ -479,7 +485,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                 ),
               ),
               Text(
-                'Asignar anuncios a "${dev.name}"',
+                l10n.developmentsPanelAssignSheetTitle(dev.name),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -487,9 +493,9 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Marca los anuncios que forman parte de esta promoción.',
-                style: TextStyle(
+              Text(
+                l10n.developmentsPanelAssignSheetHint,
+                style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
@@ -504,7 +510,8 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        'No se pudieron cargar los anuncios: $e',
+                        l10n.developmentsPanelAssignLoadListingsError(
+                            e.toString()),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 13,
@@ -515,10 +522,10 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                   ),
                   data: (listings) {
                     if (listings.isEmpty) {
-                      return const Center(
+                      return Center(
                         child: Text(
-                          'No tienes anuncios para asignar.',
-                          style: TextStyle(
+                          l10n.developmentsPanelAssignNoListings,
+                          style: const TextStyle(
                             fontSize: 13,
                             color: AppColors.textSecondary,
                           ),
@@ -547,9 +554,9 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          subtitle: const Text(
-                            'Vivienda',
-                            style: TextStyle(
+                          subtitle: Text(
+                            l10n.developmentsPanelAssignListingsSubtitle,
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -573,7 +580,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                     onPressed: _saving
                         ? null
                         : () => Navigator.of(context).pop(),
-                    child: const Text('Cancelar'),
+                    child: Text(l10n.commonCancel),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -593,7 +600,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                               ),
                             ),
                           )
-                        : const Text('Guardar'),
+                        : Text(l10n.commonSave),
                   ),
                 ],
               ),

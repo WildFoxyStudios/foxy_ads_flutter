@@ -24,6 +24,7 @@ import 'package:foxy_ads/features/developments/data/development_model.dart';
 import 'package:foxy_ads/features/developments/data/developments_service.dart';
 import 'package:foxy_ads/features/developments/presentation/screens/promociones_screen.dart';
 import 'package:foxy_ads/features/developments/presentation/widgets/development_card.dart';
+import 'package:foxy_ads/l10n/app_localizations.dart';
 
 final _testCountry = Country(
   code: 'ES',
@@ -88,7 +89,12 @@ Widget _buildTestApp(List<DevelopmentCardData> items) {
         FakeDevelopmentsService(items),
       ),
     ],
-    child: const MaterialApp(home: PromocionesScreen()),
+    child: const MaterialApp(
+      locale: Locale('es'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: PromocionesScreen(),
+    ),
   );
 }
 

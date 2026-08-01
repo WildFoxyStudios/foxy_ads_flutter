@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/panel_stats.dart';
 
 class PanelViewsChart extends StatelessWidget {
@@ -19,6 +20,7 @@ class PanelViewsChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final maxViews = series.fold<int>(0, (m, p) => p.views > m ? p.views : m);
     final hasData = series.isNotEmpty && maxViews > 0;
 
@@ -30,6 +32,7 @@ class PanelViewsChart extends StatelessWidget {
           series: series,
           maxViews: maxViews,
           hasData: hasData,
+          emptyLabel: l10n.panelNoData,
         ),
       ),
     );
@@ -40,11 +43,13 @@ class _ViewsChartPainter extends CustomPainter {
   final List<DayPoint> series;
   final int maxViews;
   final bool hasData;
+  final String emptyLabel;
 
   const _ViewsChartPainter({
     required this.series,
     required this.maxViews,
     required this.hasData,
+    required this.emptyLabel,
   });
 
   static const double _padding = 8;
@@ -106,7 +111,7 @@ class _ViewsChartPainter extends CustomPainter {
   }
 
   void _drawEmptyState(Canvas canvas, Size size) {
-    final text = 'Sin datos';
+    final text = emptyLabel;
     final tp = TextPainter(
       text: TextSpan(
         text: text,
@@ -127,6 +132,7 @@ class _ViewsChartPainter extends CustomPainter {
   bool shouldRepaint(covariant _ViewsChartPainter old) {
     return old.series != series ||
         old.maxViews != maxViews ||
-        old.hasData != hasData;
+        old.hasData != hasData ||
+        old.emptyLabel != emptyLabel;
   }
 }

@@ -37,10 +37,6 @@
 //     pattern: `anuncios-${yyyyMMdd-HHmm}.csv`. Shared via
 //     `SharePlus.instance.share(ShareParams(files: [XFile(path)]))` — the
 //     modern share_plus 11+ API. Spanish SnackBar on success / failure.
-//
-// Error UI copy is Spanish (matching the rest of the panel). Service
-// errors surface as a red SnackBar; success paths as a green SnackBar
-// (matching `DevelopmentsPanel`'s pattern).
 
 import 'dart:io';
 
@@ -55,19 +51,24 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/agency_service.dart';
 
-/// Spanish labels for listing status — mirrors the rest of the panel's
-/// Spanish-first copy. The English codes are the wire contract; the UI
-/// copy is Spanish.
-const Map<String, String> _listingStatusLabels = <String, String>{
-  'active': 'Activo',
-  'inactive': 'Inactivo',
-  'sold': 'Vendido',
-  'deleted': 'Borrado',
-};
-
-String _statusLabel(String s) => _listingStatusLabels[s] ?? s;
+/// Localized listing-status label map — wire codes stay English.
+String _statusLabel(BuildContext context, String s) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (s) {
+    case 'active':
+      return l10n.bulkListingsStatusActive;
+    case 'inactive':
+      return l10n.bulkListingsStatusInactive;
+    case 'sold':
+      return l10n.bulkListingsStatusSold;
+    case 'deleted':
+      return l10n.bulkListingsStatusDeleted;
+  }
+  return s;
+}
 
 class BulkListingsPanel extends ConsumerStatefulWidget {
   const BulkListingsPanel({super.key});
@@ -147,16 +148,17 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
   }
 
   String _errorCopy(PanelActionError? e) {
+    final l10n = AppLocalizations.of(context)!;
     switch (e) {
       case PanelActionError.unauthenticated:
-        return 'Inicia sesión para continuar.';
+        return l10n.bulkListingsErrorUnauthenticated;
       case PanelActionError.forbidden:
-        return 'No tienes permiso sobre alguno de los anuncios seleccionados.';
+        return l10n.bulkListingsErrorForbidden;
       case PanelActionError.invalidInput:
-        return 'Selección inválida.';
+        return l10n.bulkListingsErrorInvalid;
       case PanelActionError.databaseError:
       case null:
-        return 'No se pudo completar la acción.';
+        return l10n.bulkListingsErrorDb;
     }
   }
 
@@ -179,48 +181,51 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
   }
 
   Future<void> _onBulkSetStatus(String status) async {
+    final l10n = AppLocalizations.of(context)!;
     final ids = _selected.toList(growable: false);
     final service = ref.read(listingServiceProvider);
-    final label = status == 'active'
-        ? 'activar'
-        : status == 'inactive'
-            ? 'desactivar'
-            : 'marcar como vendido';
     await _runBulkAction(
       'status-$status',
       () => service.bulkSetStatus(ids, status),
-      onSuccess: () => _showOk('${ids.length} anuncio(s) $label.'),
+      onSuccess: () {
+        final okMessage = switch (status) {
+          'active' => l10n.bulkListingsSuccessStatusActive(ids.length),
+          'inactive' => l10n.bulkListingsSuccessStatusInactive(ids.length),
+          _ => l10n.bulkListingsSuccessStatusSold(ids.length),
+        };
+        _showOk(okMessage);
+      },
     );
   }
 
   Future<void> _onBulkRenew() async {
+    final l10n = AppLocalizations.of(context)!;
     final ids = _selected.toList(growable: false);
     final service = ref.read(listingServiceProvider);
     await _runBulkAction(
       'renew',
       () => service.bulkRenew(ids),
-      onSuccess: () => _showOk('${ids.length} anuncio(s) renovado(s).'),
+      onSuccess: () => _showOk(l10n.bulkListingsSuccessRenew(ids.length)),
     );
   }
 
   Future<void> _onBulkDelete() async {
+    final l10n = AppLocalizations.of(context)!;
     final ids = _selected.toList(growable: false);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Eliminar anuncios'),
-        content: Text(
-          '¿Eliminar ${ids.length} anuncio(s)? Esta acción no se puede deshacer.',
-        ),
+        title: Text(l10n.bulkListingsDeleteDialogTitle),
+        content: Text(l10n.bulkListingsDeleteDialogBody(ids.length)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Eliminar'),
+            child: Text(l10n.bulkListingsToolbarDelete),
           ),
         ],
       ),
@@ -231,11 +236,13 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
     await _runBulkAction(
       'delete',
       () => service.bulkDelete(ids),
-      onSuccess: () => _showOk('${ids.length} anuncio(s) eliminado(s).'),
+      onSuccess: () =>
+          _showOk(l10n.bulkListingsSuccessDelete(ids.length)),
     );
   }
 
   Future<void> _onBulkPrice() async {
+    final l10n = AppLocalizations.of(context)!;
     final ids = _selected.toList(growable: false);
     final params = await showDialog<_PriceResult>(
       context: context,
@@ -255,14 +262,15 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
       () => service.bulkSetPrice(ids, params.mode, params.value),
       onSuccess: () => _showOk(
         params.mode == 'set'
-            ? 'Precio actualizado en ${ids.length} anuncio(s).'
-            : 'Precio ajustado en ${ids.length} anuncio(s).',
+            ? l10n.bulkListingsSuccessPriceSet(ids.length)
+            : l10n.bulkListingsSuccessPricePct(ids.length),
       ),
     );
   }
 
   Future<void> _onExportCsv(List<Listing> rows) async {
     if (_exporting) return;
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _exporting = true);
     try {
       final service = ref.read(listingServiceProvider);
@@ -281,15 +289,15 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile(path, mimeType: 'text/csv', name: 'anuncios-$ts.csv')],
-          text: 'Listado de anuncios exportado',
-          subject: 'Anuncios ($ts)',
+          text: l10n.bulkListingsCsvShareText,
+          subject: l10n.bulkListingsCsvShareSubject(ts),
         ),
       );
       if (!mounted) return;
-      _showOk('CSV exportado.');
+      _showOk(l10n.bulkListingsCsvSuccess);
     } catch (e) {
       if (!mounted) return;
-      _showError('No se pudo exportar el CSV.');
+      _showError(l10n.bulkListingsCsvError);
     } finally {
       if (mounted) setState(() => _exporting = false);
     }
@@ -297,6 +305,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final listingsAsync = ref.watch(myPanelListingsProvider);
 
     return Container(
@@ -337,17 +346,17 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (e, _) => _ErrorBlock(
-              message: 'No se pudieron cargar los anuncios: $e',
+              message: l10n.panelListingsLoadError(e.toString()),
               onRetry: () => ref.invalidate(myPanelListingsProvider),
             ),
             data: (rows) {
               if (rows.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
                   child: Center(
                     child: Text(
-                      'Aún no tienes anuncios.',
-                      style: TextStyle(
+                      l10n.bulkListingsEmpty,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -395,11 +404,12 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        const Text(
-          'Anuncios',
-          style: TextStyle(
+        Text(
+          l10n.bulkListingsHeader,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -433,7 +443,7 @@ class _Header extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(Icons.file_download_outlined, size: 18),
-          label: const Text('Exportar CSV'),
+          label: Text(l10n.bulkListingsExport),
           style: TextButton.styleFrom(
             foregroundColor: AppColors.primary,
           ),
@@ -464,6 +474,7 @@ class _BulkToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isBusy = pendingAction != null;
     Widget btn(String key, IconData icon, String label, VoidCallback onTap,
         {Color? color}) {
@@ -508,12 +519,17 @@ class _BulkToolbar extends StatelessWidget {
           runSpacing: 4,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            btn('status-active', Icons.check_circle_outline, 'Activar', onSetActive),
-            btn('status-inactive', Icons.pause_circle_outline, 'Desactivar', onSetInactive),
-            btn('status-sold', Icons.sell_outlined, 'Vendido', onSetSold),
-            btn('price', Icons.euro_outlined, 'Precio', onPrice),
-            btn('renew', Icons.refresh, 'Renovar', onRenew),
-            btn('delete', Icons.delete_outline, 'Eliminar', onDelete,
+            btn('status-active', Icons.check_circle_outline,
+                l10n.bulkListingsToolbarActivate, onSetActive),
+            btn('status-inactive', Icons.pause_circle_outline,
+                l10n.bulkListingsToolbarDeactivate, onSetInactive),
+            btn('status-sold', Icons.sell_outlined,
+                l10n.bulkListingsToolbarSold, onSetSold),
+            btn('price', Icons.euro_outlined,
+                l10n.bulkListingsToolbarPrice, onPrice),
+            btn('renew', Icons.refresh, l10n.bulkListingsToolbarRenew, onRenew),
+            btn('delete', Icons.delete_outline,
+                l10n.bulkListingsToolbarDelete, onDelete,
                 color: AppColors.error),
           ],
         ),
@@ -530,6 +546,7 @@ class _SelectAllRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onToggle,
       child: Padding(
@@ -544,7 +561,9 @@ class _SelectAllRow extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              allSelected ? 'Quitar selección' : 'Seleccionar todo',
+              allSelected
+                  ? l10n.bulkListingsDeselectAll
+                  : l10n.bulkListingsSelectAll,
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -666,7 +685,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        _statusLabel(status),
+        _statusLabel(context, status),
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
@@ -684,6 +703,7 @@ class _ErrorBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -697,7 +717,7 @@ class _ErrorBlock extends StatelessWidget {
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Reintentar'),
+            child: Text(l10n.commonRetry),
           ),
         ],
       ),
@@ -744,28 +764,29 @@ class _PriceDialogState extends State<_PriceDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hint = _mode == 'set' ? '€' : '%';
     return AlertDialog(
-      title: const Text('Actualizar precio'),
+      title: Text(l10n.bulkListingsPriceDialogTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DropdownButtonFormField<String>(
             initialValue: _mode,
-            decoration: const InputDecoration(
-              labelText: 'Modo',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.bulkListingsPriceDialogModeLabel,
+              border: const OutlineInputBorder(),
               isDense: true,
             ),
-            items: const [
+            items: [
               DropdownMenuItem<String>(
                 value: 'set',
-                child: Text('Fijar precio'),
+                child: Text(l10n.bulkListingsPriceDialogModeSet),
               ),
               DropdownMenuItem<String>(
                 value: 'pct',
-                child: Text('Ajustar %'),
+                child: Text(l10n.bulkListingsPriceDialogModePct),
               ),
             ],
             onChanged: (v) => setState(() => _mode = v ?? 'set'),
@@ -778,7 +799,9 @@ class _PriceDialogState extends State<_PriceDialog> {
               signed: false,
             ),
             decoration: InputDecoration(
-              labelText: _mode == 'set' ? 'Precio (€)' : 'Ajuste (%)',
+              labelText: _mode == 'set'
+                  ? l10n.bulkListingsPriceDialogSetLabel
+                  : l10n.bulkListingsPriceDialogPctLabel,
               suffixText: hint,
               border: const OutlineInputBorder(),
               isDense: true,
@@ -790,7 +813,7 @@ class _PriceDialogState extends State<_PriceDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
+          child: Text(l10n.commonCancel),
         ),
         TextButton(
           onPressed: _isValid()
@@ -801,7 +824,7 @@ class _PriceDialogState extends State<_PriceDialog> {
                   Navigator.of(context).pop(_PriceResult(_mode, v));
                 }
               : null,
-          child: const Text('Guardar'),
+          child: Text(l10n.commonSave),
         ),
       ],
     );

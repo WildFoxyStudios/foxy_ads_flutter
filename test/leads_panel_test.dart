@@ -21,6 +21,7 @@ import 'package:supabase_flutter/supabase_flutter.dart'
 import 'package:foxy_ads/core/services/leads_service.dart';
 import 'package:foxy_ads/features/agency/data/lead_model.dart';
 import 'package:foxy_ads/features/agency/presentation/widgets/leads_panel.dart';
+import 'package:foxy_ads/l10n/app_localizations.dart';
 
 /// Fake `LeadsService` that ignores Supabase entirely. `listAgencyLeads`
 /// returns whatever [leads] holds (a copy, so test mutations don't leak
@@ -89,6 +90,9 @@ Widget _buildTestApp(FakeLeadsService fake) {
       ),
     ],
     child: const MaterialApp(
+      locale: Locale('es'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(body: LeadsPanel()),
     ),
   );

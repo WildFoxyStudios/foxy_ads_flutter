@@ -6,6 +6,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 
 final myListingsProvider = FutureProvider<List<Listing>>((ref) async {
   final authState = ref.watch(authStateProvider);
@@ -21,11 +22,12 @@ class MyListingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final listingsAsync = ref.watch(myListingsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mis Anuncios'),
+        title: Text(l10n.myListingsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
@@ -34,7 +36,7 @@ class MyListingsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/create-listing'),
         icon: const Icon(Icons.add),
-        label: const Text('Nuevo'),
+        label: Text(l10n.myListingsFabNew),
       ),
       body: listingsAsync.when(
         data: (listings) {
@@ -45,20 +47,23 @@ class MyListingsScreen extends ConsumerWidget {
                 children: [
                   const Text('📦', style: TextStyle(fontSize: 64)),
                   const SizedBox(height: 16),
-                  const Text(
-                    'No tienes anuncios',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Text(
+                    l10n.myListingsEmptyTitle,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Publica tu primer anuncio',
+                    l10n.myListingsEmptySubtitle,
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () => context.push('/create-listing'),
                     icon: const Icon(Icons.add),
-                    label: const Text('Publicar Anuncio'),
+                    label: Text(l10n.myListingsPublishCta),
                   ),
                 ],
               ),
@@ -128,8 +133,8 @@ class MyListingsScreen extends ConsumerWidget {
                               ),
                               child: Text(
                                 listing.status == 'active'
-                                    ? 'Activo'
-                                    : 'Inactivo',
+                                    ? l10n.myListingsBadgeActive
+                                    : l10n.myListingsBadgeInactive,
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: listing.status == 'active'
@@ -149,18 +154,18 @@ class MyListingsScreen extends ConsumerWidget {
                                   gradient: AppColors.foxGradient,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.star,
                                       color: Colors.white,
                                       size: 12,
                                     ),
-                                    SizedBox(width: 2),
+                                    const SizedBox(width: 2),
                                     Text(
-                                      'Destacado',
-                                      style: TextStyle(
+                                      l10n.myListingsBadgeFeatured,
+                                      style: const TextStyle(
                                         fontSize: 11,
                                         color: Colors.white,
                                       ),
@@ -189,46 +194,54 @@ class MyListingsScreen extends ConsumerWidget {
                     trailing: PopupMenuButton(
                       icon: const Icon(Icons.more_vert),
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'view',
                           child: Row(
                             children: [
-                              Icon(Icons.visibility),
-                              SizedBox(width: 8),
-                              Text('Ver'),
+                              const Icon(Icons.visibility),
+                              const SizedBox(width: 8),
+                              Text(l10n.myListingsMenuView),
                             ],
                           ),
                         ),
                         if (!listing.isCurrentlyFeatured)
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'promote',
                             child: Row(
                               children: [
-                                Icon(Icons.star, color: AppColors.warning),
-                                SizedBox(width: 8),
-                                Text('Promocionar'),
+                                const Icon(
+                                  Icons.star,
+                                  color: AppColors.warning,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(l10n.myListingsMenuPromote),
                               ],
                             ),
                           ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'edit',
                           child: Row(
                             children: [
-                              Icon(Icons.edit),
-                              SizedBox(width: 8),
-                              Text('Editar'),
+                              const Icon(Icons.edit),
+                              const SizedBox(width: 8),
+                              Text(l10n.myListingsMenuEdit),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, color: AppColors.error),
-                              SizedBox(width: 8),
+                              const Icon(
+                                Icons.delete,
+                                color: AppColors.error,
+                              ),
+                              const SizedBox(width: 8),
                               Text(
-                                'Eliminar',
-                                style: TextStyle(color: AppColors.error),
+                                l10n.myListingsMenuDelete,
+                                style: const TextStyle(
+                                  color: AppColors.error,
+                                ),
                               ),
                             ],
                           ),
@@ -264,21 +277,24 @@ class MyListingsScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(
+          child: Text(l10n.commonErrorWithMessage(e.toString())),
+        ),
       ),
     );
   }
 
   void _showDeleteDialog(BuildContext context, WidgetRef ref, Listing listing) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar anuncio'),
-        content: Text('¿Estás seguro de eliminar "${listing.title}"?'),
+        title: Text(l10n.myListingsDeleteDialogTitle),
+        content: Text(l10n.myListingsDeleteDialogBody(listing.title)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l10n.commonCancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -288,7 +304,7 @@ class MyListingsScreen extends ConsumerWidget {
               ref.invalidate(myListingsProvider);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Eliminar'),
+            child: Text(l10n.myListingsMenuDelete),
           ),
         ],
       ),

@@ -32,17 +32,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/leads_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/lead_model.dart';
-
-/// Spanish labels for [LEAD_STATUSES] — used in both the filter dropdown
-/// and each card's per-status dropdown. Kept inside this file because the
-/// status enum's English codes are part of the wire contract (`new` /
-/// `contacted` / `closed`) but the UI copy is Spanish.
-const Map<String, String> _statusLabels = <String, String>{
-  'new': 'Nuevo',
-  'contacted': 'Contactado',
-  'closed': 'Cerrado',
-};
 
 class LeadsPanel extends ConsumerStatefulWidget {
   const LeadsPanel({super.key});
@@ -98,6 +89,7 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
   Future<void> _onStatusChange(Lead lead, String? newStatus) async {
     if (newStatus == null || newStatus == lead.status) return;
     final previous = lead.status;
+    final l10n = AppLocalizations.of(context)!;
     // Optimistic in-list update.
     setState(() {
       final idx = _leads.indexWhere((l) => l.id == lead.id);
@@ -147,7 +139,7 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
         }
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudo actualizar el estado')),
+        SnackBar(content: Text(l10n.leadsPanelUpdateFailed)),
       );
       return;
     }
@@ -162,12 +154,13 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
   Future<void> _onSaveNotes(Lead lead) async {
     final draft = _notesDrafts[lead.id];
     if (draft == null) return;
+    final l10n = AppLocalizations.of(context)!;
     final service = ref.read(leadsServiceProvider);
     final outcome = await service.updateLeadNotes(lead.id, draft.text);
     if (!mounted) return;
     if (!outcome.ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudieron guardar las notas')),
+        SnackBar(content: Text(l10n.leadsPanelSaveNotesFailed)),
       );
       return;
     }
@@ -210,10 +203,20 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
     }
   }
 
+  /// Localized status label map — mirrors the wire codes.
+  Map<String, String> _statusLabels(AppLocalizations l10n) =>
+      <String, String>{
+        'new': l10n.leadsPanelStatusNew,
+        'contacted': l10n.leadsPanelStatusContacted,
+        'closed': l10n.leadsPanelStatusClosed,
+      };
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final leadsAsync = ref.watch(agencyLeadsProvider(_status));
     final newCountAsync = ref.watch(newLeadsCountProvider);
+    final statusLabels = _statusLabels(l10n);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -228,6 +231,12 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
           _Header(
             newCountAsync: newCountAsync,
             currentStatus: _status,
+            statusLabels: const {
+              'all': null,
+              'new': null,
+              'contacted': null,
+              'closed': null,
+            },
             onStatusChanged: (v) {
               // The filter dropdown uses 'all' as the sentinel for the
               // "Todas" option; the service treats null/'all' identically.
@@ -253,18 +262,18 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (e, _) => _ErrorBlock(
-              message: 'No se pudieron cargar los leads: $e',
+              message: l10n.leadsPanelLoadError(e.toString()),
               onRetry: () => ref.invalidate(agencyLeadsProvider(_status)),
             ),
             data: (incoming) {
               _syncFromProvider(incoming);
               if (_leads.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
                   child: Center(
                     child: Text(
-                      'No hay leads con este filtro.',
-                      style: TextStyle(
+                      l10n.leadsPanelEmpty,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -279,6 +288,7 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
                     _LeadCard(
                       lead: l,
                       controller: _draftFor(l),
+                      statusLabels: statusLabels,
                       onStatusChange: (v) => _onStatusChange(l, v),
                       onSaveNotes: () => _onSaveNotes(l),
                       formatDate: _formatDate,
@@ -298,21 +308,27 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
 class _Header extends StatelessWidget {
   final AsyncValue<int> newCountAsync;
   final String? currentStatus;
+  // Marker map so the call-site can pass through without an empty body;
+  // unused — the labels are read from the AppLocalizations inside _Header.
+  // Kept for API symmetry with future per-call overrides.
+  final Map<String, String?> statusLabels;
   final ValueChanged<String?> onStatusChanged;
 
   const _Header({
     required this.newCountAsync,
     required this.currentStatus,
+    required this.statusLabels,
     required this.onStatusChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        const Text(
-          'Leads',
-          style: TextStyle(
+        Text(
+          l10n.leadsPanelHeader,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -346,12 +362,23 @@ class _Header extends StatelessWidget {
         DropdownButton<String>(
           value: currentStatus,
           onChanged: onStatusChanged,
-          items: const [
-            DropdownMenuItem<String>(value: 'all', child: Text('Todas')),
-            DropdownMenuItem<String>(value: 'new', child: Text('Nuevos')),
+          items: [
             DropdownMenuItem<String>(
-                value: 'contacted', child: Text('Contactados')),
-            DropdownMenuItem<String>(value: 'closed', child: Text('Cerrados')),
+              value: 'all',
+              child: Text(l10n.leadsPanelFilterAll),
+            ),
+            DropdownMenuItem<String>(
+              value: 'new',
+              child: Text(l10n.leadsPanelFilterNew),
+            ),
+            DropdownMenuItem<String>(
+              value: 'contacted',
+              child: Text(l10n.leadsPanelFilterContacted),
+            ),
+            DropdownMenuItem<String>(
+              value: 'closed',
+              child: Text(l10n.leadsPanelFilterClosed),
+            ),
           ],
         ),
       ],
@@ -366,6 +393,7 @@ class _ErrorBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -379,7 +407,7 @@ class _ErrorBlock extends StatelessWidget {
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Reintentar'),
+            child: Text(l10n.commonRetry),
           ),
         ],
       ),
@@ -390,6 +418,7 @@ class _ErrorBlock extends StatelessWidget {
 class _LeadCard extends StatelessWidget {
   final Lead lead;
   final TextEditingController controller;
+  final Map<String, String> statusLabels;
   final ValueChanged<String?> onStatusChange;
   final VoidCallback onSaveNotes;
   final String Function(String iso) formatDate;
@@ -397,6 +426,7 @@ class _LeadCard extends StatelessWidget {
   const _LeadCard({
     required this.lead,
     required this.controller,
+    required this.statusLabels,
     required this.onStatusChange,
     required this.onSaveNotes,
     required this.formatDate,
@@ -404,6 +434,7 @@ class _LeadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -419,7 +450,9 @@ class _LeadCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  lead.buyerName.isEmpty ? '(sin nombre)' : lead.buyerName,
+                  lead.buyerName.isEmpty
+                      ? l10n.leadsPanelNoName
+                      : lead.buyerName,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -433,7 +466,7 @@ class _LeadCard extends StatelessWidget {
                 items: LEAD_STATUSES.map((s) {
                   return DropdownMenuItem<String>(
                     value: s,
-                    child: Text(_statusLabels[s] ?? s),
+                    child: Text(statusLabels[s] ?? s),
                   );
                 }).toList(),
               ),
@@ -544,9 +577,9 @@ class _LeadCard extends StatelessWidget {
             minLines: 2,
             maxLines: 4,
             maxLength: 4000,
-            decoration: const InputDecoration(
-              labelText: 'Notas',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.leadsPanelNotesLabel,
+              border: const OutlineInputBorder(),
               isDense: true,
             ),
           ),
@@ -554,7 +587,7 @@ class _LeadCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: onSaveNotes,
-              child: const Text('Guardar'),
+              child: Text(l10n.leadsPanelSave),
             ),
           ),
         ],

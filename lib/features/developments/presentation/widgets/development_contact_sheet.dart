@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/leads_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/development_model.dart';
 
 /// Opens the "Contactar con la promotora" bottom sheet — a server-tracked
@@ -49,13 +50,14 @@ class _DevelopmentContactSheetState
     super.initState();
     // Prefill from the signed-in profile when available.
     final user = ref.read(authStateProvider).value;
+    final l10n = AppLocalizations.of(context)!;
     if (user != null) {
       _emailController.text = user.email ?? '';
       final name = user.userMetadata?['name'];
       if (name is String) _nameController.text = name;
     }
     _messageController.text =
-        'Hola, me interesa la promoción "${widget.development.name}". ¿Podéis darme más información?';
+        l10n.developmentContactSheetDefaultMessage(widget.development.name);
   }
 
   @override
@@ -69,6 +71,7 @@ class _DevelopmentContactSheetState
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
 
@@ -89,8 +92,8 @@ class _DevelopmentContactSheetState
     if (outcome.ok) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mensaje enviado a la promotora.'),
+        SnackBar(
+          content: Text(l10n.developmentContactSheetSuccess),
           backgroundColor: AppColors.success,
         ),
       );
@@ -105,23 +108,25 @@ class _DevelopmentContactSheetState
   }
 
   String _errorMessage(LeadSubmitError error) {
+    final l10n = AppLocalizations.of(context)!;
     switch (error) {
       case LeadSubmitError.invalidInput:
-        return 'Revisa los datos del formulario.';
+        return l10n.developmentContactSheetErrorInvalid;
       case LeadSubmitError.listingUnavailable:
-        return 'Esta promoción ya no está disponible.';
+        return l10n.developmentContactSheetErrorUnavailable;
       case LeadSubmitError.selfLead:
-        return 'No puedes contactarte a ti mismo.';
+        return l10n.developmentContactSheetErrorSelf;
       case LeadSubmitError.notAuthenticated:
       case LeadSubmitError.unauthorized:
-        return 'Inicia sesión para enviar un mensaje.';
+        return l10n.developmentContactSheetErrorAuth;
       case LeadSubmitError.databaseError:
-        return 'No se pudo enviar el mensaje. Inténtalo de nuevo.';
+        return l10n.developmentContactSheetErrorDb;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
@@ -149,9 +154,9 @@ class _DevelopmentContactSheetState
                     ),
                   ),
                 ),
-                const Text(
-                  'Contactar con la promotora',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.developmentContactSheetTitle,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -163,27 +168,27 @@ class _DevelopmentContactSheetState
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Tu nombre',
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.developmentContactSheetNameLabel,
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                   textCapitalization: TextCapitalization.words,
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Ingresa tu nombre'
+                      ? l10n.developmentContactSheetNameRequired
                       : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Tu email',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.developmentContactSheetEmailLabel,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   validator: (v) {
                     final s = v?.trim() ?? '';
                     if (s.length < 3 || !s.contains('@')) {
-                      return 'Ingresa un email válido';
+                      return l10n.developmentContactSheetEmailInvalid;
                     }
                     return null;
                   },
@@ -192,9 +197,9 @@ class _DevelopmentContactSheetState
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Tu teléfono (opcional)',
-                    prefixIcon: Icon(Icons.phone_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.developmentContactSheetPhoneLabel,
+                    prefixIcon: const Icon(Icons.phone_outlined),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -202,12 +207,12 @@ class _DevelopmentContactSheetState
                   controller: _messageController,
                   maxLines: 4,
                   maxLength: 2000,
-                  decoration: const InputDecoration(
-                    labelText: 'Mensaje',
+                  decoration: InputDecoration(
+                    labelText: l10n.developmentContactSheetMessageLabel,
                     alignLabelWithHint: true,
                   ),
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Escribe un mensaje'
+                      ? l10n.developmentContactSheetMessageRequired
                       : null,
                 ),
                 // Honeypot — visually hidden (0 height, transparent). Real
@@ -221,8 +226,8 @@ class _DevelopmentContactSheetState
                       autofocus: false,
                       enableSuggestions: false,
                       autocorrect: false,
-                      decoration: const InputDecoration(
-                        labelText: 'No rellenar',
+                      decoration: InputDecoration(
+                        labelText: l10n.developmentContactSheetHoneypot,
                       ),
                     ),
                   ),
@@ -239,7 +244,9 @@ class _DevelopmentContactSheetState
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.send),
-                    label: Text(_submitting ? 'Enviando...' : 'Enviar mensaje'),
+                    label: Text(_submitting
+                        ? l10n.developmentContactSheetSubmitting
+                        : l10n.developmentContactSheetSubmit),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 14),

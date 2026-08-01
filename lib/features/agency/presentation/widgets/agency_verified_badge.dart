@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class AgencyVerifiedBadge extends StatelessWidget {
   final bool verified;
@@ -16,6 +17,7 @@ class AgencyVerifiedBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (verified) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -27,14 +29,14 @@ class AgencyVerifiedBadge extends StatelessWidget {
             width: 1,
           ),
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.verified, size: 14, color: AppColors.primary),
-            SizedBox(width: 4),
+            const Icon(Icons.verified, size: 14, color: AppColors.primary),
+            const SizedBox(width: 4),
             Text(
-              'Agencia verificada',
-              style: TextStyle(
+              l10n.agencyVerifiedBadgeVerified,
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -51,14 +53,18 @@ class AgencyVerifiedBadge extends StatelessWidget {
         color: AppColors.shimmer,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.business_outlined, size: 14, color: AppColors.textSecondary),
-          SizedBox(width: 4),
+          const Icon(
+            Icons.business_outlined,
+            size: 14,
+            color: AppColors.textSecondary,
+          ),
+          const SizedBox(width: 4),
           Text(
-            'Agencia',
-            style: TextStyle(
+            l10n.agencyVerifiedBadgeUnverified,
+            style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w600,

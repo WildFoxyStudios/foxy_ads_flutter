@@ -17,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/agency_model.dart';
 import '../../data/agency_service.dart';
 import '../widgets/agency_verified_badge.dart';
@@ -42,12 +43,13 @@ class _AgencyProfileScreenState extends ConsumerState<AgencyProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final profileAsync =
         ref.watch(agencyProfileProvider(widget.agencyId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agencia'),
+        title: Text(l10n.agencyTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
@@ -55,7 +57,7 @@ class _AgencyProfileScreenState extends ConsumerState<AgencyProfileScreen> {
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _ErrorState(
-          message: 'No se pudo cargar la agencia: $e',
+          message: l10n.agencyLoadError(e.toString()),
           onRetry: () {
             ref.invalidate(agencyProfileProvider(widget.agencyId));
             ref.invalidate(agencyListingsProvider(
@@ -94,6 +96,7 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final listingsAsync = ref.watch(
       agencyListingsProvider(AgencyListingsArgs(agencyId, page)),
     );
@@ -110,9 +113,9 @@ class _Body extends ConsumerWidget {
         children: [
           _HeaderCard(profile: profile),
           const SizedBox(height: 24),
-          const Text(
-            'Anuncios',
-            style: TextStyle(
+          Text(
+            l10n.agencyListingsHeading,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -125,7 +128,7 @@ class _Body extends ConsumerWidget {
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (e, _) => _ErrorState(
-              message: 'No se pudieron cargar los anuncios: $e',
+              message: l10n.agencyListingsLoadError(e.toString()),
               onRetry: () {
                 ref.invalidate(agencyListingsProvider(
                   AgencyListingsArgs(agencyId, page),
@@ -136,12 +139,12 @@ class _Body extends ConsumerWidget {
               final items = pageResult.items;
               final hasMore = pageResult.hasMore;
               if (items.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 48),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 48),
                   child: Center(
                     child: Text(
-                      'Aún no hay anuncios',
-                      style: TextStyle(
+                      l10n.agencyListingsEmpty,
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -408,23 +411,24 @@ class _PaginationRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _PagingButton(
-          label: 'Anterior',
+          label: l10n.agencyPrev,
           icon: Icons.chevron_left,
           onPressed: onPrev,
         ),
         Text(
-          'Página ${page + 1}',
+          l10n.agencyPageOf(page + 1),
           style: const TextStyle(
             fontSize: 13,
             color: AppColors.textSecondary,
           ),
         ),
         _PagingButton(
-          label: 'Siguiente',
+          label: l10n.agencyNext,
           icon: Icons.chevron_right,
           trailingIcon: true,
           onPressed: onNext,
@@ -481,31 +485,32 @@ class _NotFoundState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(
+          children: [
+            const Icon(
               Icons.business_outlined,
               size: 56,
               color: AppColors.textSecondary,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
-              'Agencia no encontrada',
-              style: TextStyle(
+              l10n.agencyNotFoundTitle,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             Text(
-              'Esta agencia no existe o ya no está disponible.',
+              l10n.agencyNotFoundSubtitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -525,6 +530,7 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -548,7 +554,7 @@ class _ErrorState extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: onRetry,
-              child: const Text('Reintentar'),
+              child: Text(l10n.commonRetry),
             ),
           ],
         ),

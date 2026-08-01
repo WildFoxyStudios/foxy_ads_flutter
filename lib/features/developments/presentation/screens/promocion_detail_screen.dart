@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/models/listing_model.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/development_model.dart';
 import '../../data/developments_service.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
@@ -23,11 +24,13 @@ class PromocionDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final developmentAsync = ref.watch(developmentDetailProvider(developmentId));
+    final l10n = AppLocalizations.of(context)!;
+    final developmentAsync =
+        ref.watch(developmentDetailProvider(developmentId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Promoción'),
+        title: Text(l10n.promocionDetailTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         leading: IconButton(
@@ -43,24 +46,24 @@ class PromocionDetailScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               const SizedBox(height: 16),
-              Text('Error: $error'),
+              Text(l10n.commonErrorWithMessage(error.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () =>
                     ref.invalidate(developmentDetailProvider(developmentId)),
-                child: const Text('Reintentar'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),
         ),
         data: (development) {
           if (development == null) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Text(
-                  'Promoción no encontrada',
-                  style: TextStyle(
+                  l10n.promocionDetailNotFound,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
@@ -99,14 +102,15 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
     super.dispose();
   }
 
-  static String _statusLabel(String status) {
+  String _statusLabel(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
     switch (status) {
       case 'planning':
-        return 'En planos';
+        return l10n.promocionStatusPlanning;
       case 'building':
-        return 'En construcción';
+        return l10n.promocionStatusBuilding;
       case 'ready':
-        return 'Lista para entrar';
+        return l10n.promocionStatusReady;
       default:
         return status;
     }
@@ -114,12 +118,13 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final unitsAsync = ref.watch(developmentUnitsProvider(development.id));
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _buildHero(),
+        _buildHero(context),
         if (development.images.isNotEmpty) ...[
           const SizedBox(height: 20),
           _buildGallery(),
@@ -127,11 +132,11 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
         if (development.description != null &&
             development.description!.trim().isNotEmpty) ...[
           const SizedBox(height: 20),
-          _buildDescription(),
+          _buildDescription(context),
         ],
         if (development.amenities.isNotEmpty) ...[
           const SizedBox(height: 20),
-          _buildAmenities(),
+          _buildAmenities(context),
         ],
         if (_hasLocationInfo()) ...[
           const SizedBox(height: 20),
@@ -144,7 +149,11 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
           ),
           error: (error, stack) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(child: Text('Error al cargar viviendas: $error')),
+            child: Center(
+              child: Text(
+                l10n.promocionDetailLoadUnitsError(error.toString()),
+              ),
+            ),
           ),
           data: (units) {
             final typologies = aggregateTypologies(units);
@@ -154,7 +163,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
               children: [
                 if (typologies.isNotEmpty) ...[
                   const SizedBox(height: 20),
-                  _buildTypologyTable(typologies, currency),
+                  _buildTypologyTable(context, typologies, currency),
                 ],
                 const SizedBox(height: 20),
                 _buildUnitsGrid(context, units),
@@ -169,12 +178,13 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildContactButton(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: () => showDevelopmentContactSheet(context, ref, development),
         icon: const Icon(Icons.mail_outline),
-        label: const Text('Contactar con la promotora'),
+        label: Text(l10n.promocionDetailContact),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
@@ -197,7 +207,8 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
     return true;
   }
 
-  Widget _buildHero() {
+  Widget _buildHero(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -222,7 +233,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                _statusLabel(development.status),
+                _statusLabel(context, development.status),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -236,7 +247,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
             development.promoterName!.trim().isNotEmpty) ...[
           const SizedBox(height: 6),
           Text(
-            'Promotora: ${development.promoterName}',
+            l10n.promocionDetailPromoterLabel(development.promoterName!),
             style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
@@ -269,7 +280,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
             development.deliveryLabel!.trim().isNotEmpty) ...[
           const SizedBox(height: 6),
           Text(
-            'Entrega: ${development.deliveryLabel}',
+            l10n.promocionDetailDeliveryLabel(development.deliveryLabel!),
             style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
@@ -335,13 +346,14 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Descripción',
-          style: TextStyle(
+        Text(
+          l10n.promocionDetailDescriptionHeading,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -360,13 +372,14 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
     );
   }
 
-  Widget _buildAmenities() {
+  Widget _buildAmenities(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Servicios y comodidades',
-          style: TextStyle(
+        Text(
+          l10n.promocionDetailAmenitiesHeading,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -395,12 +408,13 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildLocation(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Ubicación',
-          style: TextStyle(
+        Text(
+          l10n.promocionDetailLocationHeading,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -427,7 +441,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
           OutlinedButton.icon(
             onPressed: () => _openInMaps(),
             icon: const Icon(Icons.map_outlined, size: 18),
-            label: const Text('Abrir en mapas'),
+            label: Text(l10n.promocionDetailOpenMaps),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.primary,
               side: const BorderSide(color: AppColors.primary),
@@ -448,13 +462,18 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
-  Widget _buildTypologyTable(List<Typology> typologies, String? currency) {
+  Widget _buildTypologyTable(
+    BuildContext context,
+    List<Typology> typologies,
+    String? currency,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Tipología',
-          style: TextStyle(
+        Text(
+          l10n.promocionDetailTypologyHeading,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -470,13 +489,13 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
             3: FlexColumnWidth(1.4),
           },
           children: [
-            const TableRow(
-              decoration: BoxDecoration(color: AppColors.background),
+            TableRow(
+              decoration: const BoxDecoration(color: AppColors.background),
               children: [
-                _TypologyHeaderCell('Habitaciones'),
-                _TypologyHeaderCell('Nº viviendas'),
-                _TypologyHeaderCell('Desde'),
-                _TypologyHeaderCell('m² rango'),
+                _TypologyHeaderCell(l10n.promocionDetailTypologyRooms),
+                _TypologyHeaderCell(l10n.promocionDetailTypologyCount),
+                _TypologyHeaderCell(l10n.promocionDetailTypologyFrom),
+                _TypologyHeaderCell(l10n.promocionDetailTypologyM2Range),
               ],
             ),
             for (final typology in typologies)
@@ -512,12 +531,13 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildUnitsGrid(BuildContext context, List<Listing> units) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Viviendas',
-          style: TextStyle(
+        Text(
+          l10n.promocionDetailUnitsHeading,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -525,11 +545,11 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
         ),
         const SizedBox(height: 8),
         if (units.isEmpty)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
-              'Aún no hay viviendas publicadas',
-              style: TextStyle(
+              l10n.promocionDetailUnitsEmpty,
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

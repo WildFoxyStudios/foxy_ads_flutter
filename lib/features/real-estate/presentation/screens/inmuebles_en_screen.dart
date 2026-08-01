@@ -23,6 +23,7 @@ import '../../../../core/models/country_model.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../data/re_attributes.dart';
 import '../../data/re_models.dart';
@@ -68,6 +69,7 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final filters = ref.watch(reSearchFiltersProvider);
     final country = ref.watch(selectedCountryProvider);
     final results = ref.watch(reSearchResultsProvider);
@@ -75,13 +77,13 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inmuebles'),
+        title: Text(l10n.realEstateTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
           if (filters.isActive)
             IconButton(
-              tooltip: 'Limpiar filtros',
+              tooltip: l10n.realEstateClearTooltip,
               icon: const Icon(Icons.clear_all),
               onPressed: _clearAll,
             ),
@@ -118,7 +120,7 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
               children: [
                 Expanded(
                   child: _OperationChip(
-                    label: 'Venta',
+                    label: l10n.realEstateOperationSale,
                     value: 'venta',
                     selected: filters.operation == 'venta',
                     onSelected: () => ref
@@ -131,7 +133,7 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: _OperationChip(
-                    label: 'Alquiler',
+                    label: l10n.realEstateOperationRent,
                     value: 'alquiler',
                     selected: filters.operation == 'alquiler',
                     onSelected: () => ref
@@ -144,7 +146,7 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: _OperationChip(
-                    label: 'Temporal',
+                    label: l10n.realEstateOperationTemp,
                     value: 'alquiler_temporal',
                     selected: filters.operation == 'alquiler_temporal',
                     onSelected: () => ref
@@ -248,6 +250,7 @@ class _CityDropdown extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final citiesAsync = ref.watch(citiesProvider(countryCode));
     return citiesAsync.when(
       loading: () => Container(
@@ -269,7 +272,7 @@ class _CityDropdown extends ConsumerWidget {
         cities: const [],
         selected: selected,
         onChanged: onChanged,
-        placeholder: 'Error al cargar ciudades',
+        placeholder: l10n.realEstateLoadCitiesError,
       ),
       data: (cities) {
         final enabled = cities.where((c) => c.isEnabled).toList();
@@ -277,7 +280,7 @@ class _CityDropdown extends ConsumerWidget {
           cities: enabled,
           selected: selected,
           onChanged: onChanged,
-          placeholder: 'Todas las ciudades',
+          placeholder: l10n.realEstateAllCities,
         );
       },
     );
@@ -299,6 +302,7 @@ class _CityDropdownBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // Match the dropdown value to an actual City entry so changing the
     // country (which resets the stored string) doesn't crash the lookup.
     City? matched;
@@ -324,9 +328,9 @@ class _CityDropdownBody extends StatelessWidget {
           icon: const Icon(Icons.arrow_drop_down),
           hint: Text(placeholder, overflow: TextOverflow.ellipsis),
           items: [
-            const DropdownMenuItem<String?>(
+            DropdownMenuItem<String?>(
               value: null,
-              child: Text('Todas las ciudades'),
+              child: Text(l10n.realEstateAllCities),
             ),
             ...cities.map(
               (c) => DropdownMenuItem<String?>(
@@ -396,6 +400,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final notifier = ref.read(reSearchFiltersProvider.notifier);
     final counts = facetCounts.maybeWhen(
       data: (c) => c,
@@ -414,16 +419,16 @@ class _FiltersExpansionTile extends ConsumerWidget {
         child: ExpansionTile(
           tilePadding: const EdgeInsets.symmetric(horizontal: 16),
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          title: const Text(
-            'Filtros',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          title: Text(
+            l10n.realEstateFiltersHeading,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           subtitle: Text(
-            'Tipo, precio, m², habitaciones y más',
+            l10n.realEstateFiltersSubheading,
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
           children: [
-            _SectionLabel('Tipo de propiedad'),
+            _SectionLabel(l10n.realEstatePropertyTypeLabel),
             _CountedChipWrap<String>(
               values: RE_PROPERTY_TYPES,
               labels: _propertyTypeLabels,
@@ -435,7 +440,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Rango de precio'),
+            _SectionLabel(l10n.realEstatePriceLabel),
             Row(
               children: [
                 Expanded(
@@ -445,7 +450,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
                       decimal: true,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Mín',
+                      hintText: l10n.realEstateMinHint,
                       prefixText: '$currencySymbol ',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -467,7 +472,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
                       decimal: true,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Máx',
+                      hintText: l10n.realEstateMaxHint,
                       prefixText: '$currencySymbol ',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -481,7 +486,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Superficie (m²)'),
+            _SectionLabel(l10n.realEstateSurfaceLabel),
             Row(
               children: [
                 Expanded(
@@ -489,7 +494,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
                     controller: m2MinController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      hintText: 'Mín',
+                      hintText: l10n.realEstateMinHint,
                       suffixText: 'm²',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -509,7 +514,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
                     controller: m2MaxController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      hintText: 'Máx',
+                      hintText: l10n.realEstateMaxHint,
                       suffixText: 'm²',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -523,21 +528,21 @@ class _FiltersExpansionTile extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Habitaciones'),
+            _SectionLabel(l10n.realEstateRoomsLabel),
             _IntChipWrap(
               values: const [1, 2, 3, 4],
               selected: filters.rooms,
               onToggle: (v) => notifier.toggleInt('rooms', v),
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Baños'),
+            _SectionLabel(l10n.realEstateBathroomsLabel),
             _IntChipWrap(
               values: const [1, 2, 3],
               selected: filters.bathrooms,
               onToggle: (v) => notifier.toggleInt('bathrooms', v),
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Estado'),
+            _SectionLabel(l10n.realEstateConditionLabel),
             _CountedChipWrap<String>(
               values: RE_CONDITIONS,
               labels: _conditionLabels,
@@ -546,7 +551,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
               onToggle: (v) => notifier.toggleString('conditions', value: v),
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Características'),
+            _SectionLabel(l10n.realEstateFeaturesLabel),
             _CountedChipWrap<String>(
               values: RE_FEATURE_KEYS,
               labels: _featureLabels,
@@ -555,7 +560,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
               onToggle: (v) => notifier.toggleString('features', value: v),
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Orientación'),
+            _SectionLabel(l10n.realEstateOrientationLabel),
             _SimpleChipWrap<String>(
               values: RE_ORIENTATIONS,
               labels: _orientationLabels,
@@ -563,7 +568,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
               onToggle: (v) => notifier.toggleString('orientation', value: v),
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Planta'),
+            _SectionLabel(l10n.realEstateFloorLabel),
             _SimpleChipWrap<String>(
               values: RE_FLOOR_BUCKETS,
               labels: _floorBucketLabels,
@@ -571,19 +576,19 @@ class _FiltersExpansionTile extends ConsumerWidget {
               onToggle: (v) => notifier.toggleString('floorBuckets', value: v),
             ),
             const SizedBox(height: 12),
-            _SectionLabel('Certificado energético'),
+            _SectionLabel(l10n.realEstateEnergyBandLabel),
             _SimpleChipWrap<String>(
               values: const ['alta', 'media', 'baja'],
-              labels: const {
-                'alta': 'Alta (A-C)',
-                'media': 'Media (D-E)',
-                'baja': 'Baja (F-G)',
+              labels: {
+                'alta': l10n.realEstateEnergyBandHigh,
+                'media': l10n.realEstateEnergyBandMid,
+                'baja': l10n.realEstateEnergyBandLow,
               },
               selected: filters.energyBands,
               onToggle: (v) => notifier.toggleString('energyBands', value: v),
             ),
             const SizedBox(height: 8),
-            _SectionLabel('Letra específica'),
+            _SectionLabel(l10n.realEstateEnergyLetterLabel),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
@@ -594,11 +599,11 @@ class _FiltersExpansionTile extends ConsumerWidget {
                 child: DropdownButton<String?>(
                   isExpanded: true,
                   value: filters.energyLetter,
-                  hint: const Text('No especificado'),
+                  hint: Text(l10n.realEstateEnergyLetterNone),
                   items: [
-                    const DropdownMenuItem<String?>(
+                    DropdownMenuItem<String?>(
                       value: null,
-                      child: Text('No especificado'),
+                      child: Text(l10n.realEstateEnergyLetterNone),
                     ),
                     ...RE_ENERGY_CERTS.map(
                       (l) => DropdownMenuItem<String?>(
@@ -614,15 +619,19 @@ class _FiltersExpansionTile extends ConsumerWidget {
             const SizedBox(height: 12),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Acepta mascotas'),
+              title: Text(l10n.realEstatePetsAllowed),
               value: filters.petsAllowed == true,
               onChanged: (v) => notifier.setPetsAllowed(v ? true : null),
             ),
             const SizedBox(height: 4),
-            _SectionLabel('Publicado en los últimos'),
+            _SectionLabel(l10n.realEstatePostedWithinLabel),
             _SimpleChipWrap<int>(
               values: const [7, 30, 90],
-              labels: const {7: '7 días', 30: '30 días', 90: '90 días'},
+              labels: {
+                7: l10n.realEstatePostedWithin7,
+                30: l10n.realEstatePostedWithin30,
+                90: l10n.realEstatePostedWithin90,
+              },
               selected: filters.postedWithinDays == null
                   ? const []
                   : [filters.postedWithinDays!],
@@ -755,11 +764,12 @@ class _SortDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        const Text(
-          'Ordenar:',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          l10n.realEstateSortLabel,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -774,30 +784,30 @@ class _SortDropdown extends StatelessWidget {
               child: DropdownButton<ReSort>(
                 isExpanded: true,
                 value: value,
-                items: const [
+                items: [
                   DropdownMenuItem(
                     value: ReSort.relevance,
-                    child: Text('Relevancia'),
+                    child: Text(l10n.realEstateSortRelevance),
                   ),
                   DropdownMenuItem(
                     value: ReSort.recent,
-                    child: Text('Más recientes'),
+                    child: Text(l10n.realEstateSortRecent),
                   ),
                   DropdownMenuItem(
                     value: ReSort.priceAsc,
-                    child: Text('Precio: menor a mayor'),
+                    child: Text(l10n.realEstateSortPriceAsc),
                   ),
                   DropdownMenuItem(
                     value: ReSort.priceDesc,
-                    child: Text('Precio: mayor a menor'),
+                    child: Text(l10n.realEstateSortPriceDesc),
                   ),
                   DropdownMenuItem(
                     value: ReSort.sizeDesc,
-                    child: Text('Mayor superficie'),
+                    child: Text(l10n.realEstateSortSizeDesc),
                   ),
                   DropdownMenuItem(
                     value: ReSort.pricePerM2,
-                    child: Text('€/m²'),
+                    child: Text(l10n.realEstateSortPricePerM2),
                   ),
                 ],
                 onChanged: (v) {
@@ -818,6 +828,7 @@ class _ResultsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return results.when(
       loading: () => const Padding(
         padding: EdgeInsets.symmetric(vertical: 48),
@@ -826,7 +837,10 @@ class _ResultsGrid extends StatelessWidget {
       error: (e, _) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Center(
-          child: Text('Error: $e', style: TextStyle(color: AppColors.error)),
+          child: Text(
+            l10n.commonErrorWithMessage(e.toString()),
+            style: TextStyle(color: AppColors.error),
+          ),
         ),
       ),
       data: (listings) {
@@ -837,16 +851,16 @@ class _ResultsGrid extends StatelessWidget {
               children: [
                 const Text('🏚️', style: TextStyle(fontSize: 48)),
                 const SizedBox(height: 12),
-                const Text(
-                  'Sin resultados',
-                  style: TextStyle(
+                Text(
+                  l10n.realEstateNoResults,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Prueba a quitar filtros.',
+                  l10n.realEstateNoResultsHint,
                   style: TextStyle(color: AppColors.textSecondary),
                 ),
               ],
@@ -881,20 +895,21 @@ class _Prompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 48),
       child: Column(
         children: [
           const Text('🏠', style: TextStyle(fontSize: 64)),
           const SizedBox(height: 16),
-          const Text(
-            'Selecciona un país y operación para empezar',
+          Text(
+            l10n.realEstatePromptTitle,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
-            'Opcionalmente, elige una ciudad o usa el panel de filtros.',
+            l10n.realEstatePromptSubtitle,
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.textSecondary),
           ),

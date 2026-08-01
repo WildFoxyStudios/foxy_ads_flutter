@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/agency_model.dart';
 import '../../data/agency_service.dart';
 import '../../data/panel_stats.dart';
@@ -29,6 +30,7 @@ class PanelScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     // Auth gate first — the panel is meaningless for signed-out users and
     // `myAgencyProfileProvider` collapses to `null` for them anyway, but
     // surfacing a dedicated "Inicia sesión" CTA (mirroring
@@ -47,7 +49,7 @@ class PanelScreen extends ConsumerWidget {
     return profileAsync.when(
       loading: () => _LoadingScaffold(),
       error: (e, _) => _ErrorScaffold(
-        message: 'No se pudo cargar el panel: $e',
+        message: l10n.panelLoadFailed(e.toString()),
         onRetry: () => ref.invalidate(myAgencyProfileProvider),
       ),
       data: (profile) {
@@ -80,10 +82,11 @@ class _ErrorScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Panel Pro'),
+        title: Text(l10n.panelTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
@@ -111,7 +114,7 @@ class _ErrorScaffold extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: onRetry,
-                child: const Text('Reintentar'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),
@@ -130,10 +133,11 @@ class _GateScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Panel Pro'),
+        title: Text(l10n.panelTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
@@ -158,19 +162,19 @@ class _GateScaffold extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Panel Pro',
-                style: TextStyle(
+              Text(
+                l10n.panelTitle,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Disponible para agencias verificadas. Crea o completa tu ficha de agencia para empezar.',
+              Text(
+                l10n.panelGateDescription,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                   height: 1.4,
@@ -188,7 +192,7 @@ class _GateScaffold extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.business_outlined, size: 18),
-                label: const Text('Crear / completar ficha de agencia'),
+                label: Text(l10n.panelGateCta),
               ),
             ],
           ),
@@ -203,10 +207,11 @@ class _NotSignedInScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Panel Pro'),
+        title: Text(l10n.panelTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
@@ -223,10 +228,10 @@ class _NotSignedInScaffold extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Inicia sesión para acceder a tu panel',
+              Text(
+                l10n.panelNotSignedInTitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -239,7 +244,7 @@ class _NotSignedInScaffold extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Inicia sesión'),
+                child: Text(l10n.panelNotSignedInCta),
               ),
             ],
           ),
@@ -259,13 +264,14 @@ class _DashboardScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final listingsAsync = ref.watch(myPanelListingsProvider);
     final favsAsync = ref.watch(panelFavoritesProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Panel Pro'),
+        title: Text(l10n.panelTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
@@ -291,7 +297,7 @@ class _DashboardScaffold extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'No se pudieron cargar los anuncios: $e',
+                      l10n.panelListingsLoadError(e.toString()),
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: AppColors.error),
                     ),
@@ -301,7 +307,7 @@ class _DashboardScaffold extends ConsumerWidget {
                         ref.invalidate(myPanelListingsProvider);
                         ref.invalidate(panelFavoritesProvider);
                       },
-                      child: const Text('Reintentar'),
+                      child: Text(l10n.commonRetry),
                     ),
                   ],
                 ),
@@ -414,6 +420,7 @@ class _ViewsChartSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final viewsAsync = ref.watch(viewsSeriesProvider);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -425,9 +432,9 @@ class _ViewsChartSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Vistas (últimos 30 días)',
-            style: TextStyle(
+          Text(
+            l10n.panelViewsLast30,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -445,12 +452,12 @@ class _ViewsChartSection extends ConsumerWidget {
                 ),
               ),
             ),
-            error: (e, _) => const SizedBox(
+            error: (e, _) => SizedBox(
               height: PanelViewsChart.height,
               child: Center(
                 child: Text(
-                  'Sin datos',
-                  style: TextStyle(
+                  l10n.panelNoData,
+                  style: const TextStyle(
                     fontSize: 13,
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w500,

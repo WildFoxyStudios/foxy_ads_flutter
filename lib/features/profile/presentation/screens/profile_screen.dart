@@ -7,6 +7,7 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/locale_switcher.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -14,6 +15,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authStateProvider);
     final currentUser = ref.watch(currentUserProvider);
     final selectedCountry = ref.watch(selectedCountryProvider);
@@ -22,7 +24,7 @@ class ProfileScreen extends ConsumerWidget {
     if (authState.value == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Perfil'),
+          title: Text(l10n.profileTitleAnonymous),
           actions: [
             const LocaleSwitcher(),
             IconButton(
@@ -49,14 +51,17 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  '¡Únete a Foxy Ads!',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.profileJoinCta,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Crea una cuenta para publicar anuncios y acceder a más funciones',
+                  l10n.profileJoinBody,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 16,
@@ -68,7 +73,7 @@ class ProfileScreen extends ConsumerWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => context.push('/login'),
-                    child: const Text('Iniciar Sesión'),
+                    child: Text(l10n.profileLoginCta),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -76,7 +81,7 @@ class ProfileScreen extends ConsumerWidget {
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () => context.push('/register'),
-                    child: const Text('Crear Cuenta'),
+                    child: Text(l10n.profileRegisterCta),
                   ),
                 ),
               ],
@@ -89,7 +94,7 @@ class ProfileScreen extends ConsumerWidget {
     // Logged in
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mi Perfil'),
+        title: Text(l10n.profileTitle),
         actions: [
           const LocaleSwitcher(),
           IconButton(
@@ -101,7 +106,7 @@ class ProfileScreen extends ConsumerWidget {
       body: currentUser.when(
         data: (user) {
           if (user == null) {
-            return const Center(child: Text('Error al cargar perfil'));
+            return Center(child: Text(l10n.profileLoadError));
           }
 
           return SingleChildScrollView(
@@ -140,7 +145,7 @@ class ProfileScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user.name ?? 'Usuario',
+                              user.name ?? l10n.profileDefaultUser,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -167,9 +172,9 @@ class ProfileScreen extends ConsumerWidget {
                                   color: Colors.white.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Text(
-                                  'Editar perfil',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.profileEditProfileChip,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
@@ -191,7 +196,7 @@ class ProfileScreen extends ConsumerWidget {
                     selectedCountry.flag,
                     style: const TextStyle(fontSize: 24),
                   ),
-                  title: 'País',
+                  title: l10n.profileCountryLabel,
                   subtitle: selectedCountry.name,
                   onTap: () => context.push('/select-country'),
                 ),
@@ -200,7 +205,7 @@ class ProfileScreen extends ConsumerWidget {
                 // Menu items
                 _ProfileTile(
                   icon: const Icon(Icons.list_alt, color: AppColors.primary),
-                  title: 'Mis Anuncios',
+                  title: l10n.profileMyListings,
                   onTap: () => context.push('/my-listings'),
                 ),
                 const SizedBox(height: 12),
@@ -209,7 +214,7 @@ class ProfileScreen extends ConsumerWidget {
                     Icons.favorite_outline,
                     color: AppColors.primary,
                   ),
-                  title: 'Favoritos',
+                  title: l10n.profileFavorites,
                   onTap: () => context.go('/favorites'),
                 ),
                 const SizedBox(height: 12),
@@ -218,7 +223,7 @@ class ProfileScreen extends ConsumerWidget {
                     Icons.bookmark_outline,
                     color: AppColors.primary,
                   ),
-                  title: 'Búsquedas guardadas',
+                  title: l10n.profileSavedSearches,
                   onTap: () => context.push('/saved-searches'),
                 ),
                 const SizedBox(height: 12),
@@ -227,8 +232,8 @@ class ProfileScreen extends ConsumerWidget {
                     Icons.star_outline,
                     color: AppColors.primary,
                   ),
-                  title: 'Promocionar Anuncios',
-                  subtitle: 'Destaca tus anuncios por 2€/día',
+                  title: l10n.profilePromoteListings,
+                  subtitle: l10n.profilePromoteSubtitle,
                   onTap: () => context.push('/my-listings'),
                 ),
                 const SizedBox(height: 12),
@@ -237,7 +242,7 @@ class ProfileScreen extends ConsumerWidget {
                     Icons.settings_outlined,
                     color: AppColors.primary,
                   ),
-                  title: 'Configuración',
+                  title: l10n.profileSettings,
                   onTap: () => context.push('/settings'),
                 ),
                 const SizedBox(height: 12),
@@ -246,7 +251,7 @@ class ProfileScreen extends ConsumerWidget {
                     Icons.help_outline,
                     color: AppColors.primary,
                   ),
-                  title: 'Ayuda',
+                  title: l10n.profileHelp,
                   onTap: () {},
                 ),
                 const SizedBox(height: 12),
@@ -273,8 +278,8 @@ class ProfileScreen extends ConsumerWidget {
                             Icons.workspace_premium,
                             color: AppColors.primary,
                           ),
-                          title: 'Panel Pro',
-                          subtitle: 'Gestiona tu agencia',
+                          title: l10n.profilePanelProTitle,
+                          subtitle: l10n.profilePanelProSubtitle,
                           onTap: () => context.push(AppRoutes.panel),
                         ),
                         const SizedBox(height: 12),
@@ -290,8 +295,8 @@ class ProfileScreen extends ConsumerWidget {
                     Icons.business_center_outlined,
                     color: AppColors.primary,
                   ),
-                  title: 'Mi agencia',
-                  subtitle: 'Crea o edita tu perfil de agencia',
+                  title: l10n.profileMyAgency,
+                  subtitle: l10n.profileMyAgencySubtitle,
                   onTap: () => context.push(AppRoutes.agencyEdit),
                 ),
                 const SizedBox(height: 24),
@@ -308,9 +313,9 @@ class ProfileScreen extends ConsumerWidget {
                       }
                     },
                     icon: const Icon(Icons.logout, color: AppColors.error),
-                    label: const Text(
-                      'Cerrar Sesión',
-                      style: TextStyle(color: AppColors.error),
+                    label: Text(
+                      l10n.profileLogout,
+                      style: const TextStyle(color: AppColors.error),
                     ),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AppColors.error),
@@ -323,7 +328,9 @@ class ProfileScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(
+          child: Text(l10n.commonErrorWithMessage(e.toString())),
+        ),
       ),
     );
   }

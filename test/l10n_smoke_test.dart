@@ -55,6 +55,38 @@ dynamic _callByName(AppLocalizations l, String name) {
       return l.localeSwitcherAriaLabel;
     case 'appName':
       return l.appName;
+    case 'profileTitle':
+      return l.profileTitle;
+    case 'editProfileTitle':
+      return l.editProfileTitle;
+    case 'myListingsTitle':
+      return l.myListingsTitle;
+    case 'favoritesTitle':
+      return l.favoritesTitle;
+    case 'panelTitle':
+      return l.panelTitle;
+    case 'leadsPanelHeader':
+      return l.leadsPanelHeader;
+    case 'agencyTitle':
+      return l.agencyTitle;
+    case 'promocionesTitle':
+      return l.promocionesTitle;
+    case 'promocionDetailTitle':
+      return l.promocionDetailTitle;
+    case 'developmentFormTitle':
+      return l.developmentFormTitle;
+    case 'bulkListingsHeader':
+      return l.bulkListingsHeader;
+    case 'valuationTitle':
+      return l.valuationTitle;
+    case 'realEstateTitle':
+      return l.realEstateTitle;
+    case 'cityLandingTitle':
+      return l.cityLandingTitle;
+    case 'developmentCardPriceFrom':
+      return l.developmentCardPriceFrom;
+    case 'agencyVerifiedBadgeVerified':
+      return l.agencyVerifiedBadgeVerified;
     default:
       return null;
   }

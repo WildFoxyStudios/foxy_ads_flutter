@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/favorite_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 
 final favoritesListProvider = FutureProvider<List<Listing>>((ref) async {
@@ -21,13 +22,14 @@ class FavoritesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authStateProvider);
     final favoritesAsync = ref.watch(favoritesListProvider);
 
     // Not logged in
     if (authState.value == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Favoritos')),
+        appBar: AppBar(title: Text(l10n.favoritesTitle)),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
@@ -36,14 +38,17 @@ class FavoritesScreen extends ConsumerWidget {
               children: [
                 const Text('❤️', style: TextStyle(fontSize: 64)),
                 const SizedBox(height: 24),
-                const Text(
-                  'Guarda tus favoritos',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.favoritesSaveTitle,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Inicia sesión para guardar anuncios y verlos después',
+                  l10n.favoritesSaveSubtitle,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 16,
@@ -53,7 +58,7 @@ class FavoritesScreen extends ConsumerWidget {
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () => context.push('/login'),
-                  child: const Text('Iniciar Sesión'),
+                  child: Text(l10n.profileLoginCta),
                 ),
               ],
             ),
@@ -63,7 +68,7 @@ class FavoritesScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Favoritos')),
+      appBar: AppBar(title: Text(l10n.favoritesTitle)),
       body: favoritesAsync.when(
         data: (listings) {
           if (listings.isEmpty) {
@@ -73,20 +78,23 @@ class FavoritesScreen extends ConsumerWidget {
                 children: [
                   const Text('🦊', style: TextStyle(fontSize: 64)),
                   const SizedBox(height: 16),
-                  const Text(
-                    'No tienes favoritos',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Text(
+                    l10n.favoritesEmptyTitle,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Explora y guarda los anuncios que te interesen',
+                    l10n.favoritesEmptySubtitle,
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () => context.go('/'),
                     icon: const Icon(Icons.explore),
-                    label: const Text('Explorar'),
+                    label: Text(l10n.favoritesExploreCta),
                   ),
                 ],
               ),
@@ -131,13 +139,17 @@ class FavoritesScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.error,
+              ),
               const SizedBox(height: 16),
-              Text('Error: $e'),
+              Text(l10n.commonErrorWithMessage(e.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(favoritesListProvider),
-                child: const Text('Reintentar'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),

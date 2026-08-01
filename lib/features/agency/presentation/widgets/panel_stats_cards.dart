@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/panel_stats.dart';
 
 class PanelStatsCards extends StatelessWidget {
@@ -15,34 +16,35 @@ class PanelStatsCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final tiles = <_StatTile>[
-      _StatTile(label: 'Total anuncios', value: stats.total),
+      _StatTile(label: l10n.panelStatsTotalListings, value: stats.total),
       _StatTile(
-        label: 'Activos',
+        label: l10n.panelStatsActive,
         value: stats.active,
         accent: AppColors.success,
         icon: Icons.bolt_outlined,
       ),
       _StatTile(
-        label: 'Vendidos',
+        label: l10n.panelStatsSold,
         value: stats.sold,
         accent: AppColors.textSecondary,
         icon: Icons.check_circle_outline,
       ),
       _StatTile(
-        label: 'Vistas totales',
+        label: l10n.panelStatsTotalViews,
         value: stats.views,
         accent: AppColors.info,
         icon: Icons.visibility_outlined,
       ),
       _StatTile(
-        label: 'Destacados actualmente',
+        label: l10n.panelStatsFeaturedNow,
         value: stats.featured,
         accent: AppColors.primary,
         icon: Icons.star_outline,
       ),
       _StatTile(
-        label: 'Favoritos totales',
+        label: l10n.panelStatsTotalFavorites,
         value: stats.favorites,
         accent: AppColors.accent,
         icon: Icons.favorite_outline,

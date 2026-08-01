@@ -17,6 +17,7 @@ import '../../../../core/models/city_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ValuationScreen extends ConsumerStatefulWidget {
   const ValuationScreen({super.key});
@@ -40,10 +41,11 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (_city == null || _operation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona Venta o Alquiler')),
+        SnackBar(content: Text(l10n.valuationSelectOperation)),
       );
       return;
     }
@@ -81,12 +83,13 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final country = ref.watch(selectedCountryProvider);
     final citiesAsync = ref.watch(citiesProvider(country.code));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Valorar mi inmueble'),
+        title: Text(l10n.valuationTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -98,14 +101,13 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Obtén una estimación orientativa del precio de tu vivienda '
-                'según los anuncios activos en la zona.',
+                l10n.valuationIntro,
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
               const SizedBox(height: 16),
 
               // City dropdown
-              const _FieldLabel('Ciudad'),
+              _FieldLabel(l10n.valuationFieldCity),
               citiesAsync.when(
                 loading: () => Container(
                   height: 56,
@@ -126,7 +128,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                   cities: const [],
                   selected: _city,
                   onChanged: (v) => setState(() => _city = v),
-                  placeholder: 'Error al cargar ciudades',
+                  placeholder: l10n.valuationEmptyCities,
                 ),
                 data: (cities) {
                   final enabled = cities.where((c) => c.isEnabled).toList();
@@ -134,14 +136,14 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                     cities: enabled,
                     selected: _city,
                     onChanged: (v) => setState(() => _city = v),
-                    placeholder: 'Selecciona una ciudad',
+                    placeholder: l10n.valuationCityPlaceholder,
                   );
                 },
               ),
               const SizedBox(height: 16),
 
               // m² input
-              const _FieldLabel('Superficie (m²)'),
+              _FieldLabel(l10n.valuationFieldM2),
               TextFormField(
                 controller: _m2Controller,
                 keyboardType: TextInputType.number,
@@ -149,7 +151,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                   FilteringTextInputFormatter.digitsOnly,
                 ],
                 decoration: InputDecoration(
-                  hintText: 'Ej. 80',
+                  hintText: l10n.valuationM2Hint,
                   suffixText: 'm²',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -157,24 +159,24 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                 ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
-                    return 'Introduce la superficie';
+                    return l10n.valuationM2Required;
                   }
                   final n = int.tryParse(v.trim());
-                  if (n == null) return 'Valor no válido';
-                  if (n < 1) return 'Mínimo 1 m²';
-                  if (n > 100000) return 'Máximo 100000 m²';
+                  if (n == null) return l10n.valuationM2Invalid;
+                  if (n < 1) return l10n.valuationM2Min;
+                  if (n > 100000) return l10n.valuationM2Max;
                   return null;
                 },
               ),
               const SizedBox(height: 16),
 
               // Operation chips
-              const _FieldLabel('Operación'),
+              _FieldLabel(l10n.valuationFieldOperation),
               Row(
                 children: [
                   Expanded(
                     child: _OpChoice(
-                      label: 'Venta',
+                      label: l10n.valuationOperationSale,
                       selected: _operation == 'venta',
                       onTap: () => setState(() => _operation = 'venta'),
                     ),
@@ -182,7 +184,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _OpChoice(
-                      label: 'Alquiler',
+                      label: l10n.valuationOperationRent,
                       selected: _operation == 'alquiler',
                       onTap: () => setState(() => _operation = 'alquiler'),
                     ),
@@ -193,7 +195,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 6, left: 4),
                   child: Text(
-                    'Selecciona Venta o Alquiler',
+                    l10n.valuationSelectOperation,
                     style: TextStyle(color: AppColors.error, fontSize: 12),
                   ),
                 ),
@@ -210,9 +212,9 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Valorar',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.valuationSubmit,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -368,6 +370,7 @@ class _ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return estimate.when(
       loading: () => const Padding(
         padding: EdgeInsets.symmetric(vertical: 32),
@@ -377,7 +380,7 @@ class _ResultCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Center(
           child: Text(
-            'Error: $e',
+            l10n.commonErrorWithMessage(e.toString()),
             style: TextStyle(color: AppColors.error),
           ),
         ),
@@ -396,7 +399,7 @@ class _ResultCard extends StatelessWidget {
                 const Text('📊', style: TextStyle(fontSize: 40)),
                 const SizedBox(height: 8),
                 Text(
-                  'No hay datos suficientes para esta zona.',
+                  l10n.valuationInsufficientData,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -411,10 +414,11 @@ class _ResultCard extends StatelessWidget {
         final low = stats.avgPricePerM2 * 0.88 * m2;
         final high = stats.avgPricePerM2 * 1.12 * m2;
         final est = stats.avgPricePerM2 * m2;
-        final opLabel =
-            operation == 'venta' ? 'venta' : 'alquiler';
-        final operationNote =
-            'Valor orientativo para un inmueble tipo en $city.';
+        final isSale = operation == 'venta';
+        final heading = isSale
+            ? l10n.valuationEstimateHeadingSale(m2)
+            : l10n.valuationEstimateHeadingRent(m2);
+        final operationNote = l10n.valuationEstimateNote(city);
 
         return Container(
           padding: const EdgeInsets.all(20),
@@ -427,7 +431,7 @@ class _ResultCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Estimación para $m2 m² en $opLabel',
+                heading,
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13,
@@ -455,7 +459,7 @@ class _ResultCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _StatCell(
-                      label: 'Mínimo',
+                      label: l10n.valuationMin,
                       value: _money(low),
                       tone: AppColors.info,
                     ),
@@ -463,7 +467,7 @@ class _ResultCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _StatCell(
-                      label: 'Máximo',
+                      label: l10n.valuationMax,
                       value: _money(high),
                       tone: AppColors.success,
                     ),
@@ -484,7 +488,7 @@ class _ResultCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Precio medio/m²',
+                            l10n.valuationAvgPerM2,
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12,
@@ -505,7 +509,7 @@ class _ResultCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          'Muestra',
+                          l10n.valuationSample,
                           style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 12,
@@ -513,7 +517,7 @@ class _ResultCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${stats.sampleSize} anuncios',
+                          l10n.valuationSampleValue(stats.sampleSize),
                           style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,

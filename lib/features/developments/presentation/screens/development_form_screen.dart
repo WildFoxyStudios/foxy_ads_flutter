@@ -27,6 +27,7 @@ import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
 import '../../data/development_model.dart';
 import '../../data/developments_service.dart';
@@ -120,6 +121,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
 
   Future<void> _pickAndUploadImages() async {
     if (_uploadingImages) return;
+    final l10n = AppLocalizations.of(context)!;
     final picker = ImagePicker();
     final picked = await picker.pickMultiImage(
       maxWidth: 1600,
@@ -140,7 +142,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al subir imágenes: $e'),
+          content: Text(l10n.developmentFormUploadError(e.toString())),
           backgroundColor: AppColors.error,
         ),
       );
@@ -158,34 +160,37 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   String _errorMessage(DevelopmentValidationError error) {
+    final l10n = AppLocalizations.of(context)!;
     switch (error) {
       case DevelopmentValidationError.name:
-        return 'Introduce un nombre (2–140 caracteres).';
+        return l10n.developmentFormErrorName;
       case DevelopmentValidationError.country:
-        return 'El código de país debe tener 2–5 caracteres.';
+        return l10n.developmentFormErrorCountry;
       case DevelopmentValidationError.status:
-        return 'Estado no válido.';
+        return l10n.developmentFormErrorStatus;
       case DevelopmentValidationError.description:
-        return 'La descripción no puede superar 5000 caracteres.';
+        return l10n.developmentFormErrorDescription;
       case DevelopmentValidationError.length:
-        return 'Uno de los campos supera la longitud máxima.';
+        return l10n.developmentFormErrorLength;
     }
   }
 
-  String _statusLabel(String s) {
+  String _statusLabel(BuildContext context, String s) {
+    final l10n = AppLocalizations.of(context)!;
     switch (s) {
       case 'planning':
-        return 'En planos';
+        return l10n.promocionStatusPlanning;
       case 'building':
-        return 'En construcción';
+        return l10n.promocionStatusBuilding;
       case 'ready':
-        return 'Lista para entrar';
+        return l10n.promocionStatusReady;
     }
     return s;
   }
 
   Future<void> _save() async {
     if (_saving) return;
+    final l10n = AppLocalizations.of(context)!;
     final auth = ref.read(authStateProvider);
     final userId = auth.value?.id;
     if (userId == null) return;
@@ -198,8 +203,8 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
     final lngParsed = lngText.isEmpty ? null : double.tryParse(lngText);
     if (latText.isNotEmpty && latParsed == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Latitud no válida.'),
+        SnackBar(
+          content: Text(l10n.developmentFormLatInvalid),
           backgroundColor: AppColors.error,
         ),
       );
@@ -207,8 +212,8 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
     }
     if (lngText.isNotEmpty && lngParsed == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Longitud no válida.'),
+        SnackBar(
+          content: Text(l10n.developmentFormLngInvalid),
           backgroundColor: AppColors.error,
         ),
       );
@@ -254,10 +259,8 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
       if (!mounted) return;
       if (!outcome.ok) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'No se pudo guardar la promoción. Inténtalo de nuevo.',
-            ),
+          SnackBar(
+            content: Text(l10n.developmentFormSaveFailed),
             backgroundColor: AppColors.error,
           ),
         );
@@ -272,8 +275,8 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
         SnackBar(
           content: Text(
             _isEdit
-                ? 'Promoción actualizada'
-                : 'Promoción creada',
+                ? l10n.developmentFormSavedUpdated
+                : l10n.developmentFormSavedCreated,
           ),
           backgroundColor: AppColors.success,
         ),
@@ -283,7 +286,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al guardar: $e'),
+          content: Text(l10n.developmentFormSaveException(e.toString())),
           backgroundColor: AppColors.error,
         ),
       );
@@ -294,6 +297,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final auth = ref.watch(authStateProvider);
     final userId = auth.when(
       loading: () => null,
@@ -313,7 +317,9 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
       ),
       error: (e, _) => Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('Error: $e')),
+        body: Center(
+          child: Text(l10n.commonErrorWithMessage(e.toString())),
+        ),
       ),
       data: (profile) {
         if (profile == null || !profile.isVerified) {
@@ -344,6 +350,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   Widget _buildEditScaffold() {
+    final l10n = AppLocalizations.of(context)!;
     final detailAsync =
         ref.watch(developmentDetailProvider(widget.developmentId!));
     return Scaffold(
@@ -360,7 +367,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
                     size: 48, color: AppColors.error),
                 const SizedBox(height: 8),
                 Text(
-                  'No se pudo cargar la promoción: $e',
+                  l10n.developmentFormLoadError(e.toString()),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 14,
@@ -372,7 +379,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
                   onPressed: () => ref.invalidate(
                     developmentDetailProvider(widget.developmentId!),
                   ),
-                  child: const Text('Reintentar'),
+                  child: Text(l10n.commonRetry),
                 ),
               ],
             ),
@@ -380,7 +387,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
         ),
         data: (dev) {
           if (dev == null) {
-            return const Center(child: Text('Promoción no encontrada.'));
+            return Center(child: Text(l10n.developmentFormNotFound));
           }
           // First successful resolve — seed controllers.
           if (!_prefilled) {
@@ -396,8 +403,11 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   PreferredSizeWidget _appBar() {
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
-      title: Text(_isEdit ? 'Editar promoción' : 'Nueva promoción'),
+      title: Text(_isEdit
+          ? l10n.developmentFormEdit
+          : l10n.developmentFormNew),
       backgroundColor: AppColors.surface,
       foregroundColor: AppColors.textPrimary,
       elevation: 0,
@@ -409,6 +419,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   Widget _form() {
+    final l10n = AppLocalizations.of(context)!;
     return Form(
       key: _formKey,
       child: ListView(
@@ -416,15 +427,15 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
         children: [
           TextFormField(
             controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Nombre *',
-              prefixIcon: Icon(Icons.apartment_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldName,
+              prefixIcon: const Icon(Icons.apartment_outlined),
             ),
             maxLength: 140,
             validator: (v) {
               final t = (v ?? '').trim();
               if (t.length < 2 || t.length > 140) {
-                return 'Nombre entre 2 y 140 caracteres';
+                return l10n.developmentFormNameValidator;
               }
               return null;
             },
@@ -434,8 +445,8 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
             controller: _descriptionController,
             maxLines: 5,
             minLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Descripción',
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldDescription,
               alignLabelWithHint: true,
             ),
             maxLength: 5000,
@@ -443,19 +454,19 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
           const SizedBox(height: 12),
           TextFormField(
             controller: _promoterController,
-            decoration: const InputDecoration(
-              labelText: 'Promotora',
-              prefixIcon: Icon(Icons.business_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldPromoter,
+              prefixIcon: const Icon(Icons.business_outlined),
             ),
             maxLength: 140,
           ),
           const SizedBox(height: 12),
           TextFormField(
             controller: _countryCodeController,
-            decoration: const InputDecoration(
-              labelText: 'Código de país *',
-              prefixIcon: Icon(Icons.flag_outlined),
-              hintText: 'ES, MX, AR…',
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldCountry,
+              prefixIcon: const Icon(Icons.flag_outlined),
+              hintText: l10n.developmentFormCountryHint,
             ),
             textCapitalization: TextCapitalization.characters,
             maxLength: 5,
@@ -473,7 +484,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
             validator: (v) {
               final t = (v ?? '').trim();
               if (t.length < 2 || t.length > 5) {
-                return '2–5 caracteres';
+                return l10n.developmentFormCountryValidator;
               }
               return null;
             },
@@ -481,18 +492,18 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
           const SizedBox(height: 12),
           TextFormField(
             controller: _cityController,
-            decoration: const InputDecoration(
-              labelText: 'Ciudad',
-              prefixIcon: Icon(Icons.location_city_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldCity,
+              prefixIcon: const Icon(Icons.location_city_outlined),
             ),
             maxLength: 120,
           ),
           const SizedBox(height: 12),
           TextFormField(
             controller: _addressController,
-            decoration: const InputDecoration(
-              labelText: 'Dirección',
-              prefixIcon: Icon(Icons.place_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldAddress,
+              prefixIcon: const Icon(Icons.place_outlined),
             ),
             maxLength: 240,
           ),
@@ -502,9 +513,9 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
               Expanded(
                 child: TextFormField(
                   controller: _latitudeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Latitud',
-                    prefixIcon: Icon(Icons.my_location),
+                  decoration: InputDecoration(
+                    labelText: l10n.developmentFormFieldLat,
+                    prefixIcon: const Icon(Icons.my_location),
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -514,7 +525,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
                     final t = (v ?? '').trim();
                     if (t.isEmpty) return null;
                     if (double.tryParse(t) == null) {
-                      return 'No válido';
+                      return l10n.developmentFormNumericInvalid;
                     }
                     return null;
                   },
@@ -524,9 +535,9 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
               Expanded(
                 child: TextFormField(
                   controller: _longitudeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Longitud',
-                    prefixIcon: Icon(Icons.my_location),
+                  decoration: InputDecoration(
+                    labelText: l10n.developmentFormFieldLng,
+                    prefixIcon: const Icon(Icons.my_location),
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -536,7 +547,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
                     final t = (v ?? '').trim();
                     if (t.isEmpty) return null;
                     if (double.tryParse(t) == null) {
-                      return 'No válido';
+                      return l10n.developmentFormNumericInvalid;
                     }
                     return null;
                   },
@@ -547,10 +558,10 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
           const SizedBox(height: 12),
           TextFormField(
             controller: _amenityController,
-            decoration: const InputDecoration(
-              labelText: 'Servicios / amenidades',
-              hintText: 'Piscina, garaje, trastero…',
-              prefixIcon: Icon(Icons.local_activity_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldAmenityLabel,
+              hintText: l10n.developmentFormFieldAmenityHint,
+              prefixIcon: const Icon(Icons.local_activity_outlined),
             ),
             onFieldSubmitted: (_) => _addAmenity(),
           ),
@@ -560,7 +571,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
             child: OutlinedButton.icon(
               onPressed: _addAmenity,
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('Añadir'),
+              label: Text(l10n.developmentFormAddAmenity),
             ),
           ),
           if (_amenities.isNotEmpty) ...[
@@ -578,9 +589,9 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
             ),
           ],
           const SizedBox(height: 24),
-          const Text(
-            'Imágenes',
-            style: TextStyle(
+          Text(
+            l10n.developmentFormImagesHeading,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -597,7 +608,9 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
                   )
                 : const Icon(Icons.add_photo_alternate_outlined, size: 18),
             label: Text(
-              _uploadingImages ? 'Subiendo…' : 'Añadir imágenes',
+              _uploadingImages
+                  ? l10n.developmentFormUploading
+                  : l10n.developmentFormAddImages,
             ),
           ),
           if (_existingImageUrls.isNotEmpty || _newImageUrls.isNotEmpty) ...[
@@ -612,29 +625,32 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
           const SizedBox(height: 12),
           TextFormField(
             controller: _deliveryLabelController,
-            decoration: const InputDecoration(
-              labelText: 'Plazo de entrega',
-              hintText: 'ej. 2026 Q4',
-              prefixIcon: Icon(Icons.event_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldDelivery,
+              hintText: l10n.developmentFormDeliveryHint,
+              prefixIcon: const Icon(Icons.event_outlined),
             ),
             maxLength: 60,
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _status,
-            decoration: const InputDecoration(
-              labelText: 'Estado',
-              prefixIcon: Icon(Icons.timeline_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.developmentFormFieldStatus,
+              prefixIcon: const Icon(Icons.timeline_outlined),
             ),
             items: [
               for (final s in DEVELOPMENT_STATUSES)
-                DropdownMenuItem(value: s, child: Text(_statusLabel(s))),
+                DropdownMenuItem(
+                  value: s,
+                  child: Text(_statusLabel(context, s)),
+                ),
             ],
             onChanged: (v) => setState(() => _status = v),
             validator: (v) {
               if (v == null) return null;
               if (!DEVELOPMENT_STATUSES.contains(v)) {
-                return 'Estado no válido';
+                return l10n.developmentFormStatusInvalid;
               }
               return null;
             },
@@ -657,7 +673,9 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
                           AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : Text(_isEdit ? 'Guardar cambios' : 'Crear promoción'),
+                : Text(_isEdit
+                    ? l10n.commonSave
+                    : l10n.developmentFormSubmitCreate),
           ),
           const SizedBox(height: 24),
         ],
@@ -746,12 +764,12 @@ class _NotSignedInScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Promoción'),
+        title: Text(l10n.developmentFormTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
-        elevation: 0,
       ),
       body: Center(
         child: Padding(
@@ -765,10 +783,10 @@ class _NotSignedInScaffold extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Inicia sesión para publicar una promoción',
+              Text(
+                l10n.developmentFormNotSignedInTitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -781,7 +799,7 @@ class _NotSignedInScaffold extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Inicia sesión'),
+                child: Text(l10n.developmentFormNotSignedInCta),
               ),
             ],
           ),
@@ -796,12 +814,12 @@ class _NotVerifiedScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Promoción'),
+        title: Text(l10n.developmentFormTitle),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
@@ -819,20 +837,20 @@ class _NotVerifiedScaffold extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Solo agencias verificadas',
+              Text(
+                l10n.developmentFormNotVerifiedTitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Completa el perfil de tu agencia y espera la verificación para publicar promociones.',
+              Text(
+                l10n.developmentFormNotVerifiedSubtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
@@ -844,7 +862,7 @@ class _NotVerifiedScaffold extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Editar perfil de agencia'),
+                child: Text(l10n.developmentFormNotVerifiedCta),
               ),
             ],
           ),

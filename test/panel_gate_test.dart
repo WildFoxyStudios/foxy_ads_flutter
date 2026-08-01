@@ -28,6 +28,7 @@ import 'package:foxy_ads/features/agency/data/agency_model.dart';
 import 'package:foxy_ads/features/agency/data/agency_service.dart';
 import 'package:foxy_ads/features/agency/data/panel_stats.dart';
 import 'package:foxy_ads/features/agency/presentation/screens/panel_screen.dart';
+import 'package:foxy_ads/l10n/app_localizations.dart';
 
 AgencyProfile _verifiedProfile() {
   return AgencyProfile(
@@ -76,7 +77,12 @@ Widget _buildTestApp({
   }
   return ProviderScope(
     overrides: overrides,
-    child: const MaterialApp(home: PanelScreen()),
+    child: const MaterialApp(
+      locale: Locale('es'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: PanelScreen(),
+    ),
   );
 }
 

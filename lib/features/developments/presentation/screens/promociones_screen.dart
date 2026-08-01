@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/selected_country_provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/developments_service.dart';
 import '../widgets/development_card.dart';
 
@@ -13,12 +14,13 @@ class PromocionesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final developmentsAsync = ref.watch(developmentsForCountryProvider);
     final country = ref.watch(selectedCountryProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Promociones'),
+        title: Text(l10n.promocionesTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         leading: IconButton(
@@ -38,12 +40,12 @@ class PromocionesScreen extends ConsumerWidget {
                 color: AppColors.error,
               ),
               const SizedBox(height: 16),
-              Text('Error: $error'),
+              Text(l10n.commonErrorWithMessage(error.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () =>
                     ref.invalidate(developmentsForCountryProvider),
-                child: const Text('Reintentar'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),
@@ -59,7 +61,7 @@ class PromocionesScreen extends ConsumerWidget {
                     const Text('🏗️', style: TextStyle(fontSize: 64)),
                     const SizedBox(height: 16),
                     Text(
-                      'Aún no hay promociones en ${country.name}.',
+                      l10n.promocionesEmpty(country.name),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 16,

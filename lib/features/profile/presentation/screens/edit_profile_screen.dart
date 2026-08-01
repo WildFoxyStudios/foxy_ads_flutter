@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -42,6 +43,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() => _isLoading = true);
 
@@ -56,8 +58,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Perfil actualizado'),
+          SnackBar(
+            content: Text(l10n.editProfileSaved),
             backgroundColor: AppColors.success,
           ),
         );
@@ -68,7 +70,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text(l10n.commonErrorWithMessage(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -82,9 +84,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar Perfil'),
+        title: Text(l10n.editProfileTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
@@ -135,13 +138,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             // Name
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre',
-                prefixIcon: Icon(Icons.person_outline),
+              decoration: InputDecoration(
+                labelText: l10n.editProfileNameLabel,
+                prefixIcon: const Icon(Icons.person_outline),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'El nombre es obligatorio';
+                  return l10n.editProfileNameRequired;
                 }
                 return null;
               },
@@ -152,10 +155,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Teléfono',
-                hintText: '+34 612 345 678',
-                prefixIcon: Icon(Icons.phone_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.editProfilePhoneLabel,
+                hintText: l10n.editProfilePhoneHint,
+                prefixIcon: const Icon(Icons.phone_outlined),
               ),
             ),
             const SizedBox(height: 32),
@@ -172,7 +175,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
-                  : const Text('Guardar Cambios'),
+                  : Text(l10n.editProfileSaveChanges),
             ),
           ],
         ),

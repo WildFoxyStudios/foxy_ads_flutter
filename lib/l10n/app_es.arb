@@ -273,5 +273,519 @@
       "min": { "type": "String" },
       "max": { "type": "String" }
     }
-  }
+  },
+
+  "profileTitleAnonymous": "Perfil",
+  "profileJoinCta": "¡Únete a Foxy Ads!",
+  "profileJoinBody": "Crea una cuenta para publicar anuncios y acceder a más funciones",
+  "profileLoginCta": "Iniciar Sesión",
+  "profileRegisterCta": "Crear Cuenta",
+  "profileTitle": "Mi Perfil",
+  "profileLoadError": "Error al cargar perfil",
+  "profileDefaultUser": "Usuario",
+  "profileEditProfileChip": "Editar perfil",
+  "profileCountryLabel": "País",
+  "profileMyListings": "Mis Anuncios",
+  "profileFavorites": "Favoritos",
+  "profileSavedSearches": "Búsquedas guardadas",
+  "profilePromoteListings": "Promocionar Anuncios",
+  "profilePromoteSubtitle": "Destaca tus anuncios por 2€/día",
+  "profileSettings": "Configuración",
+  "profileHelp": "Ayuda",
+  "profilePanelProTitle": "Panel Pro",
+  "profilePanelProSubtitle": "Gestiona tu agencia",
+  "profileMyAgency": "Mi agencia",
+  "profileMyAgencySubtitle": "Crea o edita tu perfil de agencia",
+  "profileLogout": "Cerrar Sesión",
+
+  "editProfileTitle": "Editar Perfil",
+  "editProfileNameLabel": "Nombre",
+  "editProfileNameRequired": "El nombre es obligatorio",
+  "editProfilePhoneLabel": "Teléfono",
+  "editProfilePhoneHint": "+34 612 345 678",
+  "editProfileSaveChanges": "Guardar Cambios",
+  "editProfileSaved": "Perfil actualizado",
+
+  "myListingsTitle": "Mis Anuncios",
+  "myListingsFabNew": "Nuevo",
+  "myListingsEmptyTitle": "No tienes anuncios",
+  "myListingsEmptySubtitle": "Publica tu primer anuncio",
+  "myListingsPublishCta": "Publicar Anuncio",
+  "myListingsBadgeActive": "Activo",
+  "myListingsBadgeInactive": "Inactivo",
+  "myListingsBadgeFeatured": "Destacado",
+  "myListingsMenuView": "Ver",
+  "myListingsMenuPromote": "Promocionar",
+  "myListingsMenuEdit": "Editar",
+  "myListingsMenuDelete": "Eliminar",
+  "myListingsDeleteDialogTitle": "Eliminar anuncio",
+  "myListingsDeleteDialogBody": "¿Estás seguro de eliminar \"{title}\"?",
+  "@myListingsDeleteDialogBody": {
+    "description": "Confirmation dialog body before deleting a user's listing. {title} is the listing title.",
+    "placeholders": { "title": { "type": "String" } }
+  },
+
+  "favoritesTitle": "Favoritos",
+  "favoritesSaveTitle": "Guarda tus favoritos",
+  "favoritesSaveSubtitle": "Inicia sesión para guardar anuncios y verlos después",
+  "favoritesEmptyTitle": "No tienes favoritos",
+  "favoritesEmptySubtitle": "Explora y guarda los anuncios que te interesen",
+  "favoritesExploreCta": "Explorar",
+
+  "panelTitle": "Panel Pro",
+  "panelLoadFailed": "No se pudo cargar el panel: {error}",
+  "@panelLoadFailed": {
+    "description": "Panel error state message. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "panelGateDescription": "Disponible para agencias verificadas. Crea o completa tu ficha de agencia para empezar.",
+  "panelGateCta": "Crear / completar ficha de agencia",
+  "panelNotSignedInTitle": "Inicia sesión para acceder a tu panel",
+  "panelNotSignedInCta": "Inicia sesión",
+  "panelListingsLoadError": "No se pudieron cargar los anuncios: {error}",
+  "@panelListingsLoadError": {
+    "description": "Listings error state on the panel. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "panelViewsLast30": "Vistas (últimos 30 días)",
+  "panelNoData": "Sin datos",
+
+  "panelStatsTotalListings": "Total anuncios",
+  "panelStatsActive": "Activos",
+  "panelStatsSold": "Vendidos",
+  "panelStatsTotalViews": "Vistas totales",
+  "panelStatsFeaturedNow": "Destacados actualmente",
+  "panelStatsTotalFavorites": "Favoritos totales",
+
+  "leadsPanelHeader": "Leads",
+  "leadsPanelFilterAll": "Todas",
+  "leadsPanelFilterNew": "Nuevos",
+  "leadsPanelFilterContacted": "Contactados",
+  "leadsPanelFilterClosed": "Cerrados",
+  "leadsPanelStatusNew": "Nuevo",
+  "leadsPanelStatusContacted": "Contactado",
+  "leadsPanelStatusClosed": "Cerrado",
+  "leadsPanelEmpty": "No hay leads con este filtro.",
+  "leadsPanelLoadError": "No se pudieron cargar los leads: {error}",
+  "@leadsPanelLoadError": {
+    "description": "Leads panel error state. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "leadsPanelNoName": "(sin nombre)",
+  "leadsPanelNotesLabel": "Notas",
+  "leadsPanelSave": "Guardar",
+  "leadsPanelUpdateFailed": "No se pudo actualizar el estado",
+  "leadsPanelSaveNotesFailed": "No se pudieron guardar las notas",
+
+  "agencyTitle": "Agencia",
+  "agencyLoadError": "No se pudo cargar la agencia: {error}",
+  "@agencyLoadError": {
+    "description": "Public agency profile error. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "agencyListingsHeading": "Anuncios",
+  "agencyListingsLoadError": "No se pudieron cargar los anuncios: {error}",
+  "@agencyListingsLoadError": {
+    "description": "Public agency listings error. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "agencyListingsEmpty": "Aún no hay anuncios",
+  "agencyPrev": "Anterior",
+  "agencyNext": "Siguiente",
+  "agencyPageOf": "Página {page}",
+  "@agencyPageOf": {
+    "description": "Pagination indicator on agency profile. {page} is the 1-based page number.",
+    "placeholders": { "page": { "type": "int" } }
+  },
+  "agencyNotFoundTitle": "Agencia no encontrada",
+  "agencyNotFoundSubtitle": "Esta agencia no existe o ya no está disponible.",
+
+  "agencyVerifiedBadgeVerified": "Agencia verificada",
+  "agencyVerifiedBadgeUnverified": "Agencia",
+
+  "agencyEditTitle": "Editar agencia",
+  "agencyEditLoadError": "No se pudo cargar la agencia: {error}",
+  "agencyEditRetry": "Reintentar",
+  "agencyEditFieldName": "Nombre *",
+  "agencyEditFieldDescription": "Descripción",
+  "agencyEditFieldDescriptionHint": "Cuéntales a tus clientes quién eres",
+  "agencyEditFieldWebsite": "Web",
+  "agencyEditFieldWebsiteHint": "https://...",
+  "agencyEditFieldPhone": "Teléfono",
+  "agencyEditFieldLocation": "Ubicación",
+  "agencyEditSave": "Guardar",
+  "agencyEditNotSignedInTitle": "Inicia sesión para editar tu agencia",
+  "agencyEditNotSignedInCta": "Inicia sesión",
+  "agencyEditErrorName": "Introduce un nombre (2–120 caracteres).",
+  "agencyEditErrorWebsite": "La web debe empezar por http:// o https://",
+  "agencyEditErrorLength": "Uno de los campos supera la longitud máxima",
+  "agencyEditLogoUploadError": "Error al subir el logo: {error}",
+  "@agencyEditLogoUploadError": {
+    "description": "Logo upload failure toast. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "agencyEditSaveError": "No se pudo guardar el perfil. Inténtalo de nuevo.",
+  "agencyEditSavedToast": "Perfil de agencia guardado",
+  "agencyEditSaveFailed": "Error al guardar: {error}",
+  "@agencyEditSaveFailed": {
+    "description": "Generic save failure toast. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "agencyEditLogoUploading": "Subiendo…",
+  "agencyEditLogoChange": "Cambiar logo",
+
+  "promocionesTitle": "Promociones",
+  "promocionesEmpty": "Aún no hay promociones en {country}.",
+  "@promocionesEmpty": {
+    "description": "Empty state on /promociones. {country} is the selected country name.",
+    "placeholders": { "country": { "type": "String" } }
+  },
+
+  "promocionDetailTitle": "Promoción",
+  "promocionDetailNotFound": "Promoción no encontrada",
+  "promocionDetailLoadUnitsError": "Error al cargar viviendas: {error}",
+  "@promocionDetailLoadUnitsError": {
+    "description": "Unit-list error on development detail. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "promocionDetailContact": "Contactar con la promotora",
+  "promocionDetailPromoterLabel": "Promotora: {name}",
+  "@promocionDetailPromoterLabel": {
+    "description": "Inline promoter name on the development hero. {name} is the promoter name.",
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "promocionDetailDeliveryLabel": "Entrega: {label}",
+  "@promocionDetailDeliveryLabel": {
+    "description": "Inline delivery label on the development hero. {label} is the free-form delivery string.",
+    "placeholders": { "label": { "type": "String" } }
+  },
+  "promocionStatusPlanning": "En planos",
+  "promocionStatusBuilding": "En construcción",
+  "promocionStatusReady": "Lista para entrar",
+  "promocionDetailDescriptionHeading": "Descripción",
+  "promocionDetailAmenitiesHeading": "Servicios y comodidades",
+  "promocionDetailLocationHeading": "Ubicación",
+  "promocionDetailOpenMaps": "Abrir en mapas",
+  "promocionDetailTypologyHeading": "Tipología",
+  "promocionDetailTypologyRooms": "Habitaciones",
+  "promocionDetailTypologyCount": "Nº viviendas",
+  "promocionDetailTypologyFrom": "Desde",
+  "promocionDetailTypologyM2Range": "m² rango",
+  "promocionDetailUnitsHeading": "Viviendas",
+  "promocionDetailUnitsEmpty": "Aún no hay viviendas publicadas",
+
+  "developmentFormEdit": "Editar promoción",
+  "developmentFormNew": "Nueva promoción",
+  "developmentFormLoadError": "No se pudo cargar la promoción: {error}",
+  "@developmentFormLoadError": {
+    "description": "Development form load error. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "developmentFormNotFound": "Promoción no encontrada.",
+  "developmentFormFieldName": "Nombre *",
+  "developmentFormNameValidator": "Nombre entre 2 y 140 caracteres",
+  "developmentFormFieldDescription": "Descripción",
+  "developmentFormFieldPromoter": "Promotora",
+  "developmentFormFieldCountry": "Código de país *",
+  "developmentFormCountryHint": "ES, MX, AR…",
+  "developmentFormCountryValidator": "2–5 caracteres",
+  "developmentFormFieldCity": "Ciudad",
+  "developmentFormFieldAddress": "Dirección",
+  "developmentFormFieldLat": "Latitud",
+  "developmentFormFieldLng": "Longitud",
+  "developmentFormNumericInvalid": "No válido",
+  "developmentFormFieldAmenityLabel": "Servicios / amenidades",
+  "developmentFormFieldAmenityHint": "Piscina, garaje, trastero…",
+  "developmentFormAddAmenity": "Añadir",
+  "developmentFormImagesHeading": "Imágenes",
+  "developmentFormAddImages": "Añadir imágenes",
+  "developmentFormUploading": "Subiendo…",
+  "developmentFormFieldDelivery": "Plazo de entrega",
+  "developmentFormDeliveryHint": "ej. 2026 Q4",
+  "developmentFormFieldStatus": "Estado",
+  "developmentFormStatusInvalid": "Estado no válido",
+  "developmentFormSubmitCreate": "Crear promoción",
+  "developmentFormSubmitEdit": "Guardar cambios",
+  "developmentFormErrorName": "Introduce un nombre (2–140 caracteres).",
+  "developmentFormErrorCountry": "El código de país debe tener 2–5 caracteres.",
+  "developmentFormErrorStatus": "Estado no válido.",
+  "developmentFormErrorDescription": "La descripción no puede superar 5000 caracteres.",
+  "developmentFormErrorLength": "Uno de los campos supera la longitud máxima.",
+  "developmentFormSaveFailed": "No se pudo guardar la promoción. Inténtalo de nuevo.",
+  "developmentFormSavedCreated": "Promoción creada",
+  "developmentFormSavedUpdated": "Promoción actualizada",
+  "developmentFormSaveException": "Error al guardar: {error}",
+  "@developmentFormSaveException": {
+    "description": "Generic form-save exception toast. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "developmentFormUploadError": "Error al subir imágenes: {error}",
+  "@developmentFormUploadError": {
+    "description": "Image upload error toast. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "developmentFormLatInvalid": "Latitud no válida.",
+  "developmentFormLngInvalid": "Longitud no válida.",
+  "developmentFormTitle": "Promoción",
+  "developmentFormNotSignedInTitle": "Inicia sesión para publicar una promoción",
+  "developmentFormNotSignedInCta": "Inicia sesión",
+  "developmentFormNotVerifiedTitle": "Solo agencias verificadas",
+  "developmentFormNotVerifiedSubtitle": "Completa el perfil de tu agencia y espera la verificación para publicar promociones.",
+  "developmentFormNotVerifiedCta": "Editar perfil de agencia",
+
+  "developmentCardUnitsLabel": "{count, plural, one{1 vivienda} other{{count} viviendas}}",
+  "@developmentCardUnitsLabel": {
+    "description": "Unit count badge on the development card. ICU plural.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "developmentCardPriceFrom": "Desde {price}",
+  "@developmentCardPriceFrom": {
+    "description": "From-price label on the development card. {price} is the formatted price string.",
+    "placeholders": { "price": { "type": "String" } }
+  },
+  "developmentCardPriceInquiry": "Precio a consultar",
+
+  "developmentContactSheetTitle": "Contactar con la promotora",
+  "developmentContactSheetDefaultMessage": "Hola, me interesa la promoción \"{name}\". ¿Podéis darme más información?",
+  "@developmentContactSheetDefaultMessage": {
+    "description": "Pre-filled message body in the development contact sheet. {name} is the development name.",
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "developmentContactSheetNameLabel": "Tu nombre",
+  "developmentContactSheetNameRequired": "Ingresa tu nombre",
+  "developmentContactSheetEmailLabel": "Tu email",
+  "developmentContactSheetEmailInvalid": "Ingresa un email válido",
+  "developmentContactSheetPhoneLabel": "Tu teléfono (opcional)",
+  "developmentContactSheetMessageLabel": "Mensaje",
+  "developmentContactSheetMessageRequired": "Escribe un mensaje",
+  "developmentContactSheetHoneypot": "No rellenar",
+  "developmentContactSheetSubmit": "Enviar mensaje",
+  "developmentContactSheetSubmitting": "Enviando...",
+  "developmentContactSheetSuccess": "Mensaje enviado a la promotora.",
+  "developmentContactSheetErrorInvalid": "Revisa los datos del formulario.",
+  "developmentContactSheetErrorUnavailable": "Esta promoción ya no está disponible.",
+  "developmentContactSheetErrorSelf": "No puedes contactarte a ti mismo.",
+  "developmentContactSheetErrorAuth": "Inicia sesión para enviar un mensaje.",
+  "developmentContactSheetErrorDb": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+
+  "developmentsPanelHeader": "Promociones",
+  "developmentsPanelCreate": "Crear promoción",
+  "developmentsPanelEmpty": "Aún no has creado ninguna promoción.",
+  "developmentsPanelLoadError": "No se pudieron cargar las promociones: {error}",
+  "@developmentsPanelLoadError": {
+    "description": "Developments panel load error. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "developmentsPanelEdit": "Editar",
+  "developmentsPanelDelete": "Borrar",
+  "developmentsPanelAssign": "Asignar anuncios",
+  "developmentsPanelDeleteDialogTitle": "Borrar promoción",
+  "developmentsPanelDeleteDialogBody": "¿Borrar \"{name}\"? Esta acción no se puede deshacer.",
+  "@developmentsPanelDeleteDialogBody": {
+    "description": "Delete-development confirmation body. {name} is the development name.",
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "developmentsPanelDeleteFailed": "No se pudo borrar la promoción.",
+  "developmentsPanelDeleted": "Promoción \"{name}\" borrada.",
+  "@developmentsPanelDeleted": {
+    "description": "Success toast after deleting a development. {name} is the development name.",
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "developmentsPanelAssignSheetTitle": "Asignar anuncios a \"{name}\"",
+  "@developmentsPanelAssignSheetTitle": {
+    "description": "Title of the assignments bottom sheet. {name} is the development name.",
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "developmentsPanelAssignSheetHint": "Marca los anuncios que forman parte de esta promoción.",
+  "developmentsPanelAssignLoadListingsError": "No se pudieron cargar los anuncios: {error}",
+  "@developmentsPanelAssignLoadListingsError": {
+    "description": "Listings-load error inside the assignments sheet. {error} is the underlying error.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "developmentsPanelAssignNoListings": "No tienes anuncios para asignar.",
+  "developmentsPanelAssignListingsSubtitle": "Vivienda",
+  "developmentsPanelAssignSaved": "Asignación guardada.",
+  "developmentsPanelAssignSaveError": "No se pudo guardar la asignación.",
+
+  "bulkListingsHeader": "Anuncios",
+  "bulkListingsExport": "Exportar CSV",
+  "bulkListingsEmpty": "Aún no tienes anuncios.",
+  "bulkListingsSelectAll": "Seleccionar todo",
+  "bulkListingsDeselectAll": "Quitar selección",
+  "bulkListingsToolbarActivate": "Activar",
+  "bulkListingsToolbarDeactivate": "Desactivar",
+  "bulkListingsToolbarSold": "Vendido",
+  "bulkListingsToolbarPrice": "Precio",
+  "bulkListingsToolbarRenew": "Renovar",
+  "bulkListingsToolbarDelete": "Eliminar",
+  "bulkListingsStatusActive": "Activo",
+  "bulkListingsStatusInactive": "Inactivo",
+  "bulkListingsStatusSold": "Vendido",
+  "bulkListingsStatusDeleted": "Borrado",
+  "bulkListingsDeleteDialogTitle": "Eliminar anuncios",
+  "bulkListingsDeleteDialogBody": "¿Eliminar {count} anuncio(s)? Esta acción no se puede deshacer.",
+  "@bulkListingsDeleteDialogBody": {
+    "description": "Bulk-delete confirmation body. {count} is the number of selected listings.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkListingsErrorUnauthenticated": "Inicia sesión para continuar.",
+  "bulkListingsErrorForbidden": "No tienes permiso sobre alguno de los anuncios seleccionados.",
+  "bulkListingsErrorInvalid": "Selección inválida.",
+  "bulkListingsErrorDb": "No se pudo completar la acción.",
+  "bulkListingsSuccessStatusActive": "{count, plural, one{1 anuncio activado} other{{count} anuncios activados}}",
+  "@bulkListingsSuccessStatusActive": {
+    "description": "Success toast after bulk-active. ICU plural over {count}.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkListingsSuccessStatusInactive": "{count, plural, one{1 anuncio desactivado} other{{count} anuncios desactivados}}",
+  "@bulkListingsSuccessStatusInactive": {
+    "description": "Success toast after bulk-inactive. ICU plural over {count}.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkListingsSuccessStatusSold": "{count, plural, one{1 anuncio marcado como vendido} other{{count} anuncios marcados como vendidos}}",
+  "@bulkListingsSuccessStatusSold": {
+    "description": "Success toast after bulk-sold. ICU plural over {count}.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkListingsSuccessRenew": "{count, plural, one{1 anuncio renovado} other{{count} anuncios renovados}}",
+  "@bulkListingsSuccessRenew": {
+    "description": "Success toast after bulk-renew. ICU plural over {count}.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkListingsSuccessDelete": "{count, plural, one{1 anuncio eliminado} other{{count} anuncios eliminados}}",
+  "@bulkListingsSuccessDelete": {
+    "description": "Success toast after bulk-delete. ICU plural over {count}.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkListingsSuccessPriceSet": "Precio actualizado en {count} anuncio(s).",
+  "@bulkListingsSuccessPriceSet": {
+    "description": "Success toast after bulk-price-set. {count} is the number of affected listings.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkListingsSuccessPricePct": "Precio ajustado en {count} anuncio(s).",
+  "@bulkListingsSuccessPricePct": {
+    "description": "Success toast after bulk-price-pct. {count} is the number of affected listings.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkListingsCsvSuccess": "CSV exportado.",
+  "bulkListingsCsvError": "No se pudo exportar el CSV.",
+  "bulkListingsCsvShareText": "Listado de anuncios exportado",
+  "bulkListingsCsvShareSubject": "Anuncios ({ts})",
+  "@bulkListingsCsvShareSubject": {
+    "description": "Subject for the CSV share intent. {ts} is a yyyyMMdd-HHmm timestamp.",
+    "placeholders": { "ts": { "type": "String" } }
+  },
+  "bulkListingsPriceDialogTitle": "Actualizar precio",
+  "bulkListingsPriceDialogModeLabel": "Modo",
+  "bulkListingsPriceDialogModeSet": "Fijar precio",
+  "bulkListingsPriceDialogModePct": "Ajustar %",
+  "bulkListingsPriceDialogSetLabel": "Precio (€)",
+  "bulkListingsPriceDialogPctLabel": "Ajuste (%)",
+
+  "valuationTitle": "Valorar mi inmueble",
+  "valuationIntro": "Obtén una estimación orientativa del precio de tu vivienda según los anuncios activos en la zona.",
+  "valuationSelectOperation": "Selecciona Venta o Alquiler",
+  "valuationFieldCity": "Ciudad",
+  "valuationFieldM2": "Superficie (m²)",
+  "valuationM2Hint": "Ej. 80",
+  "valuationM2Required": "Introduce la superficie",
+  "valuationM2Invalid": "Valor no válido",
+  "valuationM2Min": "Mínimo 1 m²",
+  "valuationM2Max": "Máximo 100000 m²",
+  "valuationFieldOperation": "Operación",
+  "valuationOperationSale": "Venta",
+  "valuationOperationRent": "Alquiler",
+  "valuationSubmit": "Valorar",
+  "valuationInsufficientData": "No hay datos suficientes para esta zona.",
+  "valuationEmptyCities": "Error al cargar ciudades",
+  "valuationCityPlaceholder": "Selecciona una ciudad",
+  "valuationEstimateHeadingSale": "Estimación para {m2} m² en venta",
+  "@valuationEstimateHeadingSale": {
+    "description": "Heading of the estimate card for the sale operation. {m2} is the entered surface area.",
+    "placeholders": { "m2": { "type": "int" } }
+  },
+  "valuationEstimateHeadingRent": "Estimación para {m2} m² en alquiler",
+  "@valuationEstimateHeadingRent": {
+    "description": "Heading of the estimate card for the rental operation. {m2} is the entered surface area.",
+    "placeholders": { "m2": { "type": "int" } }
+  },
+  "valuationEstimateNote": "Valor orientativo para un inmueble tipo en {city}.",
+  "@valuationEstimateNote": {
+    "description": "Disclaimer line on the estimate card. {city} is the entered city name.",
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "valuationMin": "Mínimo",
+  "valuationMax": "Máximo",
+  "valuationAvgPerM2": "Precio medio/m²",
+  "valuationSample": "Muestra",
+  "valuationSampleValue": "{n} anuncios",
+  "@valuationSampleValue": {
+    "description": "Sample-size line on the estimate card. {n} is the underlying sample-size integer.",
+    "placeholders": { "n": { "type": "int" } }
+  },
+
+  "realEstateTitle": "Inmuebles",
+  "realEstateClearTooltip": "Limpiar filtros",
+  "realEstateOperationSale": "Venta",
+  "realEstateOperationRent": "Alquiler",
+  "realEstateOperationTemp": "Temporal",
+  "realEstateFiltersHeading": "Filtros",
+  "realEstateFiltersSubheading": "Tipo, precio, m², habitaciones y más",
+  "realEstatePropertyTypeLabel": "Tipo de propiedad",
+  "realEstatePriceLabel": "Rango de precio",
+  "realEstateSurfaceLabel": "Superficie (m²)",
+  "realEstateRoomsLabel": "Habitaciones",
+  "realEstateBathroomsLabel": "Baños",
+  "realEstateConditionLabel": "Estado",
+  "realEstateFeaturesLabel": "Características",
+  "realEstateOrientationLabel": "Orientación",
+  "realEstateFloorLabel": "Planta",
+  "realEstateEnergyBandLabel": "Certificado energético",
+  "realEstateEnergyLetterLabel": "Letra específica",
+  "realEstateEnergyLetterNone": "No especificado",
+  "realEstateEnergyBandHigh": "Alta (A-C)",
+  "realEstateEnergyBandMid": "Media (D-E)",
+  "realEstateEnergyBandLow": "Baja (F-G)",
+  "realEstatePetsAllowed": "Acepta mascotas",
+  "realEstatePostedWithinLabel": "Publicado en los últimos",
+  "realEstatePostedWithin7": "7 días",
+  "realEstatePostedWithin30": "30 días",
+  "realEstatePostedWithin90": "90 días",
+  "realEstateMinHint": "Mín",
+  "realEstateMaxHint": "Máx",
+  "realEstateAllCities": "Todas las ciudades",
+  "realEstateLoadCitiesError": "Error al cargar ciudades",
+  "realEstateSortLabel": "Ordenar:",
+  "realEstateSortRelevance": "Relevancia",
+  "realEstateSortRecent": "Más recientes",
+  "realEstateSortPriceAsc": "Precio: menor a mayor",
+  "realEstateSortPriceDesc": "Precio: mayor a menor",
+  "realEstateSortSizeDesc": "Mayor superficie",
+  "realEstateSortPricePerM2": "€/m²",
+  "realEstateNoResults": "Sin resultados",
+  "realEstateNoResultsHint": "Prueba a quitar filtros.",
+  "realEstatePromptTitle": "Selecciona un país y operación para empezar",
+  "realEstatePromptSubtitle": "Opcionalmente, elige una ciudad o usa el panel de filtros.",
+
+  "cityLandingTitle": "Inmuebles en {city}",
+  "@cityLandingTitle": {
+    "description": "AppBar title on the city landing page. {city} is the URL-decoded city name.",
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "cityLandingSale": "en venta",
+  "cityLandingRent": "en alquiler",
+  "cityLandingBoth": "en venta y alquiler",
+  "cityLandingPropertiesLine": "Inmuebles {operation}",
+  "@cityLandingPropertiesLine": {
+    "description": "Hero subtitle showing the current operation filter. {operation} is one of cityLandingSale/Rent/Both.",
+    "placeholders": { "operation": { "type": "String" } }
+  },
+  "cityLandingOpSale": "Venta",
+  "cityLandingOpRent": "Alquiler",
+  "cityLandingEmpty": "Aún no hay anuncios en {city}.",
+  "@cityLandingEmpty": {
+    "description": "Empty state on the city landing. {city} is the URL-decoded city name.",
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "cityLandingBrowseOther": "Buscar en otras zonas"
 }

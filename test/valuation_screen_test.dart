@@ -34,6 +34,7 @@ import 'package:foxy_ads/core/models/country_model.dart';
 import 'package:foxy_ads/core/providers/selected_country_provider.dart';
 import 'package:foxy_ads/core/services/listing_service.dart';
 import 'package:foxy_ads/features/real-estate/presentation/screens/valuation_screen.dart';
+import 'package:foxy_ads/l10n/app_localizations.dart';
 
 final _testCountry = Country(
   code: 'ES',
@@ -97,7 +98,12 @@ Widget _buildTestApp(ListingService service) {
       ),
       listingServiceProvider.overrideWithValue(service),
     ],
-    child: const MaterialApp(home: ValuationScreen()),
+    child: const MaterialApp(
+      locale: Locale('es'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: ValuationScreen(),
+    ),
   );
 }
 

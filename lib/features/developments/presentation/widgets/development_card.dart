@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/development_model.dart';
 
 /// A card summarizing a [DevelopmentCardData] in the `/promociones` grid.
@@ -15,6 +16,7 @@ class DevelopmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final images = development.images;
     final priceFrom = development.priceFrom;
     final currency = development.currency;
@@ -98,7 +100,7 @@ class DevelopmentCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          '$unitCount viviendas',
+                          l10n.developmentCardUnitsLabel(unitCount),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -121,8 +123,9 @@ class DevelopmentCard extends StatelessWidget {
                     // Price
                     Text(
                       priceFrom != null
-                          ? 'Desde ${_money(priceFrom, currency)}'
-                          : 'Precio a consultar',
+                          ? l10n.developmentCardPriceFrom(
+                              _money(priceFrom, currency))
+                          : l10n.developmentCardPriceInquiry,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

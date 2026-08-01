@@ -16,6 +16,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../data/re_models.dart';
 
@@ -33,6 +34,7 @@ class _CityLandingScreenState extends ConsumerState<CityLandingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final decodedCity = Uri.decodeComponent(widget.city);
     final country = ref.watch(selectedCountryProvider);
     final results = ref.watch(_cityListingsProvider(
@@ -44,14 +46,14 @@ class _CityLandingScreenState extends ConsumerState<CityLandingScreen> {
     ));
 
     final operationLabel = switch (_operation) {
-      'venta' => 'en venta',
-      'alquiler' => 'en alquiler',
-      _ => 'en venta y alquiler',
+      'venta' => l10n.cityLandingSale,
+      'alquiler' => l10n.cityLandingRent,
+      _ => l10n.cityLandingBoth,
     };
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Inmuebles en $decodedCity'),
+        title: Text(l10n.cityLandingTitle(decodedCity)),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -74,7 +76,7 @@ class _CityLandingScreenState extends ConsumerState<CityLandingScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Inmuebles $operationLabel',
+                  l10n.cityLandingPropertiesLine(operationLabel),
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 14,
@@ -85,7 +87,7 @@ class _CityLandingScreenState extends ConsumerState<CityLandingScreen> {
                   children: [
                     Expanded(
                       child: _OpChip(
-                        label: 'Venta',
+                        label: l10n.cityLandingOpSale,
                         selected: _operation == 'venta',
                         onTap: () => setState(() {
                           _operation = _operation == 'venta' ? null : 'venta';
@@ -95,7 +97,7 @@ class _CityLandingScreenState extends ConsumerState<CityLandingScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _OpChip(
-                        label: 'Alquiler',
+                        label: l10n.cityLandingOpRent,
                         selected: _operation == 'alquiler',
                         onTap: () => setState(() {
                           _operation =
@@ -168,13 +170,14 @@ class _ResultsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return results.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'Error: $e',
+            l10n.commonErrorWithMessage(e.toString()),
             style: TextStyle(color: AppColors.error),
           ),
         ),
@@ -190,7 +193,7 @@ class _ResultsBody extends StatelessWidget {
                   const Text('🏘️', style: TextStyle(fontSize: 56)),
                   const SizedBox(height: 12),
                   Text(
-                    'Aún no hay anuncios en $city.',
+                    l10n.cityLandingEmpty(city),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 16,
@@ -200,7 +203,7 @@ class _ResultsBody extends StatelessWidget {
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () => context.go('/inmuebles-en'),
-                    child: const Text('Buscar en otras zonas'),
+                    child: Text(l10n.cityLandingBrowseOther),
                   ),
                 ],
               ),

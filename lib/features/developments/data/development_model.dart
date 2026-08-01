@@ -117,6 +117,102 @@ class Typology {
   });
 }
 
+/// Status lifecycle for developments. Mirrors the web's `DevelopmentStatus`
+/// union in `foxy_ads_web/src/lib/developments.ts`. Used by the agency
+/// development edit form (Tasks 4, 5).
+const List<String> DEVELOPMENT_STATUSES = ['planning', 'building', 'ready'];
+
+/// Edit-input shape for the development create/update form. `toColumns()`
+/// yields the snake_case column map accepted by the Supabase `developments`
+/// upsert RPC. All string fields are trimmed; empties collapse to null so
+/// they don't overwrite existing values with blanks.
+class DevelopmentInput {
+  final String name;
+  final String countryCode;
+  final String? description;
+  final String? promoterName;
+  final String? city;
+  final String? address;
+  final String? deliveryLabel;
+  final String? status;
+  final double? latitude;
+  final double? longitude;
+  final List<String> amenities;
+  final List<String> images;
+
+  const DevelopmentInput({
+    required this.name,
+    required this.countryCode,
+    this.description,
+    this.promoterName,
+    this.city,
+    this.address,
+    this.deliveryLabel,
+    this.status,
+    this.latitude,
+    this.longitude,
+    this.amenities = const [],
+    this.images = const [],
+  });
+
+  Map<String, dynamic> toColumns() => {
+        'name': name.trim(),
+        'description': (description?.trim().isEmpty ?? true)
+            ? null
+            : description!.trim(),
+        'promoter_name': (promoterName?.trim().isEmpty ?? true)
+            ? null
+            : promoterName!.trim(),
+        'country_code': countryCode.trim(),
+        'city': (city?.trim().isEmpty ?? true) ? null : city!.trim(),
+        'address':
+            (address?.trim().isEmpty ?? true) ? null : address!.trim(),
+        'latitude': latitude,
+        'longitude': longitude,
+        'amenities': amenities,
+        'images': images,
+        'delivery_label': (deliveryLabel?.trim().isEmpty ?? true)
+            ? null
+            : deliveryLabel!.trim(),
+        'status': status ?? 'planning',
+      };
+}
+
+enum DevelopmentValidationError { name, country, status, description, length }
+
+/// Validation bounds are parity-locked to the web's `validateDevelopment` in
+/// `foxy_ads_web/src/lib/developments.ts`. Tests in
+/// `test/agency_validation_test.dart` pin these bounds.
+DevelopmentValidationError? validateDevelopmentInput(DevelopmentInput input) {
+  final name = input.name.trim();
+  if (name.length < 2 || name.length > 140) {
+    return DevelopmentValidationError.name;
+  }
+  final cc = input.countryCode.trim();
+  if (cc.length < 2 || cc.length > 5) {
+    return DevelopmentValidationError.country;
+  }
+  if (input.status != null && !DEVELOPMENT_STATUSES.contains(input.status)) {
+    return DevelopmentValidationError.status;
+  }
+  if ((input.description?.length ?? 0) > 5000) {
+    return DevelopmentValidationError.description;
+  }
+  if ((input.promoterName?.length ?? 0) > 140) {
+    return DevelopmentValidationError.length;
+  }
+  if ((input.city?.length ?? 0) > 120) {
+    return DevelopmentValidationError.length;
+  }
+  if ((input.address?.length ?? 0) > 240) {
+    return DevelopmentValidationError.length;
+  }
+  if ((input.deliveryLabel?.length ?? 0) > 60) {
+    return DevelopmentValidationError.length;
+  }
+  return null;
+}
+
 List<Typology> aggregateTypologies(List<Listing> units) {
   final Map<int, List<Listing>> buckets = {};
 

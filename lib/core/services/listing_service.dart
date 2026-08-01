@@ -6,6 +6,34 @@ import '../providers/supabase_provider.dart';
 import '../../features/real-estate/data/re_models.dart';
 import '../../features/real-estate/data/re_pricing.dart';
 
+/// Top-level UUID v4 matcher used by `parseIds`. Exposed file-private (no
+/// leading underscore on the const is fine — the leading underscore on the
+/// identifier keeps it library-internal). Case-insensitive so callers can
+/// pass either upper- or lower-case UUIDs.
+final RegExp _uuidRe = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+
+/// Parse + dedupe + validate a list of UUIDs for bulk Supabase `.in_()`
+/// queries. Returns null when the input is unusable (empty, >100 entries,
+/// or any non-UUID). Otherwise returns the lower-cased unique list in input
+/// order. Mirrors the web's `parseIds` helper used by the agency bulk
+/// actions (Task 8).
+List<String>? parseIds(List<String> ids) {
+  if (ids.isEmpty || ids.length > 100) return null;
+  if (!ids.every(_uuidRe.hasMatch)) return null;
+  return ids.map((e) => e.toLowerCase()).toSet().toList();
+}
+
+/// Apply a price adjustment for bulk price actions. `mode=='set'` replaces
+/// with `value`; `mode=='pct'` adds `value%` to `current`. The result is
+/// clamped to >=0 and rounded to 2 decimals (cents). Mirrors the web's
+/// `applyPriceMode` helper used by the agency bulk price panel (Task 11).
+double applyPriceMode(double current, String mode, double value) {
+  final raw = mode == 'set' ? value : current * (1 + value / 100);
+  final clamped = raw < 0 ? 0.0 : raw;
+  return (clamped * 100).round() / 100;
+}
+
 final listingServiceProvider = Provider<ListingService>((ref) {
   return ListingService(ref.watch(supabaseClientProvider));
 });

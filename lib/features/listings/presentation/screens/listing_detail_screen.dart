@@ -10,6 +10,7 @@ import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/favorite_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../agency/data/agency_service.dart';
 import '../widgets/contact_sheet.dart';
 import '../widgets/report_sheet.dart';
 
@@ -361,6 +362,63 @@ class ListingDetailScreen extends ConsumerWidget {
                                     fontSize: 13,
                                   ),
                                 ),
+                                // "Ver agencia" — shown only when the
+                                // seller has a public agency profile AND
+                                // the seller id is a valid UUID (the
+                                // agency RPC expects UUIDs; defensive
+                                // guard keeps legacy/seeded listings from
+                                // tripping the query). Hidden during
+                                // loading and on error.
+                                if (_isUuid(listing.userId))
+                                  Builder(
+                                    builder: (_) {
+                                      final agency =
+                                          ref.watch(
+                                            agencyProfileProvider(
+                                              listing.userId,
+                                            ),
+                                          );
+                                      final hasAgency = agency.maybeWhen(
+                                        data: (p) => p != null,
+                                        orElse: () => false,
+                                      );
+                                      if (!hasAgency) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 6,
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () => context.push(
+                                            AppRoutes.agencyProfile(
+                                              listing.userId,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons
+                                                    .business_center_outlined,
+                                                size: 14,
+                                                color: AppColors.primary,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'Ver agencia',
+                                                style: TextStyle(
+                                                  color: AppColors.primary,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                               ],
                             ),
                           ),
@@ -495,4 +553,12 @@ class ListingDetailScreen extends ConsumerWidget {
     ];
     return '${months[date.month - 1]} ${date.year}';
   }
+
+  /// Defensive: the agency RPC expects a UUID, so only invoke
+  /// `agencyProfileProvider` when the seller's id looks like one. Skips
+  /// legacy/seeded listings whose `userId` is something else.
+  static final _uuidRe = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+  );
+  static bool _isUuid(String s) => _uuidRe.hasMatch(s);
 }

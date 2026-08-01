@@ -5,6 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../agency/data/agency_service.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -243,6 +245,51 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   title: 'Ayuda',
                   onTap: () {},
+                ),
+                const SizedBox(height: 12),
+
+                // "Panel Pro" — only for verified agencies. Hidden while
+                // loading or on error (the provider's resilience contract
+                // treats both as "no profile yet"). Resilient .when() means
+                // a transient auth-stream hiccup doesn't lock the user out
+                // of /panel.
+                Builder(
+                  builder: (_) {
+                    final myAgency = ref.watch(myAgencyProfileProvider);
+                    final isVerified =
+                        myAgency.maybeWhen(
+                              data: (p) => p?.isVerified ?? false,
+                              orElse: () => false,
+                            ) ==
+                            true;
+                    if (!isVerified) return const SizedBox.shrink();
+                    return Column(
+                      children: [
+                        _ProfileTile(
+                          icon: const Icon(
+                            Icons.workspace_premium,
+                            color: AppColors.primary,
+                          ),
+                          title: 'Panel Pro',
+                          subtitle: 'Gestiona tu agencia',
+                          onTap: () => context.push(AppRoutes.panel),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    );
+                  },
+                ),
+
+                // "Mi agencia" — always shown when signed in, so a seller
+                // can create / complete their agency profile from here.
+                _ProfileTile(
+                  icon: const Icon(
+                    Icons.business_center_outlined,
+                    color: AppColors.primary,
+                  ),
+                  title: 'Mi agencia',
+                  subtitle: 'Crea o edita tu perfil de agencia',
+                  onTap: () => context.push(AppRoutes.agencyEdit),
                 ),
                 const SizedBox(height: 24),
 

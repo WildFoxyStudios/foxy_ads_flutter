@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/widgets/locale_switcher.dart';
 import '../../../agency/data/agency_service.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -23,6 +24,7 @@ class ProfileScreen extends ConsumerWidget {
         appBar: AppBar(
           title: const Text('Perfil'),
           actions: [
+            const LocaleSwitcher(),
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () => context.push('/settings'),
@@ -89,6 +91,7 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Mi Perfil'),
         actions: [
+          const LocaleSwitcher(),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => context.push('/settings'),

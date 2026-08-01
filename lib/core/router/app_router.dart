@@ -17,6 +17,7 @@ import '../../features/developments/presentation/screens/promociones_screen.dart
 import '../../features/developments/presentation/screens/promocion_detail_screen.dart';
 import '../../features/agency/presentation/screens/agency_profile_edit_screen.dart';
 import '../../features/agency/presentation/screens/agency_profile_screen.dart';
+import '../../features/agency/presentation/screens/panel_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/search/presentation/screens/saved_searches_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
@@ -212,6 +213,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return AgencyProfileScreen(agencyId: id);
         },
       ),
+      // Pro Dashboard — auth-gated internally; the verified-agency gate
+      // lives inside `PanelScreen` (mirrors the web's `/panel` page).
+      GoRoute(
+        path: '/panel',
+        name: 'panel',
+        builder: (context, state) => const PanelScreen(),
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -245,6 +253,7 @@ class AppRoutes {
   static String promocionDetail(String id) => '/promocion/$id';
   static String agencyProfile(String id) => '/agencia/$id';
   static const String agencyEdit = '/agencia/editar';
+  static const String panel = '/panel';
 }
 
 /// Loads the listing by [listingId] and, if the current user is its owner,

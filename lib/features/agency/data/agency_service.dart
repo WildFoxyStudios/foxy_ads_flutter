@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/models/listing_model.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/listing_service.dart';
 import 'agency_model.dart';
 
 const _agencySelect =
@@ -146,4 +147,46 @@ final agencyListingsProvider = FutureProvider.family<
   return ref.watch(
     agencyServiceProvider,
   ).fetchAgencyListings(args.userId, args.page);
+});
+
+/// The signed-in user's own listings (incl. inactive / sold) used by the Pro
+/// Dashboard. Re-uses `ListingService.getUserListings` (which already filters
+/// `status != 'deleted'` and joins the category name), so the panel and the
+/// profile "Mis Anuncios" screen see the same data. `myListingsProvider` is
+/// not reused directly so the panel can be tested with an independent
+/// override without coupling to profile-screen refactors.
+final myPanelListingsProvider = FutureProvider<List<Listing>>((ref) async {
+  final auth = ref.watch(authStateProvider);
+  final user = auth.value;
+  if (user == null) return const <Listing>[];
+  final listingService = ref.read(listingServiceProvider);
+  return await listingService.getUserListings(user.id);
+});
+
+/// `{listingId: favCount}` map for the panel's own listings, used by
+/// `computePanelStats` to aggregate the "Favoritos" tile. Skips the query
+/// entirely when the agency has no listings. Non-fatal on error — favorites
+/// are a non-essential panel stat and a transient DB hiccup must NOT lock
+/// the user out of `/panel`.
+final panelFavoritesProvider = FutureProvider<Map<String, int>>((ref) async {
+  final listings = await ref.watch(myPanelListingsProvider.future);
+  if (listings.isEmpty) return const <String, int>{};
+  final ids = listings.map((l) => l.id).toList(growable: false);
+  try {
+    final supabase = ref.read(supabaseClientProvider);
+    final rows = await supabase
+        .from('favorites')
+        .select('listing_id')
+        .inFilter('listing_id', ids);
+    final counts = <String, int>{};
+    for (final row in (rows as List)) {
+      final m = row as Map<String, dynamic>;
+      final id = m['listing_id'] as String?;
+      if (id == null) continue;
+      counts[id] = (counts[id] ?? 0) + 1;
+    }
+    return counts;
+  } catch (_) {
+    return const <String, int>{};
+  }
 });

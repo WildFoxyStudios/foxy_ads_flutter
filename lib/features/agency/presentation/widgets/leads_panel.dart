@@ -231,6 +231,12 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
             onStatusChanged: (v) {
               // The filter dropdown uses 'all' as the sentinel for the
               // "Todas" option; the service treats null/'all' identically.
+              // Invalidate the new family arg BEFORE setState so the
+              // existing `.when(loading:)` branch is entered on the next
+              // frame, avoiding a one-frame flash of the empty-state
+              // ("No hay leads con este filtro.") while the new filter
+              // is resolving.
+              ref.invalidate(agencyLeadsProvider(v));
               setState(() {
                 _status = v;
                 // Reset drafts so any newly-seeded controllers match the

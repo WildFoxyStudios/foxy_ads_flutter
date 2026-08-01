@@ -605,6 +605,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 onChanged: (value) {
                   setState(() {
                     _selectedCategory = value;
+                    if (value?.id != 'real_estate') _reAttributes = null;
                   });
                 },
                 validator: (value) {

@@ -11,6 +11,8 @@ import '../../features/listings/presentation/screens/create_listing_screen.dart'
 import '../../features/listings/presentation/screens/category_listings_screen.dart';
 import '../../features/listings/presentation/screens/all_categories_screen.dart';
 import '../../features/real-estate/presentation/screens/inmuebles_en_screen.dart';
+import '../../features/real-estate/presentation/screens/city_landing_screen.dart';
+import '../../features/real-estate/presentation/screens/valuation_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/search/presentation/screens/saved_searches_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
@@ -159,6 +161,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'realEstateSearch',
         builder: (context, state) => const InmueblesEnScreen(),
       ),
+      // City landing — pre-filtered search for a single city
+      GoRoute(
+        path: '/inmuebles-en/:city',
+        name: 'cityLanding',
+        builder: (context, state) {
+          final city = state.pathParameters['city']!;
+          return CityLandingScreen(city: city);
+        },
+      ),
+      // Property valuation form
+      GoRoute(
+        path: '/valorar',
+        name: 'valuation',
+        builder: (context, state) => const ValuationScreen(),
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -186,6 +203,8 @@ class AppRoutes {
   static String categoryListings(String categoryId, String name) =>
       '/category/$categoryId?name=$name';
   static String promoteListing(String listingId) => '/promote/$listingId';
+  static String cityLanding(String city) => '/inmuebles-en/$city';
+  static String valuation() => '/valorar';
 }
 
 /// Loads the listing by [listingId] and, if the current user is its owner,

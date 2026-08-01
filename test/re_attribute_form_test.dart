@@ -15,15 +15,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:foxy_ads/features/real-estate/presentation/widgets/re_attribute_form.dart';
+import 'package:foxy_ads/l10n/app_localizations.dart';
 
 /// Sized host with a tall surface so the entire form fits without overflowing
 /// the test viewport (the form is a long Column with several dropdowns,
 /// chips, and text fields). The form has no providers it reads directly, but
 /// ProviderScope is the convention the rest of the codebase's widget tests
-/// use.
+/// use. AppLocalizations delegates are required since the form reads
+/// `AppLocalizations.of(context)!` for the 'No especificado' / pets-allowed
+/// labels (Task 5 i18n migration).
 Widget _tallHost(Widget child) {
   return ProviderScope(
     child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: SingleChildScrollView(child: child),
       ),

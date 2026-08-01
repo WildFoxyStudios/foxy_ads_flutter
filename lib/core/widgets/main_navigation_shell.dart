@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 
 class MainNavigationShell extends StatelessWidget {
@@ -38,6 +39,7 @@ class MainNavigationShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: child,
       bottomNavigationBar: Container(
@@ -61,7 +63,7 @@ class MainNavigationShell extends StatelessWidget {
                   child: _NavItem(
                     icon: Icons.home_outlined,
                     activeIcon: Icons.home,
-                    label: 'Inicio',
+                    label: l10n.navHome,
                     isSelected: _calculateSelectedIndex(context) == 0,
                     onTap: () => _onItemTapped(context, 0),
                   ),
@@ -70,7 +72,7 @@ class MainNavigationShell extends StatelessWidget {
                   child: _NavItem(
                     icon: Icons.search_outlined,
                     activeIcon: Icons.search,
-                    label: 'Buscar',
+                    label: l10n.navSearch,
                     isSelected: _calculateSelectedIndex(context) == 1,
                     onTap: () => _onItemTapped(context, 1),
                   ),
@@ -80,7 +82,7 @@ class MainNavigationShell extends StatelessWidget {
                   child: _NavItem(
                     icon: Icons.favorite_outline,
                     activeIcon: Icons.favorite,
-                    label: 'Favoritos',
+                    label: l10n.navFavorites,
                     isSelected: _calculateSelectedIndex(context) == 3,
                     onTap: () => _onItemTapped(context, 3),
                   ),
@@ -89,7 +91,7 @@ class MainNavigationShell extends StatelessWidget {
                   child: _NavItem(
                     icon: Icons.person_outline,
                     activeIcon: Icons.person,
-                    label: 'Perfil',
+                    label: l10n.navProfile,
                     isSelected: _calculateSelectedIndex(context) == 4,
                     onTap: () => _onItemTapped(context, 4),
                   ),
@@ -164,6 +166,7 @@ class _PostAdButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -184,9 +187,9 @@ class _PostAdButton extends StatelessWidget {
           children: [
             const Icon(Icons.add, color: Colors.white, size: 18),
             const SizedBox(width: 4),
-            const Text(
-              'Publicar',
-              style: TextStyle(
+            Text(
+              l10n.navPost,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 final promoteListingProvider = FutureProvider.family<Listing?, String>((
   ref,
@@ -46,12 +47,13 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final listingAsync = ref.watch(promoteListingProvider(widget.listingId));
     final country = ref.watch(selectedCountryProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Promocionar Anuncio'),
+        title: Text(l10n.paymentsPromoteTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
@@ -60,7 +62,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
       body: listingAsync.when(
         data: (listing) {
           if (listing == null) {
-            return const Center(child: Text('Anuncio no encontrado'));
+            return Center(child: Text(l10n.paymentsListingNotFound));
           }
 
           if (listing.isCurrentlyFeatured) {
@@ -84,9 +86,9 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      '¡Tu anuncio ya está destacado!',
-                      style: TextStyle(
+                    Text(
+                      l10n.paymentsAlreadyFeatured,
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
@@ -94,7 +96,9 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Expira el ${_formatDate(listing.featuredUntil!)}',
+                      l10n.paymentsExpiresOn(
+                        _formatDate(listing.featuredUntil!),
+                      ),
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 16,
@@ -103,7 +107,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: () => context.pop(),
-                      child: const Text('Volver'),
+                      child: Text(l10n.commonBack),
                     ),
                   ],
                 ),
@@ -170,37 +174,43 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                 const SizedBox(height: 24),
 
                 // Benefits
-                const Text(
-                  'Beneficios de promocionar',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.paymentsBenefitsHeading,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 _BenefitItem(
                   icon: Icons.visibility,
-                  title: 'Mayor visibilidad',
-                  description: 'Aparece en el carrusel destacado del inicio',
+                  title: l10n.paymentsBenefit1Title,
+                  description: l10n.paymentsBenefit1Desc,
                 ),
                 _BenefitItem(
                   icon: Icons.trending_up,
-                  title: '10x más vistas',
-                  description: 'Los anuncios destacados reciben más atención',
+                  title: l10n.paymentsBenefit2Title,
+                  description: l10n.paymentsBenefit2Desc,
                 ),
                 _BenefitItem(
                   icon: Icons.star,
-                  title: 'Etiqueta especial',
-                  description: 'Tu anuncio se distingue con la etiqueta ⭐',
+                  title: l10n.paymentsBenefit3Title,
+                  description: l10n.paymentsBenefit3Desc,
                 ),
                 _BenefitItem(
                   icon: Icons.speed,
-                  title: 'Vende más rápido',
-                  description: 'Conecta con más compradores interesados',
+                  title: l10n.paymentsBenefit4Title,
+                  description: l10n.paymentsBenefit4Desc,
                 ),
                 const SizedBox(height: 24),
 
                 // Pricing options
-                const Text(
-                  'Selecciona la duración',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.paymentsSelectDuration,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 ..._featurePricesEuros.entries.map((entry) {
@@ -247,7 +257,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      '$days ${days == 1 ? 'día' : 'días'}',
+                                      l10n.paymentsDaysCount(days),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
@@ -307,9 +317,12 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                 const SizedBox(height: 24),
 
                 // Payment methods
-                const Text(
-                  'Método de pago',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.paymentsMethodHeading,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Card(
@@ -317,7 +330,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.credit_card),
-                        title: const Text('Tarjeta de crédito/débito'),
+                        title: Text(l10n.paymentsCardMethod),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () => _processPayment('card'),
                       ),
@@ -329,7 +342,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                           errorBuilder: (_, __, ___) =>
                               const Icon(Icons.g_mobiledata),
                         ),
-                        title: const Text('Google Pay'),
+                        title: Text(l10n.paymentsGooglePay),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () => _processPayment('google_pay'),
                       ),
@@ -351,9 +364,12 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Total a pagar',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          Text(
+                            l10n.paymentsTotalLabel,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
                           ),
                           Text(
                             '${country.currencySymbol}${_totalPrice.toStringAsFixed(2)}',
@@ -366,7 +382,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                         ],
                       ),
                       Text(
-                        '$_selectedDays ${_selectedDays == 1 ? 'día' : 'días'}',
+                        l10n.paymentsDaysCount(_selectedDays),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 16,
@@ -399,7 +415,9 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                             ),
                           )
                         : Text(
-                            'Pagar ${country.currencySymbol}${_totalPrice.toStringAsFixed(2)}',
+                            l10n.paymentsPayButtonLabel(
+                              '${country.currencySymbol}${_totalPrice.toStringAsFixed(2)}',
+                            ),
                           ),
                   ),
                 ),
@@ -409,7 +427,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(child: Text(l10n.commonErrorWithMessage('$e'))),
       ),
     );
   }
@@ -441,9 +459,10 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
       );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Anuncio promocionado con éxito!'),
+          SnackBar(
+            content: Text(l10n.paymentsPromoteSuccess),
             backgroundColor: AppColors.success,
           ),
         );
@@ -451,9 +470,10 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al promocionar: $e'),
+            content: Text(l10n.paymentsPromoteError('$e')),
             backgroundColor: AppColors.error,
           ),
         );

@@ -3,18 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CountrySelectionScreen extends ConsumerWidget {
   const CountrySelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final selectedCountry = ref.watch(selectedCountryProvider);
     final countriesAsync = ref.watch(countriesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Seleccionar País'),
+        title: Text(l10n.settingsSelectCountryTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
@@ -28,11 +30,11 @@ class CountrySelectionScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-              const Text('Error al cargar países'),
+              Text(l10n.settingsLoadCountriesError),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => ref.invalidate(countriesProvider),
-                child: const Text('Reintentar'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),
@@ -85,7 +87,9 @@ class CountrySelectionScreen extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('País cambiado a ${country.name}'),
+                        content: Text(
+                          l10n.settingsCountryChanged(country.name),
+                        ),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );

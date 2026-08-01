@@ -19,6 +19,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../data/re_attributes.dart';
 import '../../data/re_pricing.dart' show energyBandForLetter;
 
@@ -171,6 +172,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -332,7 +334,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
           spacing: 8,
           children: [
             ChoiceChip(
-              label: const Text('No especificado'),
+              label: Text(l10n.realEstateEnergyLetterNone),
               selected: _floorBucket == null,
               onSelected: (_) {
                 setState(() => _floorBucket = null);
@@ -363,9 +365,9 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
             border: OutlineInputBorder(),
           ),
           items: [
-            const DropdownMenuItem<String>(
+            DropdownMenuItem<String>(
               value: null,
-              child: Text('No especificado'),
+              child: Text(l10n.realEstateEnergyLetterNone),
             ),
             ...RE_ENERGY_CERTS.map(
               (e) => DropdownMenuItem<String>(value: e, child: Text(e)),
@@ -387,9 +389,9 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
             border: OutlineInputBorder(),
           ),
           items: [
-            const DropdownMenuItem<String>(
+            DropdownMenuItem<String>(
               value: null,
-              child: Text('No especificado'),
+              child: Text(l10n.realEstateEnergyLetterNone),
             ),
             ...RE_ORIENTATIONS.map(
               (o) => DropdownMenuItem<String>(value: o, child: Text(o)),
@@ -405,7 +407,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         // petsAllowed (switch).
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Se admiten mascotas'),
+          title: Text(l10n.realEstatePetsAllowedSwitchLabel),
           value: _petsAllowed == true,
           onChanged: (v) {
             setState(() => _petsAllowed = v);

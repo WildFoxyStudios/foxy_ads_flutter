@@ -8,7 +8,26 @@ void main() {
       final en = await AppLocalizations.delegate.load(const Locale('en'));
       final it = await AppLocalizations.delegate.load(const Locale('it'));
       // Pick a few spot-check keys we know exist.
-      for (final key in ['commonSave', 'commonCancel', 'commonRetry']) {
+      for (final key in [
+        'commonSave',
+        'commonCancel',
+        'commonRetry',
+        'settingsTitle',
+        'settingsChangePassword',
+        'settingsDeleteAccount',
+        'settingsCannotOpenUrl',
+        'settingsCountryChanged',
+        'settingsSelectCountryTitle',
+        'paymentsPromoteTitle',
+        'paymentsDaysCount',
+        'paymentsPayButtonLabel',
+        'paymentsPromoteError',
+        'realEstatePetsAllowedSwitchLabel',
+        'listingCreateUnauthorizedEdit',
+        'navHome',
+        'navPost',
+        'splashTagline',
+      ]) {
         expect(_callByName(en, key), isNotNull, reason: 'en missing $key');
         expect(_callByName(it, key), isNotNull, reason: 'it missing $key');
       }
@@ -87,6 +106,36 @@ dynamic _callByName(AppLocalizations l, String name) {
       return l.developmentCardPriceFrom;
     case 'agencyVerifiedBadgeVerified':
       return l.agencyVerifiedBadgeVerified;
+    case 'settingsTitle':
+      return l.settingsTitle;
+    case 'settingsChangePassword':
+      return l.settingsChangePassword;
+    case 'settingsDeleteAccount':
+      return l.settingsDeleteAccount;
+    case 'settingsCannotOpenUrl':
+      return l.settingsCannotOpenUrl('https://example.com');
+    case 'settingsCountryChanged':
+      return l.settingsCountryChanged('Spain');
+    case 'settingsSelectCountryTitle':
+      return l.settingsSelectCountryTitle;
+    case 'paymentsPromoteTitle':
+      return l.paymentsPromoteTitle;
+    case 'paymentsDaysCount':
+      return l.paymentsDaysCount(3);
+    case 'paymentsPayButtonLabel':
+      return l.paymentsPayButtonLabel('€12.00');
+    case 'paymentsPromoteError':
+      return l.paymentsPromoteError('boom');
+    case 'realEstatePetsAllowedSwitchLabel':
+      return l.realEstatePetsAllowedSwitchLabel;
+    case 'listingCreateUnauthorizedEdit':
+      return l.listingCreateUnauthorizedEdit;
+    case 'navHome':
+      return l.navHome;
+    case 'navPost':
+      return l.navPost;
+    case 'splashTagline':
+      return l.splashTagline;
     default:
       return null;
   }

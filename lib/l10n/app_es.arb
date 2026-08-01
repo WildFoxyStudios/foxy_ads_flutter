@@ -787,5 +787,100 @@
     "description": "Empty state on the city landing. {city} is the URL-decoded city name.",
     "placeholders": { "city": { "type": "String" } }
   },
-  "cityLandingBrowseOther": "Buscar en otras zonas"
+  "cityLandingBrowseOther": "Buscar en otras zonas",
+
+  "listingCreateUnauthorizedEdit": "No autorizado para editar",
+
+  "realEstatePetsAllowedSwitchLabel": "Se admiten mascotas",
+
+  "settingsTitle": "Configuración",
+  "settingsSectionGeneral": "General",
+  "settingsCountryLabel": "País",
+  "settingsThemeLabel": "Tema",
+  "settingsThemeLight": "Claro",
+  "settingsNotificationsLabel": "Notificaciones",
+  "settingsNotificationsEnabled": "Activadas",
+  "settingsSectionAccount": "Cuenta",
+  "settingsEditProfile": "Editar perfil",
+  "settingsChangePassword": "Cambiar contraseña",
+  "settingsDeleteAccount": "Eliminar cuenta",
+  "settingsSectionInfo": "Información",
+  "settingsAbout": "Acerca de",
+  "settingsVersionValue": "Versión 1.0.0",
+  "settingsAboutDescription": "Foxy Ads es tu plataforma de clasificados favorita. Compra, vende y conecta con personas cerca de ti.",
+  "settingsTerms": "Términos y condiciones",
+  "settingsPrivacyPolicy": "Política de privacidad",
+  "settingsHelpSupport": "Ayuda y soporte",
+  "settingsLogout": "Cerrar Sesión",
+  "settingsFooterMadeWith": "Hecho con ❤️ por Foxy Ads",
+  "settingsComingSoon": "Próximamente",
+  "settingsCannotOpenUrl": "No se pudo abrir {url}",
+  "@settingsCannotOpenUrl": {
+    "description": "Snackbar shown when url_launcher fails to open an external link. {url} is the target URL.",
+    "placeholders": { "url": { "type": "String" } }
+  },
+  "settingsNewPasswordLabel": "Nueva contraseña",
+  "settingsMinPasswordHint": "Mínimo 6 caracteres",
+  "settingsPasswordUpdated": "Contraseña actualizada",
+  "settingsDeleteAccountConfirm": "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible y perderás todos tus anuncios y datos.",
+  "settingsAccountDeleted": "Tu cuenta ha sido eliminada",
+  "settingsDeleteAccountError": "No se pudo eliminar la cuenta: {error}",
+  "@settingsDeleteAccountError": {
+    "description": "Snackbar shown when account deletion fails. {error} is the error.toString().",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "settingsSelectCountryTitle": "Seleccionar País",
+  "settingsLoadCountriesError": "Error al cargar países",
+  "settingsCountryChanged": "País cambiado a {country}",
+  "@settingsCountryChanged": {
+    "description": "Snackbar confirming the new selected country. {country} is the country display name.",
+    "placeholders": { "country": { "type": "String" } }
+  },
+
+  "paymentsPromoteTitle": "Promocionar Anuncio",
+  "paymentsListingNotFound": "Anuncio no encontrado",
+  "paymentsAlreadyFeatured": "¡Tu anuncio ya está destacado!",
+  "paymentsExpiresOn": "Expira el {date}",
+  "@paymentsExpiresOn": {
+    "description": "Shown when a listing is already featured. {date} is the formatted expiry date (d/m/yyyy).",
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "paymentsBenefitsHeading": "Beneficios de promocionar",
+  "paymentsBenefit1Title": "Mayor visibilidad",
+  "paymentsBenefit1Desc": "Aparece en el carrusel destacado del inicio",
+  "paymentsBenefit2Title": "10x más vistas",
+  "paymentsBenefit2Desc": "Los anuncios destacados reciben más atención",
+  "paymentsBenefit3Title": "Etiqueta especial",
+  "paymentsBenefit3Desc": "Tu anuncio se distingue con la etiqueta ⭐",
+  "paymentsBenefit4Title": "Vende más rápido",
+  "paymentsBenefit4Desc": "Conecta con más compradores interesados",
+  "paymentsSelectDuration": "Selecciona la duración",
+  "paymentsDaysCount": "{days, plural, one{{days} día} other{{days} días}}",
+  "@paymentsDaysCount": {
+    "description": "Duration label, e.g. '3 días' or '1 día'. ICU plural.",
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "paymentsMethodHeading": "Método de pago",
+  "paymentsCardMethod": "Tarjeta de crédito/débito",
+  "paymentsGooglePay": "Google Pay",
+  "paymentsTotalLabel": "Total a pagar",
+  "paymentsPayButtonLabel": "Pagar {amount}",
+  "@paymentsPayButtonLabel": {
+    "description": "Pay button label. {amount} is the pre-formatted currency amount, e.g. '€12.00'.",
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "paymentsPromoteSuccess": "¡Anuncio promocionado con éxito!",
+  "paymentsPromoteError": "Error al promocionar: {error}",
+  "@paymentsPromoteError": {
+    "description": "Snackbar shown when promoting a listing fails. {error} is the error.toString().",
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "navHome": "Inicio",
+  "navSearch": "Buscar",
+  "navFavorites": "Favoritos",
+  "navProfile": "Perfil",
+  "navPost": "Publicar",
+
+  "splashTagline": "Tu mercado de clasificados"
 }

@@ -28,6 +28,7 @@ import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/settings/presentation/screens/country_selection_screen.dart';
 import '../../features/payments/presentation/screens/promote_listing_screen.dart';
+import '../../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../widgets/main_navigation_shell.dart';
 
@@ -296,9 +297,10 @@ class _EditListingRoute extends ConsumerWidget {
       data: (listing) {
         final currentUserId = ref.watch(authStateProvider).value?.id;
         if (listing == null || listing.userId != currentUserId) {
+          final l10n = AppLocalizations.of(context)!;
           return Scaffold(
             appBar: AppBar(),
-            body: const Center(child: Text('No autorizado para editar')),
+            body: Center(child: Text(l10n.listingCreateUnauthorizedEdit)),
           );
         }
         return CreateListingScreen(existing: listing);

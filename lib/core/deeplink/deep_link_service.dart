@@ -27,8 +27,11 @@ class DeepLinkService {
 
   void _navigate(Uri uri) {
     final location = resolveDeepLink(uri);
-    // null -> fall back to home so a bad/foreign link never dead-ends.
-    _router.go(location ?? '/');
+    // Only navigate for links we actually recognize. An unrecognized link
+    // (foreign host, unknown path, bad id, or another consumer's deep link such
+    // as a Supabase OAuth callback on the shared uriLinkStream) is IGNORED — the
+    // app stays where it is / boots normally, never yanked to home.
+    if (location != null) _router.go(location);
   }
 
   void dispose() {

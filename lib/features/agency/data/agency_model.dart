@@ -25,7 +25,7 @@ class AgencyProfile {
   });
 
   factory AgencyProfile.fromRow(Map<String, dynamic> r) => AgencyProfile(
-        userId: r['user_id'] as String,
+        userId: r['user_id'] as String? ?? '',
         name: (r['name'] ?? '') as String,
         logoUrl: r['logo_url'] as String?,
         description: r['description'] as String?,

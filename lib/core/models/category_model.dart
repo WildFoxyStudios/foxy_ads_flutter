@@ -24,12 +24,13 @@ class Category {
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
+    final name = json['name'] as String? ?? '';
     return Category(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      nameEs: json['name_es'] as String? ?? json['name'] as String,
-      icon: json['icon'] as String,
-      color: json['color'] as String,
+      id: json['id'] as String? ?? '',
+      name: name,
+      nameEs: json['name_es'] as String? ?? name,
+      icon: json['icon'] as String? ?? '',
+      color: json['color'] as String? ?? '',
       sortOrder: json['sort_order'] as int? ?? 0,
       isAdult: json['is_adult'] as bool? ?? false,
       parentId: json['parent_id'] as String?,

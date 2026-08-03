@@ -13,10 +13,13 @@ class Favorite {
 
   factory Favorite.fromJson(Map<String, dynamic> json) {
     return Favorite(
-      id: json['id'] as String,
-      userId: json['user_id'] as String,
-      listingId: json['listing_id'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['id'] as String? ?? '',
+      userId: json['user_id'] as String? ?? '',
+      listingId: json['listing_id'] as String? ?? '',
+      createdAt: json['created_at'] != null
+          ? (DateTime.tryParse(json['created_at'] as String? ?? '') ??
+              DateTime.now())
+          : DateTime.now(),
     );
   }
 

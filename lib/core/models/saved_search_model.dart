@@ -36,15 +36,18 @@ class SavedSearch {
         : <String, dynamic>{};
 
     return SavedSearch(
-      id: row['id'] as String,
-      userId: row['user_id'] as String,
+      id: row['id'] as String? ?? '',
+      userId: row['user_id'] as String? ?? '',
       categoryId: row['category_id'] as String?,
       label: row['label'] as String?,
       filters: SearchFilters.fromJson(filtersJson),
       countryCode: row['country_code'] as String?,
-      createdAt: DateTime.parse(row['created_at'] as String),
+      createdAt: row['created_at'] != null
+          ? (DateTime.tryParse(row['created_at'] as String? ?? '') ??
+              DateTime.now())
+          : DateTime.now(),
       lastSeenAt: row['last_seen_at'] != null
-          ? DateTime.parse(row['last_seen_at'] as String)
+          ? DateTime.tryParse(row['last_seen_at'] as String? ?? '')
           : null,
     );
   }

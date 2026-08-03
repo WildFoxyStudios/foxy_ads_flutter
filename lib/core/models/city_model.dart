@@ -15,9 +15,9 @@ class City {
 
   factory City.fromJson(Map<String, dynamic> json) {
     return City(
-      id: json['id'] as String,
-      countryCode: json['country_code'] as String,
-      name: json['name'] as String,
+      id: json['id'] as String? ?? '',
+      countryCode: json['country_code'] as String? ?? '',
+      name: json['name'] as String? ?? '',
       isEnabled: json['is_enabled'] as bool? ?? true,
       sortOrder: json['sort_order'] as int? ?? 0,
     );

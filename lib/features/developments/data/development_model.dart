@@ -37,12 +37,12 @@ class Development {
 
   factory Development.fromRow(Map<String, dynamic> row) {
     return Development(
-      id: row['id'] as String,
-      agencyUserId: row['agency_user_id'] as String,
-      name: row['name'] as String,
+      id: row['id'] as String? ?? '',
+      agencyUserId: row['agency_user_id'] as String? ?? '',
+      name: row['name'] as String? ?? '',
       description: row['description'] as String?,
       promoterName: row['promoter_name'] as String?,
-      countryCode: row['country_code'] as String,
+      countryCode: row['country_code'] as String? ?? '',
       city: row['city'] as String?,
       address: row['address'] as String?,
       latitude: (row['latitude'] as num?)?.toDouble(),
@@ -50,8 +50,11 @@ class Development {
       amenities: (row['amenities'] as List?)?.cast<String>() ?? const [],
       images: (row['images'] as List?)?.cast<String>() ?? const [],
       deliveryLabel: row['delivery_label'] as String?,
-      status: row['status'] as String,
-      createdAt: DateTime.parse(row['created_at'] as String),
+      status: row['status'] as String? ?? 'planning',
+      createdAt: row['created_at'] != null
+          ? (DateTime.tryParse(row['created_at'] as String? ?? '') ??
+              DateTime.now())
+          : DateTime.now(),
     );
   }
 }

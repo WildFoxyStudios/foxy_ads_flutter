@@ -40,7 +40,7 @@ class Lead {
   /// nullable joined fields (`listing_title`, `owner_user_id`, `buyer_*`)
   /// because some list queries return them as empty when the join misses.
   factory Lead.fromRow(Map<String, dynamic> r) => Lead(
-        id: r['id'] as String,
+        id: r['id'] as String? ?? '',
         listingId: r['listing_id'] as String?,
         developmentId: r['development_id'] as String?,
         listingTitle: (r['listing_title'] ?? '') as String,

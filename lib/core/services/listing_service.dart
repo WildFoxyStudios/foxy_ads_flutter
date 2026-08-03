@@ -69,7 +69,7 @@ class ListingService {
         .from('listings')
         .select('''
           *,
-          users(name, avatar_url),
+          users!listings_user_id_fkey(name, avatar_url),
           categories!listings_category_id_fkey(name)
         ''')
         .eq('status', 'active');
@@ -134,7 +134,7 @@ class ListingService {
         .from('listings')
         .select('''
           *,
-          users(name, avatar_url),
+          users!listings_user_id_fkey(name, avatar_url),
           categories!listings_category_id_fkey(name)
         ''')
         .eq('status', 'active')
@@ -169,7 +169,7 @@ class ListingService {
           .from('listings')
           .select('''
             *,
-            users(name, avatar_url),
+            users!listings_user_id_fkey(name, avatar_url),
             categories!listings_category_id_fkey(name)
           ''')
           .eq('id', id)

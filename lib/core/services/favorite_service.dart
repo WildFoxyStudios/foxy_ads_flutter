@@ -91,8 +91,8 @@ class FavoriteService {
           listing_id,
           listings!inner(
             *,
-            users(name, avatar_url),
-            categories(name)
+            users!listings_user_id_fkey(name, avatar_url),
+            categories!listings_category_id_fkey(name)
           )
         ''')
         .eq('user_id', userId)

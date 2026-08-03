@@ -19,11 +19,11 @@ class Country {
 
   factory Country.fromJson(Map<String, dynamic> json) {
     return Country(
-      code: json['code'] as String,
-      name: json['name'] as String,
-      flag: json['flag'] as String,
-      currency: json['currency'] as String,
-      currencySymbol: json['currency_symbol'] as String,
+      code: json['code'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      flag: json['flag'] as String? ?? '',
+      currency: json['currency'] as String? ?? '',
+      currencySymbol: json['currency_symbol'] as String? ?? '',
       isEnabled: json['is_enabled'] as bool? ?? true,
       sortOrder: json['sort_order'] as int? ?? 0,
     );

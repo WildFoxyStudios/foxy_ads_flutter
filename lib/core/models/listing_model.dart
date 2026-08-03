@@ -75,14 +75,14 @@ class Listing {
 
   factory Listing.fromJson(Map<String, dynamic> json) {
     return Listing(
-      id: json['id'] as String,
-      userId: json['user_id'] as String,
-      categoryId: json['category_id'] as String,
+      id: json['id'] as String? ?? '',
+      userId: json['user_id'] as String? ?? '',
+      categoryId: json['category_id'] as String? ?? '',
       subcategoryId: json['subcategory_id'] as String?,
-      countryCode: json['country_code'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      price: (json['price'] as num).toDouble(),
+      countryCode: json['country_code'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0,
       currency: json['currency'] as String? ?? 'EUR',
       images: (json['images'] as List<dynamic>?)?.cast<String>() ?? [],
       whatsapp: json['whatsapp'] as String?,
@@ -93,13 +93,16 @@ class Listing {
       isNegotiable: json['is_negotiable'] as bool? ?? false,
       isFeatured: json['is_featured'] as bool? ?? false,
       featuredUntil: json['featured_until'] != null
-          ? DateTime.parse(json['featured_until'] as String)
+          ? DateTime.tryParse(json['featured_until'] as String? ?? '')
           : null,
       status: json['status'] as String? ?? 'active',
       views: json['views'] as int? ?? 0,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: json['created_at'] != null
+          ? (DateTime.tryParse(json['created_at'] as String? ?? '') ??
+              DateTime.now())
+          : DateTime.now(),
       updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
+          ? DateTime.tryParse(json['updated_at'] as String? ?? '')
           : null,
       userName: json['user_name'] as String?,
       userAvatar: json['user_avatar'] as String?,

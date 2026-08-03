@@ -27,6 +27,8 @@ import '../../features/profile/presentation/screens/my_listings_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/settings/presentation/screens/country_selection_screen.dart';
+import '../../features/payments/presentation/screens/payment_cancelled_screen.dart';
+import '../../features/payments/presentation/screens/payment_success_screen.dart';
 import '../../features/payments/presentation/screens/promote_listing_screen.dart';
 import '../../features/static/screens/help_screen.dart';
 import '../../features/static/screens/contact_screen.dart';
@@ -268,6 +270,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'terminos',
         builder: (context, state) => const TermsScreen(),
       ),
+
+      // Payment return targets (Sprint 7 Task 3). The deep-link resolver
+      // (T4) lands here after Stripe Checkout completes/cancels. The session
+      // id (`/payment/success`) and original listing id (`/payment/cancelled`)
+      // arrive as query parameters.
+      GoRoute(
+        path: AppRoutes.paymentSuccess,
+        name: 'paymentSuccess',
+        builder: (context, state) {
+          final sessionId = state.uri.queryParameters['session_id'];
+          return PaymentSuccessScreen(sessionId: sessionId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.paymentCancelled,
+        name: 'paymentCancelled',
+        builder: (context, state) {
+          final listingId = state.uri.queryParameters['listing_id'];
+          return PaymentCancelledScreen(listingId: listingId);
+        },
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -310,6 +333,10 @@ class AppRoutes {
   static const String contacto = '/contacto';
   static const String privacidad = '/privacidad';
   static const String terminos = '/terminos';
+
+  // Payment return targets (Sprint 7 Task 3).
+  static const String paymentSuccess = '/payment/success';
+  static const String paymentCancelled = '/payment/cancelled';
 }
 
 /// Loads the listing by [listingId] and, if the current user is its owner,

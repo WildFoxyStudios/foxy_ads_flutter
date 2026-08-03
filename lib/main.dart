@@ -6,8 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:foxy_ads/firebase_options.dart';
 import 'package:foxy_ads/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'core/deeplink/deep_link_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'core/providers/locale_provider.dart';
@@ -41,12 +43,41 @@ Future<void> main() async {
   runApp(const ProviderScope(child: FoxyAdsApp()));
 }
 
-class FoxyAdsApp extends ConsumerWidget {
+class FoxyAdsApp extends ConsumerStatefulWidget {
   const FoxyAdsApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(appRouterProvider);
+  ConsumerState<FoxyAdsApp> createState() => _FoxyAdsAppState();
+}
+
+class _FoxyAdsAppState extends ConsumerState<FoxyAdsApp> {
+  // The GoRouter is a Riverpod Provider (singleton for the container's
+  // lifetime), not rebuilt per-frame, so it's safe to capture once here and
+  // hand the same instance to both MaterialApp.router and DeepLinkService.
+  late final GoRouter _router;
+  late final DeepLinkService _deepLinkService;
+
+  @override
+  void initState() {
+    super.initState();
+    _router = ref.read(appRouterProvider);
+    _deepLinkService = DeepLinkService(_router);
+    // Defer until after the first frame so there's a live navigator for
+    // router.go() to act on.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _deepLinkService.handleInitialLink();
+      _deepLinkService.startListening();
+    });
+  }
+
+  @override
+  void dispose() {
+    _deepLinkService.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
@@ -55,7 +86,7 @@ class FoxyAdsApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-      routerConfig: router,
+      routerConfig: _router,
       locale: locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,

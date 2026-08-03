@@ -30,6 +30,15 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https" android:host="foxyads.app"/>
                 <data android:scheme="https" android:host="foxyads.vercel.app"/>
+                <data android:pathPrefix="/anuncio/"/>
+                <data android:pathPrefix="/agencia/"/>
+                <data android:pathPrefix="/promocion/"/>
+                <data android:path="/promociones"/>
+                <data android:pathPrefix="/inmuebles-en"/>
+                <data android:path="/ayuda"/>
+                <data android:path="/contacto"/>
+                <data android:path="/privacidad"/>
+                <data android:path="/terminos"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -43,6 +52,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="flutter_deeplinking_enabled" android:value="false"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

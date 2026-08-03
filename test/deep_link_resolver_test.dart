@@ -6,47 +6,113 @@ const _uuid = '11111111-1111-1111-1111-111111111111';
 void main() {
   group('resolveDeepLink https (our hosts)', () {
     test('anuncio -> /listing/:id', () {
-      expect(resolveDeepLink(Uri.parse('https://foxyads.app/anuncio/$_uuid')),
-          '/listing/$_uuid');
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/anuncio/$_uuid'))!,
+          Uri(path: '/listing/$_uuid'));
     });
     test('agencia / promocion pass through', () {
-      expect(resolveDeepLink(Uri.parse('https://foxyads.app/agencia/$_uuid')),
-          '/agencia/$_uuid');
-      expect(resolveDeepLink(Uri.parse('https://foxyads.app/promocion/$_uuid')),
-          '/promocion/$_uuid');
+      expect(
+          resolveDeepLink(Uri.parse('https://foxyads.app/agencia/$_uuid')),
+          Uri(path: '/agencia/$_uuid'));
+      expect(
+          resolveDeepLink(Uri.parse('https://foxyads.app/promocion/$_uuid')),
+          Uri(path: '/promocion/$_uuid'));
     });
     test('static + search pass through', () {
-      for (final p in ['/ayuda', '/contacto', '/privacidad', '/terminos', '/promociones']) {
-        expect(resolveDeepLink(Uri.parse('https://foxyads.app$p')), p);
+      for (final p in [
+        '/ayuda',
+        '/contacto',
+        '/privacidad',
+        '/terminos',
+        '/promociones'
+      ]) {
+        expect(resolveDeepLink(Uri.parse('https://foxyads.app$p')),
+            Uri(path: p));
       }
-      expect(resolveDeepLink(Uri.parse('https://foxyads.app/inmuebles-en')), '/inmuebles-en');
-      expect(resolveDeepLink(Uri.parse('https://foxyads.app/inmuebles-en/madrid')),
-          '/inmuebles-en/madrid');
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/inmuebles-en')),
+          Uri(path: '/inmuebles-en'));
+      expect(
+          resolveDeepLink(
+              Uri.parse('https://foxyads.app/inmuebles-en/madrid')),
+          Uri(path: '/inmuebles-en/madrid'));
     });
     test('vercel fallback host also honored', () {
-      expect(resolveDeepLink(Uri.parse('https://foxyads.vercel.app/anuncio/$_uuid')),
-          '/listing/$_uuid');
+      expect(
+          resolveDeepLink(
+              Uri.parse('https://foxyads.vercel.app/anuncio/$_uuid')),
+          Uri(path: '/listing/$_uuid'));
     });
   });
 
   group('resolveDeepLink foxyads:// scheme', () {
     test('scheme host+path -> /listing/:id', () {
-      expect(resolveDeepLink(Uri.parse('foxyads://anuncio/$_uuid')), '/listing/$_uuid');
+      expect(resolveDeepLink(Uri.parse('foxyads://anuncio/$_uuid')),
+          Uri(path: '/listing/$_uuid'));
     });
     test('scheme static', () {
-      expect(resolveDeepLink(Uri.parse('foxyads://ayuda')), '/ayuda');
+      expect(resolveDeepLink(Uri.parse('foxyads://ayuda')),
+          Uri(path: '/ayuda'));
+    });
+  });
+
+  group('resolveDeepLink payment return paths (Stripe)', () {
+    test('foxyads://payment/success?session_id=...', () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'foxyads://payment/success?session_id=cs_test_a1b2c3')),
+          Uri(
+              path: '/payment/success',
+              queryParameters: {'session_id': 'cs_test_a1b2c3'}));
+    });
+    test('foxyads://payment/cancelled?listing_id=...', () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'foxyads://payment/cancelled?listing_id=$_uuid')),
+          Uri(
+              path: '/payment/cancelled',
+              queryParameters: {'listing_id': _uuid}));
+    });
+    test('https://foxyads.app/payment/success?session_id=...', () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'https://foxyads.app/payment/success?session_id=cs_test_a1b2c3')),
+          Uri(
+              path: '/payment/success',
+              queryParameters: {'session_id': 'cs_test_a1b2c3'}));
+    });
+    test('https://foxyads.app/payment/cancelled?listing_id=...', () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'https://foxyads.app/payment/cancelled?listing_id=$_uuid')),
+          Uri(
+              path: '/payment/cancelled',
+              queryParameters: {'listing_id': _uuid}));
+    });
+    test('payment without query string still resolves', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://payment/success')),
+          Uri(path: '/payment/success'));
+      expect(resolveDeepLink(Uri.parse('foxyads://payment/cancelled')),
+          Uri(path: '/payment/cancelled'));
+    });
+    test('payment with unknown sub-path rejected', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://payment/refund')), isNull);
+      expect(
+          resolveDeepLink(Uri.parse('foxyads://payment/success/extra')),
+          isNull);
     });
   });
 
   group('resolveDeepLink guards -> null (caller sends home)', () {
     test('bad id', () {
-      expect(resolveDeepLink(Uri.parse('https://foxyads.app/anuncio/not-a-uuid')), isNull);
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/anuncio/not-a-uuid')),
+          isNull);
     });
     test('unknown path', () {
-      expect(resolveDeepLink(Uri.parse('https://foxyads.app/some/unknown')), isNull);
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/some/unknown')),
+          isNull);
     });
     test('foreign host', () {
-      expect(resolveDeepLink(Uri.parse('https://evil.com/anuncio/$_uuid')), isNull);
+      expect(resolveDeepLink(Uri.parse('https://evil.com/anuncio/$_uuid')),
+          isNull);
     });
     test('empty', () {
       expect(resolveDeepLink(Uri.parse('https://foxyads.app/')), isNull);

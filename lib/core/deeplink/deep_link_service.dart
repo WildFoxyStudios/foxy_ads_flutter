@@ -31,7 +31,14 @@ class DeepLinkService {
     // (foreign host, unknown path, bad id, or another consumer's deep link such
     // as a Supabase OAuth callback on the shared uriLinkStream) is IGNORED — the
     // app stays where it is / boots normally, never yanked to home.
-    if (location != null) _router.go(location);
+    if (location != null) {
+      // go_router's go() takes a String location. Re-join the path + query so
+      // payment return paths (which carry ?session_id=… / ?listing_id=…)
+      // reach the destination screen with their query string intact.
+      final hasQuery = location.hasQuery;
+      final qp = hasQuery ? location.query : '';
+      _router.go(qp.isEmpty ? location.path : '${location.path}?$qp');
+    }
   }
 
   void dispose() {

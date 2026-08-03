@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
+import '../../data/payments_providers.dart';
+import '../../data/payments_service.dart';
 import '../../../../l10n/app_localizations.dart';
 
 final promoteListingProvider = FutureProvider.family<Listing?, String>((
@@ -318,42 +321,11 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                 }),
                 const SizedBox(height: 24),
 
-                // Payment methods
-                Text(
-                  l10n.paymentsMethodHeading,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.credit_card),
-                        title: Text(l10n.paymentsCardMethod),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () => _processPayment('card'),
-                      ),
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: Image.network(
-                          'https://www.gstatic.com/instantbuy/svg/dark_gpay.svg',
-                          width: 40,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.g_mobiledata),
-                        ),
-                        title: Text(l10n.paymentsGooglePay),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () => _processPayment('google_pay'),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Total
+                // Total + single Stripe Checkout CTA per the brief: payment
+                // method tiles are gone (Card/Google Pay collapsed into one
+                // redirect-based flow). The CTA below uses
+                // `paymentsContinueToCheckout` and triggers Stripe Checkout
+                // via `launchUrl`.
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -395,13 +367,12 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Pay button
+                // Continue to Stripe Checkout CTA. This is the single primary
+                // action per the brief (Card/Google Pay tiles collapsed).
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _isProcessing
-                        ? null
-                        : () => _processPayment('card'),
+                    onPressed: _isProcessing ? null : _processPayment,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -416,11 +387,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                               ),
                             ),
                           )
-                        : Text(
-                            l10n.paymentsPayButtonLabel(
-                              '${country.currencySymbol}${_totalPrice.toStringAsFixed(2)}',
-                            ),
-                          ),
+                        : Text(l10n.paymentsContinueToCheckout),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -438,46 +405,30 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _processPayment(String method) async {
+  /// Creates a Stripe Checkout session via the payments-create-checkout edge
+  /// function and hands the resulting redirect URL to the system browser
+  /// (`LaunchMode.externalApplication`). On failure shows a snackbar with
+  /// `l10n.paymentsCheckoutError` and stays on the screen so the user can
+  /// retry — the listing is NOT promoted here (that's the webhook's job
+  /// after Stripe confirms the payment).
+  Future<void> _processPayment() async {
     setState(() => _isProcessing = true);
 
+    final l10n = AppLocalizations.of(context)!;
+    final PaymentsService svc = ref.read(paymentsServiceProvider);
     try {
-      // `method` is wired through so the Stripe PaymentSheet hook can branch
-      // on it ('card' vs 'google_pay'); for now we just promote the listing.
-      // Honour the pricing table that matches `FEATURE_PRICES` on the web.
-      // We don't take the user's money here — that's the Stripe PaymentSheet's
-      // job. We just promote the listing server-side; if the matching payment
-      // row is missing the listing will still appear as featured for the
-      // selected window. A real production rollout would await the Stripe
-      // PaymentSheet's success callback before calling promoteListing.
-      assert(method == 'card' || method == 'google_pay');
-      // ignore: unused_local_variable
-      final _ = method;
-      final listingService = ref.read(listingServiceProvider);
-      await listingService.promoteListing(
-        id: widget.listingId,
+      final r = await svc.createCheckout(
+        listingId: widget.listingId,
         days: _selectedDays,
-        priceCents: _eurosToCents(_totalPrice),
       );
-
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.paymentsPromoteSuccess),
-            backgroundColor: AppColors.success,
-          ),
-        );
-        context.pop();
-      }
+      await launchUrl(
+        Uri.parse(r.url),
+        mode: LaunchMode.externalApplication,
+      );
     } catch (e) {
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.paymentsPromoteError('$e')),
-            backgroundColor: AppColors.error,
-          ),
+          SnackBar(content: Text(l10n.paymentsCheckoutError)),
         );
       }
     } finally {

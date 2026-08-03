@@ -8,5 +8,10 @@
 	<true/>
 	<key>com.apple.security.network.server</key>
 	<true/>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:foxyads.app</string>
+		<string>applinks:foxyads.vercel.app</string>
+	</array>
 </dict>
 </plist>

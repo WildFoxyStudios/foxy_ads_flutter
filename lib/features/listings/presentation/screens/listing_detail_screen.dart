@@ -11,6 +11,7 @@ import '../../../../core/services/favorite_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/util/site_url.dart';
+import '../../../../core/util/text_util.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
 import '../widgets/contact_sheet.dart';
@@ -346,7 +347,10 @@ class ListingDetailScreen extends ConsumerWidget {
                                 : null,
                             child: listing.userAvatar == null
                                 ? Text(
-                                    (listing.userName ?? 'U')[0].toUpperCase(),
+                                    initialLetter(
+                                      listing.userName,
+                                      fallback: 'U',
+                                    ),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

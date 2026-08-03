@@ -51,7 +51,9 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
     }
 
     final country = ref.read(selectedCountryProvider);
-    final m2 = double.parse(_m2Controller.text.trim());
+    final m2 = double.parse(
+      _m2Controller.text.trim().replaceAll(',', '.'),
+    );
     // Mirror the web's bound: 1..100000. Validated above.
     if (m2 < 1 || m2 > 100000) return;
 
@@ -161,7 +163,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                   if (v == null || v.trim().isEmpty) {
                     return l10n.valuationM2Required;
                   }
-                  final n = int.tryParse(v.trim());
+                  final n = int.tryParse(v.trim().replaceAll(',', '.'));
                   if (n == null) return l10n.valuationM2Invalid;
                   if (n < 1) return l10n.valuationM2Min;
                   if (n > 100000) return l10n.valuationM2Max;
@@ -228,7 +230,9 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                 estimate: _estimate!,
                 city: _city!,
                 operation: _operation!,
-                m2: int.parse(_m2Controller.text.trim()),
+                m2: int.tryParse(
+                  _m2Controller.text.trim().replaceAll(',', '.'),
+                ) ?? 0,
                 currency: country.currency,
                 currencySymbol: country.currencySymbol,
               ),

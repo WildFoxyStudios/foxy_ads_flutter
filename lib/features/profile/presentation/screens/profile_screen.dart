@@ -7,6 +7,7 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/locale_switcher.dart';
+import '../../../../core/util/text_util.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
 
@@ -130,7 +131,11 @@ class ProfileScreen extends ConsumerWidget {
                             : null,
                         child: user.avatarUrl == null
                             ? Text(
-                                (user.name ?? user.email)[0].toUpperCase(),
+                                initialLetter(
+                                  user.name?.trim().isNotEmpty == true
+                                      ? user.name
+                                      : user.email,
+                                ),
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,

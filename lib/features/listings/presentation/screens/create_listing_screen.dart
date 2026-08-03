@@ -193,7 +193,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           countryCode: country.code,
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
-          price: double.parse(_priceController.text),
+          price: double.parse(_priceController.text.replaceAll(',', '.')),
           currency: country.currency,
           images: imageUrls,
           whatsapp: _whatsappController.text.trim().isNotEmpty
@@ -245,7 +245,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
         final updates = <String, dynamic>{
           'title': _titleController.text.trim(),
           'description': _descriptionController.text.trim(),
-          'price': double.parse(_priceController.text),
+          'price': double.parse(_priceController.text.replaceAll(',', '.')),
           'currency': _existingCurrency ?? country.currency,
           'category_id': _selectedCategory!.id,
           'subcategory_id': _existingSubcategoryId,
@@ -687,7 +687,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                       if (value == null || value.isEmpty) {
                         return l10n.listingCreatePriceRequired;
                       }
-                      if (double.tryParse(value) == null) {
+                      if (double.tryParse(value.replaceAll(',', '.')) ==
+                          null) {
                         return l10n.listingCreatePriceInvalid;
                       }
                       return null;

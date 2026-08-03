@@ -97,12 +97,13 @@
   "listingDetailNotFound": "Anuncio no encontrado",
   "listingDetailEdit": "Editar anuncio",
   "listingDetailReport": "Reportar anuncio",
-  "listingDetailShareMessage": "{title} - {price}\n\nMira este anuncio en Foxy Ads",
+  "listingDetailShareMessage": "{title} - {price}\n\nMira este anuncio en Foxy Ads: {url}",
   "@listingDetailShareMessage": {
-    "description": "Body of the share intent for a listing. {title} is the listing title, {price} is the formatted price.",
+    "description": "Body of the share intent for a listing. {title} is the listing title, {price} is the formatted price, {url} is the canonical listing URL.",
     "placeholders": {
       "title": { "type": "String" },
-      "price": { "type": "String" }
+      "price": { "type": "String" },
+      "url": { "type": "String" }
     }
   },
   "listingDetailFeaturedBadge": "ANUNCIO DESTACADO",

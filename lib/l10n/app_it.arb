@@ -76,7 +76,7 @@
   "listingDetailNotFound": "Annuncio non trovato",
   "listingDetailEdit": "Modifica annuncio",
   "listingDetailReport": "Segnala annuncio",
-  "listingDetailShareMessage": "{title} - {price}\n\nGuarda questo annuncio su Foxy Ads",
+  "listingDetailShareMessage": "{title} - {price}\n\nGuarda questo annuncio su Foxy Ads: {url}",
   "listingDetailFeaturedBadge": "ANNUNCIO IN EVIDENZA",
   "listingDetailNegotiable": "Prezzo trattabile",
   "listingDetailDescriptionHeading": "Descrizione",

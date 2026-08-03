@@ -76,7 +76,7 @@
   "listingDetailNotFound": "Listing not found",
   "listingDetailEdit": "Edit listing",
   "listingDetailReport": "Report listing",
-  "listingDetailShareMessage": "{title} - {price}\n\nCheck out this listing on Foxy Ads",
+  "listingDetailShareMessage": "{title} - {price}\n\nCheck out this listing on Foxy Ads: {url}",
   "listingDetailFeaturedBadge": "FEATURED LISTING",
   "listingDetailNegotiable": "Negotiable price",
   "listingDetailDescriptionHeading": "Description",

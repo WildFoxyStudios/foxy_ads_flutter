@@ -10,6 +10,7 @@ import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/favorite_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/util/site_url.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
 import '../widgets/contact_sheet.dart';
@@ -157,6 +158,7 @@ class ListingDetailScreen extends ConsumerWidget {
                         l10n.listingDetailShareMessage(
                           listing.title,
                           listing.formattedPrice,
+                          siteUrl(listingUrl(listing.id)),
                         ),
                       );
                     },

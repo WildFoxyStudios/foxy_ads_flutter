@@ -421,10 +421,15 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
         listingId: widget.listingId,
         days: _selectedDays,
       );
-      await launchUrl(
+      final ok = await launchUrl(
         Uri.parse(r.url),
         mode: LaunchMode.externalApplication,
       );
+      if (!ok && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.paymentsCheckoutError)),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

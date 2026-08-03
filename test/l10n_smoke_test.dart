@@ -21,8 +21,6 @@ void main() {
         'paymentsPromoteTitle',
         'paymentsDaysCount',
         'paymentsPerDayRate',
-        'paymentsPayButtonLabel',
-        'paymentsPromoteError',
         'realEstatePetsAllowedSwitchLabel',
         'listingCreateUnauthorizedEdit',
         'navHome',
@@ -125,10 +123,6 @@ dynamic _callByName(AppLocalizations l, String name) {
       return l.paymentsDaysCount(3);
     case 'paymentsPerDayRate':
       return l.paymentsPerDayRate('€0.67');
-    case 'paymentsPayButtonLabel':
-      return l.paymentsPayButtonLabel('€12.00');
-    case 'paymentsPromoteError':
-      return l.paymentsPromoteError('boom');
     case 'realEstatePetsAllowedSwitchLabel':
       return l.realEstatePetsAllowedSwitchLabel;
     case 'listingCreateUnauthorizedEdit':

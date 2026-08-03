@@ -874,21 +874,7 @@
     "description": "Per-day rate shown under the duration option. {amount} is the pre-formatted currency amount, e.g. '€0.67'.",
     "placeholders": { "amount": { "type": "String" } }
   },
-  "paymentsMethodHeading": "Método de pago",
-  "paymentsCardMethod": "Tarjeta de crédito/débito",
-  "paymentsGooglePay": "Google Pay",
   "paymentsTotalLabel": "Total a pagar",
-  "paymentsPayButtonLabel": "Pagar {amount}",
-  "@paymentsPayButtonLabel": {
-    "description": "Pay button label. {amount} is the pre-formatted currency amount, e.g. '€12.00'.",
-    "placeholders": { "amount": { "type": "String" } }
-  },
-  "paymentsPromoteSuccess": "¡Anuncio promocionado con éxito!",
-  "paymentsPromoteError": "Error al promocionar: {error}",
-  "@paymentsPromoteError": {
-    "description": "Snackbar shown when promoting a listing fails. {error} is the error.toString().",
-    "placeholders": { "error": { "type": "String" } }
-  },
   "paymentsContinueToCheckout": "Continuar a Stripe",
   "paymentsCheckoutError": "No se pudo iniciar el pago. Inténtalo de nuevo.",
   "paymentsCheckoutCancel": "Pago cancelado. No se ha cobrado nada.",

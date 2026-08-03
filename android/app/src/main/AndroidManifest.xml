@@ -39,6 +39,7 @@
                 <data android:path="/contacto"/>
                 <data android:path="/privacidad"/>
                 <data android:path="/terminos"/>
+                <data android:pathPrefix="/payment/"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

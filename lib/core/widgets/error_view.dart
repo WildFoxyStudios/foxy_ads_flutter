@@ -8,7 +8,8 @@
 //   * a warning icon (amber, large),
 //   * the [title] in `headlineMedium`,
 //   * the [message] in `bodyMedium` with horizontal padding,
-//   * an optional retry button (rendered only when [onRetry] is non-null).
+//   * an optional retry button labelled [retryLabel] (rendered only when
+//     [onRetry] is non-null).
 //
 // The button is intentionally a [TextButton] (not an `ElevatedButton`) so
 // the error view does not steal focus from the app bar's leading widget
@@ -21,11 +22,17 @@ class ErrorView extends StatelessWidget {
     super.key,
     required this.title,
     required this.message,
+    required this.retryLabel,
     this.onRetry,
   });
 
   final String title;
   final String message;
+
+  /// Localized label for the retry/back-home button. Always supplied by the
+  /// caller (see `AppLocalizations.commonErrorFallbackBackHome`), but only
+  /// rendered when [onRetry] is non-null.
+  final String retryLabel;
   final VoidCallback? onRetry;
 
   @override
@@ -57,7 +64,7 @@ class ErrorView extends StatelessWidget {
               const SizedBox(height: 24),
               TextButton(
                 onPressed: onRetry,
-                child: const Text('Volver al inicio'),
+                child: Text(retryLabel),
               ),
             ],
           ],

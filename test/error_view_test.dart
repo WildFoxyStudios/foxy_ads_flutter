@@ -21,6 +21,7 @@ void main() {
         const ErrorView(
           title: 'Algo salió mal',
           message: 'No pudimos cargar esta página.',
+          retryLabel: 'Volver al inicio',
         ),
       ));
 
@@ -34,17 +35,14 @@ void main() {
         ErrorView(
           title: 'Title',
           message: 'Body',
+          retryLabel: 'Retry',
           onRetry: () {},
         ),
       ));
 
-      // Both labels share a single button slot in the widget — the title
-      // "Volver al inicio" is the retry/back-home string passed in by the
-      // router. Either label format the brief allows for is acceptable.
-      final hasRetry = find.byType(ElevatedButton).evaluate().isNotEmpty ||
-          find.byType(TextButton).evaluate().isNotEmpty;
-      expect(hasRetry, isTrue,
-          reason: 'Expected a button when onRetry is non-null');
+      // The retry button renders the caller-supplied `retryLabel` (wired to
+      // `AppLocalizations.commonErrorFallbackBackHome` by the router).
+      expect(find.widgetWithText(TextButton, 'Retry'), findsOneWidget);
     });
 
     testWidgets('hides the retry button when onRetry is null',
@@ -53,11 +51,13 @@ void main() {
         const ErrorView(
           title: 'Title',
           message: 'Body',
+          retryLabel: 'Retry',
         ),
       ));
 
       expect(find.byType(ElevatedButton), findsNothing);
       expect(find.byType(TextButton), findsNothing);
+      expect(find.text('Retry'), findsNothing);
     });
 
     testWidgets('tapping the retry button invokes onRetry', (tester) async {
@@ -66,6 +66,7 @@ void main() {
         ErrorView(
           title: 'Title',
           message: 'Body',
+          retryLabel: 'Retry',
           onRetry: () => taps++,
         ),
       ));

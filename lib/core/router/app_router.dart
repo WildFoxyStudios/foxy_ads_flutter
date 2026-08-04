@@ -312,6 +312,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         body: ErrorView(
           title: l.commonErrorFallbackTitle,
           message: l.commonErrorFallbackBody,
+          retryLabel: l.commonErrorFallbackBackHome,
           onRetry: () => GoRouter.of(context).go('/'),
         ),
       );

@@ -826,5 +826,12 @@
   "chatError": "Impossible d'envoyer le message. Veuillez réessayer.",
   "chatRateLimited": "Trop de requêtes. Veuillez patienter un instant.",
   "chatWelcome": "Bonjour ! Je suis Foxy 🦊. Que recherchez-vous ? Je peux vous aider à trouver des annonces.",
-  "chatSearchingResults": "Recherche d'annonces..."
+  "chatSearchingResults": "Recherche d'annonces...",
+
+  "allListingsTitle": "Toutes les annonces",
+  "allListingsSortNewest": "Plus récentes",
+  "allListingsSortOldest": "Plus anciennes",
+  "allListingsSortPriceLow": "Prix : croissant",
+  "allListingsSortPriceHigh": "Prix : décroissant",
+  "allListingsViewAll": "Voir toutes les annonces"
 }

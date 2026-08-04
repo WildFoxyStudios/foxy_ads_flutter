@@ -826,5 +826,12 @@
   "chatError": "Não foi possível enviar a mensagem. Tente novamente.",
   "chatRateLimited": "Muitas solicitações. Aguarde um momento.",
   "chatWelcome": "Olá! Sou o Foxy 🦊. O que você está procurando? Posso ajudar a encontrar anúncios.",
-  "chatSearchingResults": "Buscando anúncios..."
+  "chatSearchingResults": "Buscando anúncios...",
+
+  "allListingsTitle": "Todos os anúncios",
+  "allListingsSortNewest": "Mais recentes",
+  "allListingsSortOldest": "Mais antigos",
+  "allListingsSortPriceLow": "Preço: do menor ao maior",
+  "allListingsSortPriceHigh": "Preço: do maior ao menor",
+  "allListingsViewAll": "Ver todos os anúncios"
 }

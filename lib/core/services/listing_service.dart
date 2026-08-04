@@ -9,6 +9,26 @@ import '../../features/real-estate/data/re_pricing.dart';
 
 enum PanelActionError { unauthenticated, forbidden, invalidInput, databaseError }
 
+/// Sort order for browse-all/category listing queries. Mirrors the web's
+/// `ListingSort` union (`newest | oldest | price_low | price_high`) used by
+/// `/anuncios`, `/categoria/[slug]`, and `/categoria/[slug]/[subcategory]`.
+enum ListingSort { newest, oldest, priceLow, priceHigh }
+
+/// `(column, ascending)` pair applied for a given [ListingSort]. Mirrors the
+/// web's `SORT_ORDER` table in `src/lib/listings/list.ts`.
+({String column, bool ascending}) _sortOrderFor(ListingSort sort) {
+  switch (sort) {
+    case ListingSort.newest:
+      return (column: 'created_at', ascending: false);
+    case ListingSort.oldest:
+      return (column: 'created_at', ascending: true);
+    case ListingSort.priceLow:
+      return (column: 'price', ascending: true);
+    case ListingSort.priceHigh:
+      return (column: 'price', ascending: false);
+  }
+}
+
 class PanelActionOutcome {
   final bool ok;
   final PanelActionError? error;
@@ -57,11 +77,17 @@ class ListingService {
   Future<List<Listing>> getListings({
     String? countryCode,
     String? categoryId,
+    String? subcategoryId,
     String? searchQuery,
     double? minPrice,
     double? maxPrice,
     String? city,
     bool featuredFirst = true,
+    // Explicit browse sort (newest/oldest/price_low/price_high — mirrors the
+    // web's ListingSort). Left null, the existing `featuredFirst`-driven
+    // ordering below is used UNCHANGED so the home/category/search screens
+    // that don't pass this param keep their current behavior exactly.
+    ListingSort? sort,
     int limit = 20,
     int offset = 0,
   }) async {
@@ -80,6 +106,10 @@ class ListingService {
 
     if (categoryId != null) {
       query = query.eq('category_id', categoryId);
+    }
+
+    if (subcategoryId != null) {
+      query = query.eq('subcategory_id', subcategoryId);
     }
 
     if (searchQuery != null && searchQuery.isNotEmpty) {
@@ -102,7 +132,12 @@ class ListingService {
 
     // Apply ordering and pagination
     PostgrestTransformBuilder orderedQuery;
-    if (featuredFirst) {
+    if (sort != null) {
+      final order = _sortOrderFor(sort);
+      orderedQuery = query
+          .order(order.column, ascending: order.ascending)
+          .order('is_featured', ascending: false);
+    } else if (featuredFirst) {
       orderedQuery = query
           .order('is_featured', ascending: false)
           .order('created_at', ascending: false);

@@ -1,3 +1,8 @@
+// Browse-all listings screen (`/anuncios`) — mirrors the web's
+// `src/app/[locale]/anuncios/page.tsx`: every active listing across
+// categories, filtered by the selected country, with a sort dropdown
+// (newest/oldest/price-low/price-high) in the AppBar.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,55 +13,65 @@ import '../../../../core/services/country_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 
-/// Family key: `categoryId` + an optional `subcategoryId`. When
-/// [subcategoryId] is present, listings are additionally filtered by
-/// `subcategory_id` (the `/category/:categoryId/:subcategoryId` route).
-typedef CategoryListingsArgs = ({String categoryId, String? subcategoryId});
-
-final categoryListingsProvider =
-    FutureProvider.family<List<Listing>, CategoryListingsArgs>((
-  ref,
-  args,
-) async {
+final allListingsProvider =
+    FutureProvider.family<List<Listing>, ListingSort>((ref, sort) async {
   final listingService = ref.read(listingServiceProvider);
   final country = ref.watch(selectedCountryProvider);
   return await listingService.getListings(
     countryCode: country.code,
-    categoryId: args.categoryId,
-    subcategoryId: args.subcategoryId,
+    sort: sort,
     limit: 50,
   );
 });
 
-class CategoryListingsScreen extends ConsumerWidget {
-  final String categoryId;
-  final String categoryName;
-  final String? subcategoryId;
-
-  const CategoryListingsScreen({
-    super.key,
-    required this.categoryId,
-    required this.categoryName,
-    this.subcategoryId,
-  });
+class AllListingsScreen extends ConsumerStatefulWidget {
+  const AllListingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AllListingsScreen> createState() => _AllListingsScreenState();
+}
+
+class _AllListingsScreenState extends ConsumerState<AllListingsScreen> {
+  ListingSort _sort = ListingSort.newest;
+
+  String _sortLabel(AppLocalizations l10n, ListingSort sort) {
+    switch (sort) {
+      case ListingSort.newest:
+        return l10n.allListingsSortNewest;
+      case ListingSort.oldest:
+        return l10n.allListingsSortOldest;
+      case ListingSort.priceLow:
+        return l10n.allListingsSortPriceLow;
+      case ListingSort.priceHigh:
+        return l10n.allListingsSortPriceHigh;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final args = (categoryId: categoryId, subcategoryId: subcategoryId);
-    final listingsAsync = ref.watch(categoryListingsProvider(args));
+    final listingsAsync = ref.watch(allListingsProvider(_sort));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(categoryName),
+        title: Text(l10n.allListingsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () => context.push('/search'),
+          PopupMenuButton<ListingSort>(
+            icon: const Icon(Icons.sort),
+            initialValue: _sort,
+            onSelected: (value) => setState(() => _sort = value),
+            itemBuilder: (context) => ListingSort.values
+                .map(
+                  (sort) => PopupMenuItem<ListingSort>(
+                    value: sort,
+                    child: Text(_sortLabel(l10n, sort)),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -75,17 +90,6 @@ class CategoryListingsScreen extends ConsumerWidget {
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.categoryDetailBeFirst(categoryName),
-                    style: TextStyle(color: AppColors.textSecondary),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () => context.push('/create-listing'),
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n.listingCreateTitle),
                   ),
                 ],
               ),
@@ -120,8 +124,7 @@ class CategoryListingsScreen extends ConsumerWidget {
               Text(l10n.commonErrorWithMessage(e.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () =>
-                    ref.invalidate(categoryListingsProvider(args)),
+                onPressed: () => ref.invalidate(allListingsProvider(_sort)),
                 child: Text(l10n.commonRetry),
               ),
             ],

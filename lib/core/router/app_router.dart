@@ -11,6 +11,7 @@ import '../../features/listings/presentation/screens/listing_detail_screen.dart'
 import '../../features/listings/presentation/screens/create_listing_screen.dart';
 import '../../features/listings/presentation/screens/category_listings_screen.dart';
 import '../../features/listings/presentation/screens/all_categories_screen.dart';
+import '../../features/listings/presentation/screens/all_listings_screen.dart';
 import '../../features/real-estate/presentation/screens/inmuebles_en_screen.dart';
 import '../../features/real-estate/presentation/screens/city_landing_screen.dart';
 import '../../features/real-estate/presentation/screens/valuation_screen.dart';
@@ -139,10 +140,35 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
+      // Subcategory listings — filters by BOTH category_id and
+      // subcategory_id. Registered after the plain `/category/:categoryId`
+      // route for clarity (go_router matches by segment count, so there's
+      // no shadowing between the two).
+      GoRoute(
+        path: '/category/:categoryId/:subcategoryId',
+        name: 'categorySubcategoryListings',
+        builder: (context, state) {
+          final categoryId = state.pathParameters['categoryId']!;
+          final subcategoryId = state.pathParameters['subcategoryId']!;
+          final categoryName = state.uri.queryParameters['name'] ?? 'Categoría';
+          return CategoryListingsScreen(
+            categoryId: categoryId,
+            categoryName: categoryName,
+            subcategoryId: subcategoryId,
+          );
+        },
+      ),
       GoRoute(
         path: '/categories',
         name: 'allCategories',
         builder: (context, state) => const AllCategoriesScreen(),
+      ),
+      // Browse-all listings with a sort dropdown (mirrors the web's
+      // /anuncios).
+      GoRoute(
+        path: AppRoutes.allListings,
+        name: 'allListings',
+        builder: (context, state) => const AllListingsScreen(),
       ),
 
       // Profile Routes
@@ -350,11 +376,18 @@ class AppRoutes {
   static const String selectCountry = '/select-country';
   static const String realEstateSearch = '/inmuebles-en';
   static const String promociones = '/promociones';
+  static const String allListings = '/anuncios';
 
   static String listingDetail(String id) => '/listing/$id';
   static String editListing(String id) => '/edit-listing/$id';
   static String categoryListings(String categoryId, String name) =>
       '/category/$categoryId?name=$name';
+  static String categorySubcategoryListings(
+    String categoryId,
+    String subcategoryId,
+    String name,
+  ) =>
+      '/category/$categoryId/$subcategoryId?name=$name';
   static String promoteListing(String listingId) => '/promote/$listingId';
   static String cityLanding(String city) => '/inmuebles-en/$city';
   static String valuation() => '/valorar';

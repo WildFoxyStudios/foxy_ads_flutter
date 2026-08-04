@@ -43,8 +43,38 @@ class AllCategoriesScreen extends ConsumerWidget {
         ),
         data: (categories) => ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: categories.length + 2,
+          itemCount: categories.length + 3,
           itemBuilder: (context, index) {
+            if (index == categories.length + 2) {
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Text('📋', style: TextStyle(fontSize: 24)),
+                    ),
+                  ),
+                  title: Text(
+                    l10n.allListingsViewAll,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => context.push(AppRoutes.allListings),
+                ),
+              );
+            }
             if (index == categories.length) {
               return Card(
                 margin: const EdgeInsets.only(top: 4, bottom: 12),
@@ -173,7 +203,11 @@ class AllCategoriesScreen extends ConsumerWidget {
                             size: 16,
                           ),
                           onTap: () => context.push(
-                            '/category/${sub.id}?name=${sub.nameEs.isNotEmpty ? sub.nameEs : sub.name}',
+                            AppRoutes.categorySubcategoryListings(
+                              category.id,
+                              sub.id,
+                              sub.nameEs.isNotEmpty ? sub.nameEs : sub.name,
+                            ),
                           ),
                         );
                       }).toList(),

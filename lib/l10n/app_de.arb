@@ -826,5 +826,12 @@
   "chatError": "Nachricht konnte nicht gesendet werden. Bitte versuche es erneut.",
   "chatRateLimited": "Zu viele Anfragen. Bitte warte einen Moment.",
   "chatWelcome": "Hallo! Ich bin Foxy 🦊. Wonach suchst du? Ich helfe dir, Anzeigen zu finden.",
-  "chatSearchingResults": "Anzeigen werden gesucht..."
+  "chatSearchingResults": "Anzeigen werden gesucht...",
+
+  "allListingsTitle": "Alle Anzeigen",
+  "allListingsSortNewest": "Neueste zuerst",
+  "allListingsSortOldest": "Älteste zuerst",
+  "allListingsSortPriceLow": "Preis: aufsteigend",
+  "allListingsSortPriceHigh": "Preis: absteigend",
+  "allListingsViewAll": "Alle Anzeigen ansehen"
 }

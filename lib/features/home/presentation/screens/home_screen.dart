@@ -8,6 +8,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../ads/ad_banner.dart';
 import '../widgets/category_card.dart';
 import '../widgets/listing_card.dart';
 import '../widgets/featured_listing_card.dart';
@@ -305,6 +306,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),
+              ),
+            ),
+
+            // Ad Banner (below the featured rail — mirrors the web's
+            // AdSense placement). Renders nothing while kAdsEnabled=false.
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Center(child: AdBanner()),
               ),
             ),
 

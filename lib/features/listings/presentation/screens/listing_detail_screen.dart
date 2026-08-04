@@ -13,6 +13,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/util/site_url.dart';
 import '../../../../core/util/text_util.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../ads/ad_banner.dart';
 import '../../../agency/data/agency_service.dart';
 import '../widgets/contact_sheet.dart';
 import '../widgets/report_sheet.dart';
@@ -441,6 +442,9 @@ class ListingDetailScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
+
+                      const Divider(height: 32),
+                      const Center(child: AdBanner()),
 
                       const SizedBox(height: 100),
                     ],

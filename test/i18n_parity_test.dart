@@ -81,6 +81,25 @@ void main() {
       }
     });
 
+    test('app_pt.arb base fallback exists (gen-l10n REQUIRES it for app_pt_BR.arb)', () {
+      // Flutter gen-l10n requires the language-only base ARB (app_pt.arb) to
+      // exist whenever a country-specific ARB (app_pt_BR.arb) is present.
+      // Deleting app_pt.arb makes `flutter build apk --release` fail with
+      // "Arb file for a fallback, pt, does not exist" — even though
+      // `flutter test` still passes (it reuses the already-generated Dart).
+      // DO NOT delete app_pt.arb. It is a copy of app_pt_BR.arb; a bare `pt`
+      // device resolves to Brazilian Portuguese (better than the es fallback).
+      final repoRoot = _findRepoRoot();
+      final ptBase = File('${repoRoot}lib/l10n/app_pt.arb');
+      expect(
+        ptBase.existsSync(),
+        isTrue,
+        reason: 'app_pt.arb is missing — gen-l10n needs it as the base fallback '
+            'for app_pt_BR.arb, or the release build fails. Restore it as a '
+            'copy of app_pt_BR.arb with "@@locale": "pt".',
+      );
+    });
+
     test('translation coverage floor — pt-BR >= 500 translated keys', () {
       _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_pt_BR.arb', floor: 500);
     });

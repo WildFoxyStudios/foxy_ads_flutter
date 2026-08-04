@@ -27,6 +27,7 @@ import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
 import '../../data/development_model.dart';
@@ -415,7 +416,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
       title: Text(_isEdit
           ? l10n.developmentFormEdit
           : l10n.developmentFormNew),
-      backgroundColor: AppColors.surface,
+      backgroundColor: surfaceFor(context),
       foregroundColor: AppColors.textPrimary,
       elevation: 0,
       leading: IconButton(
@@ -789,7 +790,7 @@ class _NotSignedInScaffold extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.developmentFormTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
       ),
       body: Center(
@@ -839,7 +840,7 @@ class _NotVerifiedScaffold extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.developmentFormTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),

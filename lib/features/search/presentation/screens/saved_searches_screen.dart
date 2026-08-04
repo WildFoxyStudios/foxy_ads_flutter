@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/models/saved_search_model.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -139,7 +140,7 @@ class SavedSearchesScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final search = searches[index];
                 return Material(
-                  color: AppColors.surface,
+                  color: surfaceFor(context),
                   borderRadius: BorderRadius.circular(12),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),

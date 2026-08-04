@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/models/country_model.dart';
 import '../../../../core/models/listing_model.dart';
@@ -420,7 +421,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: surfaceFor(context),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: AppColors.border,

@@ -819,12 +819,12 @@
   "termsS12Title": "12. Contato",
   "termsS12Body": "Para qualquer dúvida sobre estes termos:",
 
-  "chatBubbleTooltip": "Pregúntale a Foxy",
+  "chatBubbleTooltip": "Pergunte ao Foxy",
   "chatSheetTitle": "Foxy",
-  "chatInputHint": "Escribe tu mensaje...",
+  "chatInputHint": "Escreva sua mensagem...",
   "chatSend": "Enviar",
-  "chatError": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
-  "chatRateLimited": "Demasiadas peticiones. Espera un momento.",
-  "chatWelcome": "¡Hola! Soy Foxy 🦊. ¿Qué estás buscando? Puedo ayudarte a encontrar anuncios.",
-  "chatSearchingResults": "Buscando anuncios..."
+  "chatError": "Não foi possível enviar a mensagem. Tente novamente.",
+  "chatRateLimited": "Muitas solicitações. Aguarde um momento.",
+  "chatWelcome": "Olá! Sou o Foxy 🦊. O que você está procurando? Posso ajudar a encontrar anúncios.",
+  "chatSearchingResults": "Buscando anúncios..."
 }

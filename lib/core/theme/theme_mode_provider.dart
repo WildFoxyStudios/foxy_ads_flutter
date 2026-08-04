@@ -7,19 +7,22 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 
   @override
   ThemeMode build() {
-    _loadFromPrefs();
-    return ThemeMode.system;
+    // Capture the synchronous default; load will only override if the user
+    // hasn't changed it yet.
+    final initial = ThemeMode.system;
+    state = initial;
+    _loadFromPrefs(initial);
+    return initial;
   }
 
-  Future<void> _loadFromPrefs() async {
+  Future<void> _loadFromPrefs(ThemeMode expected) async {
     final prefs = await SharedPreferences.getInstance();
-    final value = prefs.getString(_key);
-    if (value == null) return;
+    final v = prefs.getString(_key);
+    if (v == null) return;
     final parsed = ThemeMode.values.firstWhere(
-      (mode) => mode.name == value,
-      orElse: () => ThemeMode.system,
-    );
-    if (parsed != state) state = parsed;
+      (m) => m.name == v, orElse: () => ThemeMode.system);
+    // Only apply if the user hasn't touched the picker since startup.
+    if (state == expected && parsed != state) state = parsed;
   }
 
   Future<void> set(ThemeMode mode) async {

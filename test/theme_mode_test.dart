@@ -35,4 +35,20 @@ void main() {
 
     expect(container.read(themeModeProvider), ThemeMode.dark);
   });
+
+  test('user choice wins when set beats load (race guard)', () async {
+    SharedPreferences.setMockInitialValues({'app_theme_mode': 'light'});
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    // Subscribe (triggers build + unawaited load), then immediately set dark
+    // synchronously — this is the user touching the picker before load resolves.
+    container.read(themeModeProvider);
+    await container.read(themeModeProvider.notifier).set(ThemeMode.dark);
+    // Let any in-flight _loadFromPrefs microtask settle.
+    await pumpEventQueue();
+
+    // The user's fresh selection must NOT be clobbered by the stale load.
+    expect(container.read(themeModeProvider), ThemeMode.dark);
+  });
 }

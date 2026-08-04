@@ -23,10 +23,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
-    show AuthClientOptions, SupabaseClient;
+    show AuthClientOptions, SupabaseClient, User;
 
 import 'package:foxy_ads/core/models/category_model.dart';
+import 'package:foxy_ads/core/models/country_model.dart';
 import 'package:foxy_ads/core/models/saved_search_model.dart';
+import 'package:foxy_ads/core/providers/selected_country_provider.dart';
+import 'package:foxy_ads/core/services/auth_service.dart';
 import 'package:foxy_ads/core/services/saved_searches_service.dart';
 import 'package:foxy_ads/core/theme/app_colors.dart';
 import 'package:foxy_ads/features/developments/presentation/screens/development_form_screen.dart';
@@ -89,6 +92,26 @@ List<SavedSearch> _savedSearchesFixture() {
       createdAt: DateTime(2026, 1, 2),
     ),
   ];
+}
+
+/// Signed-in `User` fixture used by the create_listing dark-mode test so the
+/// screen renders the form (which contains the swapped add-image tile)
+/// instead of the `_NotSignedInScaffold` branch.
+User _signedInUser() {
+  return User(
+    id: 'u1',
+    appMetadata: const {},
+    userMetadata: const {},
+    aud: 'authenticated',
+    createdAt: '2026-01-01T00:00:00Z',
+  );
+}
+
+/// Overrides `SelectedCountryNotifier.build()` so no `SharedPreferences`
+/// platform channel is touched during the test.
+class _FakeCountryNotifier extends SelectedCountryNotifier {
+  @override
+  Country build() => Country.defaultCountries.first;
 }
 
 Widget _wrap({
@@ -198,60 +221,158 @@ void main() {
   // ----- create_listing_screen.dart ----------------------------------------
   //
   // The single surface swapped in this widget is the add-image tile
-  // Container. That tile only renders in the signed-in branch, which
-  // requires re-wiring the auth provider. To keep the test self-contained
-  // we assert on the AppBar backgroundColor (the next-most-relevant
-  // surface, and a regression vector if a future change hardcodes it).
+  // Container at line 432 (`color: surfaceFor(context)`). That tile only
+  // renders in the signed-in branch, so the test overrides
+  // `authStateProvider` with a logged-in user (and stubs the categories +
+  // selected-country providers so the form builds without a real backend).
+  // The test then locates the tile by its icon, reads the resolved
+  // `Container`'s `BoxDecoration.color`, and asserts it equals
+  // `Theme.of(context).colorScheme.surface` in BOTH light and dark modes.
   //
-  // In the signed-out branch (the default when no auth state is emitted),
-  // the AppBar paints without an explicit backgroundColor so its color is
-  // derived from the M3 theme. The hardcoded-white assertion still guards
-  // against a future leak: if anyone introduces a `backgroundColor:
-  // AppColors.surface` here, the test fails.
+  // If a future change reverts the Container to `color: AppColors.surface`
+  // (the fixed 0xFFFFFFFF), the dark-mode assertion fails because the
+  // resolved color would not match the dark color scheme surface. The
+  // light-mode assertion additionally guards against the helper being
+  // removed entirely (so the constant leaks back in).
+
+  /// Pumps `CreateListingScreen` in the signed-in branch with the minimum
+  /// set of provider overrides, then returns the [WidgetTester] and the
+  /// `Container` carrying the add-image tile decoration.
+  Future<({Container container, BuildContext context})> pumpSignedIn(
+    WidgetTester tester, {
+    required ThemeMode themeMode,
+  }) async {
+    // The form is a long ListView (photos, category, title, description,
+    // price, contact fields, submit button). At the default 800x600 test
+    // surface the add-image tile sits well above the fold so this is not
+    // strictly needed, but we match the form-mode test's surface size for
+    // consistency in case the layout shifts.
+    await tester.binding.setSurfaceSize(const Size(800, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authStateProvider.overrideWith(
+            (ref) => Stream<User?>.value(_signedInUser()),
+          ),
+          createListingCategoriesProvider.overrideWith(
+            (ref) async => const <Category>[],
+          ),
+          selectedCountryProvider.overrideWith(() => _FakeCountryNotifier()),
+        ],
+        child: _wrap(
+          themeMode: themeMode,
+          home: const CreateListingScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // The add-image tile is the only Container in the form that has an
+    // Icon(Icons.add_a_photo) child. Locate it via that icon (stable
+    // across refactors) and walk up to the enclosing Container.
+    final iconFinder = find.byIcon(Icons.add_a_photo);
+    expect(
+      iconFinder,
+      findsOneWidget,
+      reason:
+          'Expected the add-a-photo icon to be present in the signed-in '
+          'create_listing form (the tile Container is its parent).',
+    );
+    // Use a context INSIDE the subtree where `surfaceFor(context)` was
+    // evaluated (i.e. the Container's own element). `Theme.of` walks up
+    // from there and resolves to the active theme honoring `themeMode`
+    // — `MaterialApp.theme` alone would yield the light scheme even when
+    // the app is in dark mode.
+    final ctx = tester.element(
+      find.ancestor(of: iconFinder, matching: find.byType(Container)).first,
+    );
+    final tileContainer = tester.widget<Container>(
+      find.ancestor(of: iconFinder, matching: find.byType(Container)).first,
+    );
+
+    return (container: tileContainer, context: ctx);
+  }
 
   testWidgets(
-    'create_listing_screen has no hardcoded white leak in dark',
+    'create_listing add-image tile Container follows the active theme in dark',
     (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            createListingCategoriesProvider.overrideWith(
-              (ref) async => <Category>[],
-            ),
-          ],
-          child: _wrap(
-            themeMode: ThemeMode.dark,
-            home: const CreateListingScreen(),
-          ),
-        ),
+      final result = await pumpSignedIn(tester, themeMode: ThemeMode.dark);
+      final deco = result.container.decoration;
+      expect(
+        deco,
+        isA<BoxDecoration>(),
+        reason:
+            'Expected the add-image tile to have a BoxDecoration (it sets '
+            'color/border/borderRadius in source).',
       );
-      await tester.pumpAndSettle();
+      final bg = (deco as BoxDecoration).color;
+      expect(
+        bg,
+        isNotNull,
+        reason: 'The add-image tile BoxDecoration must declare a color.',
+      );
+      // 1. The color must NOT be the hardcoded `AppColors.surface`
+      //    constant — that's the regression we are guarding against.
+      expect(
+        bg,
+        isNot(equals(_hardcodedWhite)),
+        reason:
+            'create_listing add-image tile leaked AppColors.surface '
+            '($_hardcodedWhite) into dark mode. Switch to surfaceFor(context) '
+            'so it follows the active theme.',
+      );
+      // 2. The color must equal the resolved theme surface — this is
+      //    what `surfaceFor(context)` returns. If the helper is wired
+      //    through, this assertion holds in both light and dark.
+      final expectedSurface =
+          Theme.of(result.context).colorScheme.surface;
+      expect(
+        bg,
+        equals(expectedSurface),
+        reason:
+            'create_listing add-image tile color ($bg) should equal the '
+            'resolved theme surface ($expectedSurface) in dark mode.',
+      );
+      // Sanity: in dark mode the surface must be dark — if a future
+      // framework upgrade flips the default, this assertion catches it.
+      expect(
+        Theme.of(result.context).brightness,
+        Brightness.dark,
+        reason:
+            'Test sanity check: themeMode.dark should resolve to a dark '
+            'brightness.',
+      );
+    },
+  );
 
-      // No Container/BoxDecoration on the page should be the hardcoded
-      // white. The signed-out scaffold has no Container with a color in
-      // its body, so this is currently a no-op — but it would FAIL if a
-      // future change hardcoded `color: AppColors.surface` anywhere.
-      final containers = tester.widgetList<Container>(find.byType(Container));
-      for (final c in containers) {
-        final deco = c.decoration;
-        if (deco is! BoxDecoration) continue;
-        final bg = deco.color;
-        if (bg == null) continue;
-        expect(
-          bg,
-          isNot(equals(_hardcodedWhite)),
-          reason:
-              'create_listing_screen Container leaked AppColors.surface '
-              '($_hardcodedWhite) into dark mode.',
-        );
-      }
-
-      // And the AppBar must NOT carry the hardcoded white either.
-      final appBars = tester.widgetList<AppBar>(find.byType(AppBar));
-      for (final a in appBars) {
-        if (a.backgroundColor == null) continue;
-        expect(a.backgroundColor, isNot(equals(_hardcodedWhite)));
-      }
+  testWidgets(
+    'create_listing add-image tile Container follows the active theme in light',
+    (tester) async {
+      final result = await pumpSignedIn(tester, themeMode: ThemeMode.light);
+      final deco = result.container.decoration;
+      expect(deco, isA<BoxDecoration>());
+      final bg = (deco as BoxDecoration).color;
+      expect(bg, isNotNull);
+      expect(
+        bg,
+        isNot(equals(_hardcodedWhite)),
+        reason:
+            'create_listing add-image tile is still using the hardcoded '
+            'AppColors.surface ($_hardcodedWhite) in light mode. Switch to '
+            'surfaceFor(context) so it follows the active theme.',
+      );
+      final expectedSurface =
+          Theme.of(result.context).colorScheme.surface;
+      expect(
+        bg,
+        equals(expectedSurface),
+        reason:
+            'create_listing add-image tile color ($bg) should equal the '
+            'resolved theme surface ($expectedSurface) in light mode.',
+      );
+      expect(Theme.of(result.context).brightness, Brightness.light);
     },
   );
 

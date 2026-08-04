@@ -7,22 +7,33 @@ final _uuidRe = RegExp(
 
 /// Maps an incoming deep-link [uri] to a go_router location (as a [Uri]
 /// carrying path + query), or null when the caller should fall back to home.
-/// Only our https hosts + the foxyads scheme are honored. The only real
-/// remap is /anuncio/:id -> /listing/:id.
+/// Only our https hosts + the foxyads scheme are honored.
+///
+/// Path segments are read via [Uri.pathSegments], which returns the
+/// *decoded* form (e.g. `búsquedas-guardadas`, NOT `b%C3%BAsquedas-...`).
+/// That keeps the switch arms agnostic of whether the inbound URI was
+/// percent-encoded or raw utf-8 — both forms resolve to the same target.
+/// For the `foxyads://` scheme the host itself is the first segment; we
+/// decode it with [Uri.decodeComponent] so that a percent-encoded host
+/// (e.g. `b%C3%BAsquedas-guardadas`) and a raw host (`búsquedas-guardadas`)
+/// both hit the same arm.
 Uri? resolveDeepLink(Uri uri) {
   // Normalize the path across the two link forms.
-  final String path;
+  final List<String> segments;
   if (uri.scheme == 'https' && _trustedHosts.contains(uri.host)) {
-    path = uri.path;
+    if (uri.pathSegments.isEmpty) return null;
+    segments = uri.pathSegments;
   } else if (uri.scheme == _scheme) {
-    // foxyads://anuncio/123  -> host='anuncio', path='/123'  -> '/anuncio/123'
-    path = '/${uri.host}${uri.path}';
+    // foxyads://anuncio/123  -> host='anuncio', path='/123'
+    // foxyads://búsquedas-guardadas -> host is the only segment, path empty.
+    final host = Uri.decodeComponent(uri.host);
+    if (host.isEmpty) return null;
+    final tail = uri.pathSegments; // already decoded by Dart
+    segments = <String>[host, ...tail];
+    if (segments.isEmpty) return null;
   } else {
     return null; // foreign host / scheme
   }
-
-  final segments = path.split('/').where((s) => s.isNotEmpty).toList();
-  if (segments.isEmpty) return null;
 
   bool isId(String s) => _uuidRe.hasMatch(s);
 
@@ -68,6 +79,25 @@ Uri? resolveDeepLink(Uri uri) {
         );
       }
       return null;
+    case 'promocionar':
+      // Auth-gated: /promocionar/:listingId -> /promote/:listingId
+      if (segments.length == 2 && isId(segments[1])) {
+        return Uri(path: '/promote/${segments[1]}');
+      }
+      return null;
+    case 'perfil':
+      return segments.length == 1 ? Uri(path: '/profile') : null;
+    case 'mis-anuncios':
+      return segments.length == 1 ? Uri(path: '/my-listings') : null;
+    case 'favoritos':
+      return segments.length == 1 ? Uri(path: '/favorites') : null;
+    case 'búsquedas-guardadas':
+      // The non-ASCII slug is preserved by [Uri.pathSegments] / by the
+      // explicit [Uri.decodeComponent] of the scheme host above. Both
+      // `foxyads://búsquedas-guardadas` and
+      // `https://foxyads.app/búsquedas-guardadas` (raw or percent-encoded)
+      // land on the same arm.
+      return segments.length == 1 ? Uri(path: '/saved-searches') : null;
     default:
       return null;
   }

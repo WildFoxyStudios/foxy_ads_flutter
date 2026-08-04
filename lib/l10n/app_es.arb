@@ -17,6 +17,9 @@
   "commonEdit": "Editar",
   "localeSwitcherAriaLabel": "Seleccionar idioma",
   "commonErrorWithMessage": "Error: {error}",
+  "commonErrorFallbackTitle": "Algo salió mal",
+  "commonErrorFallbackBody": "No pudimos cargar esta página. Inténtalo de nuevo.",
+  "commonErrorFallbackBackHome": "Volver al inicio",
   "@commonErrorWithMessage": {
     "description": "Generic 'Error: <msg>' label. {error} is the error.toString().",
     "placeholders": { "error": { "type": "String" } }

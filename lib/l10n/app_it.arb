@@ -16,6 +16,9 @@
   "commonEdit": "Modifica",
   "localeSwitcherAriaLabel": "Seleziona lingua",
   "commonErrorWithMessage": "Errore: {error}",
+  "commonErrorFallbackTitle": "Qualcosa è andato storto",
+  "commonErrorFallbackBody": "Non siamo riusciti a caricare questa pagina. Riprova.",
+  "commonErrorFallbackBackHome": "Torna alla home",
 
   "authWelcomeBack": "Bentornato!",
   "authLoginSubtitle": "Accedi per pubblicare i tuoi annunci",

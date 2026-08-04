@@ -16,6 +16,9 @@
   "commonEdit": "Edit",
   "localeSwitcherAriaLabel": "Select language",
   "commonErrorWithMessage": "Error: {error}",
+  "commonErrorFallbackTitle": "Something went wrong",
+  "commonErrorFallbackBody": "We couldn't load this page. Please try again.",
+  "commonErrorFallbackBackHome": "Back to home",
 
   "authWelcomeBack": "Welcome back!",
   "authLoginSubtitle": "Sign in to publish your listings",

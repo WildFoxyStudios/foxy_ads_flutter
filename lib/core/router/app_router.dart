@@ -37,6 +37,7 @@ import '../../features/static/screens/privacy_screen.dart';
 import '../../features/static/screens/terms_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../widgets/error_view.dart';
 import '../widgets/main_navigation_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -304,8 +305,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
     ],
-    errorBuilder: (context, state) =>
-        Scaffold(body: Center(child: Text('Error: ${state.error}'))),
+    errorBuilder: (context, state) {
+      final l = AppLocalizations.of(context);
+      return Scaffold(
+        appBar: AppBar(title: Text(l.commonErrorFallbackTitle)),
+        body: ErrorView(
+          title: l.commonErrorFallbackTitle,
+          message: l.commonErrorFallbackBody,
+          onRetry: () => GoRouter.of(context).go('/'),
+        ),
+      );
+    },
   );
 });
 

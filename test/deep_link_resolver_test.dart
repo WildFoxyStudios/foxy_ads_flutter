@@ -101,6 +101,79 @@ void main() {
     });
   });
 
+  group('resolveDeepLink T3: 5 new deeplink paths (auth-gated screens)', () {
+    // /promocionar/:listingId -> /promote/:listingId
+    test('https: /promocionar/:id -> /promote/:id', () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'https://foxyads.app/promocionar/$_uuid')),
+          Uri(path: '/promote/$_uuid'));
+    });
+    test('foxyads://: /promocionar/:id -> /promote/:id', () {
+      expect(
+          resolveDeepLink(Uri.parse('foxyads://promocionar/$_uuid')),
+          Uri(path: '/promote/$_uuid'));
+    });
+
+    // /perfil -> /profile
+    test('https: /perfil -> /profile', () {
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/perfil')),
+          Uri(path: '/profile'));
+    });
+    test('foxyads://: /perfil -> /profile', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://perfil')),
+          Uri(path: '/profile'));
+    });
+
+    // /mis-anuncios -> /my-listings
+    test('https: /mis-anuncios -> /my-listings', () {
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/mis-anuncios')),
+          Uri(path: '/my-listings'));
+    });
+    test('foxyads://: /mis-anuncios -> /my-listings', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://mis-anuncios')),
+          Uri(path: '/my-listings'));
+    });
+
+    // /favoritos -> /favorites
+    test('https: /favoritos -> /favorites', () {
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/favoritos')),
+          Uri(path: '/favorites'));
+    });
+    test('foxyads://: /favoritos -> /favorites', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://favoritos')),
+          Uri(path: '/favorites'));
+    });
+
+    // /búsquedas-guardadas -> /saved-searches (the non-ASCII slug)
+    test('https: /búsquedas-guardadas (raw utf8) -> /saved-searches', () {
+      expect(
+          resolveDeepLink(Uri.parse('https://foxyads.app/búsquedas-guardadas')),
+          Uri(path: '/saved-searches'));
+    });
+    test(
+        'https: /búsquedas-guardadas (percent-encoded) -> /saved-searches',
+        () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'https://foxyads.app/b%C3%BAsquedas-guardadas')),
+          Uri(path: '/saved-searches'));
+    });
+    test('foxyads://: /búsquedas-guardadas (raw utf8) -> /saved-searches', () {
+      expect(
+          resolveDeepLink(Uri.parse('foxyads://búsquedas-guardadas')),
+          Uri(path: '/saved-searches'));
+    });
+    test(
+        'foxyads://: /búsquedas-guardadas (percent-encoded host) -> /saved-searches',
+        () {
+      expect(
+          resolveDeepLink(
+              Uri.parse('foxyads://b%C3%BAsquedas-guardadas')),
+          Uri(path: '/saved-searches'));
+    });
+  });
+
   group('resolveDeepLink guards -> null (caller sends home)', () {
     test('bad id', () {
       expect(resolveDeepLink(Uri.parse('https://foxyads.app/anuncio/not-a-uuid')),

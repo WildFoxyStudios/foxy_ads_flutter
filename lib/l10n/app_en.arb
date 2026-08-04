@@ -862,5 +862,14 @@
   "termsS11Title": "11. Governing Law",
   "termsS11Body": "These terms are governed by Spanish law. Any dispute will be submitted to the courts of Pavia, Italy.",
   "termsS12Title": "12. Contact",
-  "termsS12Body": "For any questions regarding these terms:"
+  "termsS12Body": "For any questions regarding these terms:",
+
+  "chatBubbleTooltip": "Ask Foxy",
+  "chatSheetTitle": "Foxy",
+  "chatInputHint": "Type your message...",
+  "chatSend": "Send",
+  "chatError": "Couldn't send the message. Please try again.",
+  "chatRateLimited": "Too many requests. Please wait a moment.",
+  "chatWelcome": "Hi! I'm Foxy 🦊. What are you looking for? I can help you find listings.",
+  "chatSearchingResults": "Searching listings..."
 }

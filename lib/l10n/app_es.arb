@@ -1122,5 +1122,14 @@
   "termsS11Title": "11. Ley Aplicable",
   "termsS11Body": "Estos términos se rigen por la legislación española. Cualquier disputa se someterá a los tribunales de Pavia, Italia.",
   "termsS12Title": "12. Contacto",
-  "termsS12Body": "Para cualquier consulta sobre estos términos:"
+  "termsS12Body": "Para cualquier consulta sobre estos términos:",
+
+  "chatBubbleTooltip": "Pregúntale a Foxy",
+  "chatSheetTitle": "Foxy",
+  "chatInputHint": "Escribe tu mensaje...",
+  "chatSend": "Enviar",
+  "chatError": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+  "chatRateLimited": "Demasiadas peticiones. Espera un momento.",
+  "chatWelcome": "¡Hola! Soy Foxy 🦊. ¿Qué estás buscando? Puedo ayudarte a encontrar anuncios.",
+  "chatSearchingResults": "Buscando anuncios..."
 }

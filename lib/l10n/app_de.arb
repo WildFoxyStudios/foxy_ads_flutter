@@ -817,5 +817,14 @@
   "termsS11Title": "11. Anwendbares Recht",
   "termsS11Body": "Diese Bedingungen unterliegen deutschem Recht. Alle Streitigkeiten werden den Gerichten in Pavia, Italien, vorgelegt.",
   "termsS12Title": "12. Kontakt",
-  "termsS12Body": "Für Fragen zu diesen Bedingungen:"
+  "termsS12Body": "Für Fragen zu diesen Bedingungen:",
+
+  "chatBubbleTooltip": "Pregúntale a Foxy",
+  "chatSheetTitle": "Foxy",
+  "chatInputHint": "Escribe tu mensaje...",
+  "chatSend": "Enviar",
+  "chatError": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+  "chatRateLimited": "Demasiadas peticiones. Espera un momento.",
+  "chatWelcome": "¡Hola! Soy Foxy 🦊. ¿Qué estás buscando? Puedo ayudarte a encontrar anuncios.",
+  "chatSearchingResults": "Buscando anuncios..."
 }

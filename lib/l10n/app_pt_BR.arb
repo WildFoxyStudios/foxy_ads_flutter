@@ -817,5 +817,14 @@
   "termsS11Title": "11. Lei Aplicável",
   "termsS11Body": "Estes termos são regidos pela legislação brasileira. Qualquer disputa será submetida aos tribunais de Pavia, Itália.",
   "termsS12Title": "12. Contato",
-  "termsS12Body": "Para qualquer dúvida sobre estes termos:"
+  "termsS12Body": "Para qualquer dúvida sobre estes termos:",
+
+  "chatBubbleTooltip": "Pregúntale a Foxy",
+  "chatSheetTitle": "Foxy",
+  "chatInputHint": "Escribe tu mensaje...",
+  "chatSend": "Enviar",
+  "chatError": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+  "chatRateLimited": "Demasiadas peticiones. Espera un momento.",
+  "chatWelcome": "¡Hola! Soy Foxy 🦊. ¿Qué estás buscando? Puedo ayudarte a encontrar anuncios.",
+  "chatSearchingResults": "Buscando anuncios..."
 }

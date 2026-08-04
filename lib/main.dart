@@ -14,6 +14,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/providers/locale_provider.dart';
+import 'features/chat/presentation/widgets/chat_bubble.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,6 +97,33 @@ class _FoxyAdsAppState extends ConsumerState<FoxyAdsApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: LocaleNotifier.supported,
+      // Overlay the Foxy chat bubble above the routed content on every
+      // screen (Sprint 10, Task 2). `builder`'s `child` is the go_router
+      // `Router` widget itself, and it is placed INSIDE this Stack, not an
+      // ancestor of it — so anything else in the Stack (namely `ChatBubble`)
+      // has no `Navigator`/`Overlay` ancestor of its own. `ChatBubble`'s
+      // `Tooltip` needs an `Overlay` ancestor to build at all (verified: it
+      // throws "No Overlay widget found" without this wrapper), so a local
+      // `Overlay` is introduced here purely to satisfy that. `ChatBubble`'s
+      // `showModalBottomSheet` call additionally can't just use its own
+      // context either (no Navigator ancestor) — it instead opens the sheet
+      // against `rootNavigatorKeyProvider`'s `currentContext`, which is a
+      // real descendant of the go_router Navigator inside `child` (see that
+      // provider's doc comment in `core/router/app_router.dart`).
+      builder: (context, child) {
+        return Overlay(
+          initialEntries: [
+            OverlayEntry(
+              builder: (context) => Stack(
+                children: [
+                  child ?? const SizedBox.shrink(),
+                  const ChatBubble(),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

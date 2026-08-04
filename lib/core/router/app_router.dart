@@ -40,8 +40,22 @@ import '../services/auth_service.dart';
 import '../widgets/error_view.dart';
 import '../widgets/main_navigation_shell.dart';
 
+/// Root `Navigator` key, shared with the `GoRouter` below. Exposed as its own
+/// provider so widgets mounted OUTSIDE the routed tree — namely `ChatBubble`,
+/// which sits in a `Stack` alongside `MaterialApp.router`'s `builder` child
+/// rather than inside it — can still obtain a `BuildContext` that has a
+/// `Navigator` ancestor (via `navigatorKey.currentContext`) to open a modal
+/// bottom sheet. A context taken directly from within `builder`'s `Stack` has
+/// no such ancestor: the app's only `Navigator` lives inside the `child`
+/// subtree that GoRouter builds, which is a SIBLING of, not an ancestor of,
+/// anything else placed in that `Stack`.
+final rootNavigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
+  return GlobalKey<NavigatorState>(debugLabel: 'root');
+});
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: ref.watch(rootNavigatorKeyProvider),
     initialLocation: '/splash',
     debugLogDiagnostics: true,
     routes: [

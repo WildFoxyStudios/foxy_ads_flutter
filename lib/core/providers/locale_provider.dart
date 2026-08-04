@@ -9,6 +9,9 @@ class LocaleNotifier extends Notifier<Locale> {
     Locale('es'),
     Locale('en'),
     Locale('it'),
+    Locale('pt', 'BR'),
+    Locale('fr'),
+    Locale('de'),
   ];
 
   @override
@@ -23,15 +26,23 @@ class LocaleNotifier extends Notifier<Locale> {
     final prefs = await SharedPreferences.getInstance();
     final code = prefs.getString(_localeKey);
     if (code == null) return;
-    final parsed = supported.where((l) => l.languageCode == code).firstOrNull;
+    // Match by languageCode so 'pt' resolves to Locale('pt', 'BR').
+    final parsed = supported
+        .where((l) => l.languageCode == code)
+        .firstOrNull;
     if (parsed != null && parsed != state) state = parsed;
   }
 
   Future<void> setLocale(Locale locale) async {
-    if (!supported.contains(locale)) return;
-    state = locale;
+    // Match by languageCode so callers can pass either Locale('pt') or
+    // Locale('pt', 'BR') and both resolve to the canonical pt-BR entry.
+    final canonical = supported
+        .where((l) => l.languageCode == locale.languageCode)
+        .firstOrNull;
+    if (canonical == null) return;
+    state = canonical;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_localeKey, locale.languageCode);
+    await prefs.setString(_localeKey, canonical.languageCode);
   }
 }
 

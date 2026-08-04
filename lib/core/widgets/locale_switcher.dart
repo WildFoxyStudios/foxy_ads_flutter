@@ -10,6 +10,9 @@ class LocaleSwitcher extends ConsumerWidget {
     ('🇪🇸', Locale('es'), 'Español'),
     ('🇬🇧', Locale('en'), 'English'),
     ('🇮🇹', Locale('it'), 'Italiano'),
+    ('🇧🇷', Locale('pt', 'BR'), 'Português (Brasil)'),
+    ('🇫🇷', Locale('fr'), 'Français'),
+    ('🇩🇪', Locale('de'), 'Deutsch'),
   ];
 
   @override

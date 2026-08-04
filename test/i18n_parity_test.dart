@@ -5,6 +5,11 @@
 // app_pt_BR.arb, app_fr.arb, and app_de.arb. Values can be empty / fallback
 // for the new locales; this test only checks the key set.
 //
+// Also asserts a translation coverage floor for the new locales (pt-BR / fr /
+// de): a "translated key" is one whose value differs from the es value. The
+// floor is set so that it requires continued translation effort and only
+// grows over time.
+//
 // If a developer adds a new string to the template (app_es.arb) and forgets
 // to add the same key to the translation ARBs, this test fails.
 
@@ -75,7 +80,31 @@ void main() {
         );
       }
     });
+
+    test('translation coverage floor — pt-BR >= 500 translated keys', () {
+      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_pt_BR.arb', floor: 500);
+    });
+
+    test('translation coverage floor — fr >= 500 translated keys', () {
+      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_fr.arb', floor: 500);
+    });
+
+    test('translation coverage floor — de >= 500 translated keys', () {
+      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_de.arb', floor: 500);
+    });
   });
+}
+
+void _expectCoverage({required String arbDir, required String locale, required int floor}) {
+  final es = jsonDecode(File('$arbDir/app_es.arb').readAsStringSync()) as Map<String, dynamic>;
+  final translated = jsonDecode(File('$arbDir/$locale').readAsStringSync()) as Map<String, dynamic>;
+  var count = 0;
+  for (final key in es.keys) {
+    if (key.startsWith('@') || key == '@@locale') continue;
+    final value = translated[key];
+    if (value is String && value.isNotEmpty && value != es[key]) count++;
+  }
+  expect(count, greaterThanOrEqualTo(floor), reason: '$locale coverage dropped below the floor. Translate more keys.');
 }
 
 /// Find the repo root by walking up from the cwd until pubspec.yaml.

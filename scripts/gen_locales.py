@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 """Generate the 3 new ARB translation files (pt-BR, fr, de).
 
-Strategy:
-- Read app_es.arb as JSON.
-- Strip ALL @key metadata blocks (those are template-only).
-- Strip the @@locale line.
-- For "top visible keys" (a curated set), override the value with real translation.
-- For all other keys, fall back to the es text (so the gen-l10n template fallback
-  is not invoked; user sees Spanish in pt-BR/fr/de for these — not ideal but not broken).
-- Add @@locale: "pt_BR" (or "fr", "de") at the top.
-- Write the 3 new files.
+After adding keys to ``app_es.arb``, run ``python scripts/gen_locales.py``
+to regenerate the 3 translation files with the empty-value fallback, then
+manually fill in real translations for high-visibility keys. Run
+``flutter gen-l10n`` after.
 """
 import json
 from pathlib import Path
 
-ARB_DIR = Path("E:/Mis_Apps/Mis_Apps/foxy_ads/app_flutter/lib/l10n")
+ARB_DIR = Path(__file__).resolve().parents[1] / "lib/l10n"
 SRC = ARB_DIR / "app_es.arb"
 
 # Top visible keys (curated, ~120 entries to be safe — covers app bar titles,
@@ -1640,6 +1635,7 @@ def build_arb(src_data: dict, locale_code: str, translations: dict) -> dict:
     """
     # Identify "data" keys (not @-prefixed, not @@locale)
     data_keys = [k for k in src_data.keys() if not k.startswith("@")]
+    assert set(translations) - set(data_keys) == set(), "translation file has stale keys not in template"
 
     out = {"@@locale": locale_code}
     for k in data_keys:

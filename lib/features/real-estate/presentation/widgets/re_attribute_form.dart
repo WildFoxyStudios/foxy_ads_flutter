@@ -23,20 +23,21 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/re_attributes.dart';
 import '../../data/re_pricing.dart' show energyBandForLetter;
 
-/// Visual labels for the operation segmented control. The stored values are
-/// the canonical RE_OPERATIONS strings.
-const Map<String, String> _kOperationLabels = {
-  'venta': 'Venta',
-  'alquiler': 'Alquiler',
-  'alquiler_temporal': 'Temporal',
-};
+/// Visual labels for the operation segmented control, keyed by the canonical
+/// RE_OPERATIONS wire value. Built per-build from the active locale.
+Map<String, String> _operationLabels(AppLocalizations l10n) => {
+      'venta': l10n.realEstateOperationSale,
+      'alquiler': l10n.realEstateOperationRent,
+      'alquiler_temporal': l10n.realEstateOperationTemp,
+    };
 
-/// Visual labels for the floor-bucket segmented control.
-const Map<String, String> _kFloorBucketLabels = {
-  'bajos': 'Bajos',
-  'intermedias': 'Intermedias',
-  'ultima': 'Última',
-};
+/// Visual labels for the floor-bucket segmented control (short form — the
+/// search screen uses the longer `realEstateFloorBucket*` variants).
+Map<String, String> _floorBucketLabels(AppLocalizations l10n) => {
+      'bajos': l10n.realEstateFloorBucketShortLow,
+      'intermedias': l10n.realEstateFloorBucketShortMid,
+      'ultima': l10n.realEstateFloorBucketShortTop,
+    };
 
 class ReAttributeForm extends ConsumerStatefulWidget {
   const ReAttributeForm({
@@ -173,6 +174,8 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final operationLabels = _operationLabels(l10n);
+    final floorBucketLabels = _floorBucketLabels(l10n);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,7 +198,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
           children: RE_OPERATIONS.map((op) {
             final selected = _operation == op;
             return ChoiceChip(
-              label: Text(_kOperationLabels[op] ?? op),
+              label: Text(operationLabels[op] ?? op),
               selected: selected,
               onSelected: (_) {
                 setState(() => _operation = op);
@@ -284,7 +287,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
               .map(
                 (c) => DropdownMenuItem<String>(
                   value: c,
-                  child: Text(_conditionLabel(c)),
+                  child: Text(_conditionLabel(l10n, c)),
                 ),
               )
               .toList(),
@@ -307,7 +310,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
           children: RE_FEATURE_KEYS.map((f) {
             final selected = _features.contains(f);
             return FilterChip(
-              label: Text(_featureLabel(f)),
+              label: Text(_featureLabel(l10n, f)),
               selected: selected,
               onSelected: (yes) {
                 setState(() {
@@ -344,7 +347,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
             ...RE_FLOOR_BUCKETS.map((b) {
               final selected = _floorBucket == b;
               return ChoiceChip(
-                label: Text(_kFloorBucketLabels[b] ?? b),
+                label: Text(floorBucketLabels[b] ?? b),
                 selected: selected,
                 onSelected: (_) {
                   setState(() => _floorBucket = b);
@@ -418,53 +421,52 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
     );
   }
 
-  // Lightweight Spanish labels for the values the user picks. Kept inline
-  // because the canonical constants (`RE_*`) only carry the wire values —
-  // mapping them to human-readable text here keeps the form widget
-  // self-contained and avoids leaking the constant list to non-engineers.
-  String _conditionLabel(String code) {
+  // Localized labels for the values the user picks. The canonical constants
+  // (`RE_*`) only carry the wire values; these resolve them to human-readable
+  // copy from the active locale's ARB.
+  String _conditionLabel(AppLocalizations l10n, String code) {
     switch (code) {
       case 'obra_nueva':
-        return 'Obra nueva';
+        return l10n.realEstateConditionNew;
       case 'buen_estado':
-        return 'Buen estado';
+        return l10n.realEstateConditionGood;
       case 'a_reformar':
-        return 'A reformar';
+        return l10n.realEstateConditionToRenovate;
       default:
         return code;
     }
   }
 
-  String _featureLabel(String code) {
+  String _featureLabel(AppLocalizations l10n, String code) {
     switch (code) {
       case 'elevator':
-        return 'Ascensor';
+        return l10n.realEstateFeatureElevator;
       case 'parking':
-        return 'Parking';
+        return l10n.realEstateFeatureParking;
       case 'terrace':
-        return 'Terraza';
+        return l10n.realEstateFeatureTerrace;
       case 'balcony':
-        return 'Balcón';
+        return l10n.realEstateFeatureBalcony;
       case 'garden':
-        return 'Jardín';
+        return l10n.realEstateFeatureGarden;
       case 'pool':
-        return 'Piscina';
+        return l10n.realEstateFeaturePool;
       case 'storage_room':
-        return 'Trastero';
+        return l10n.realEstateFeatureStorageRoom;
       case 'air_conditioning':
-        return 'Aire acondicionado';
+        return l10n.realEstateFeatureAirConditioning;
       case 'heating':
-        return 'Calefacción';
+        return l10n.realEstateFeatureHeating;
       case 'built_in_wardrobes':
-        return 'Armarios empotrados';
+        return l10n.realEstateFeatureBuiltInWardrobes;
       case 'furnished':
-        return 'Amueblado';
+        return l10n.realEstateFeatureFurnished;
       case 'exterior':
-        return 'Exterior';
+        return l10n.realEstateFeatureExterior;
       case 'accessible':
-        return 'Accesible';
+        return l10n.realEstateFeatureAccessible;
       case 'luxury':
-        return 'Lujo';
+        return l10n.realEstateFeatureLuxury;
       default:
         return code;
     }

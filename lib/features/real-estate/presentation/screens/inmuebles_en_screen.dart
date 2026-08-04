@@ -431,7 +431,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstatePropertyTypeLabel),
             _CountedChipWrap<String>(
               values: RE_PROPERTY_TYPES,
-              labels: _propertyTypeLabels,
+              labels: _propertyTypeLabels(l10n),
               selected: filters.propertyTypes,
               counts: counts.propertyType,
               onToggle: (v) => notifier.toggleString(
@@ -545,7 +545,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateConditionLabel),
             _CountedChipWrap<String>(
               values: RE_CONDITIONS,
-              labels: _conditionLabels,
+              labels: _conditionLabels(l10n),
               selected: filters.conditions,
               counts: counts.condition,
               onToggle: (v) => notifier.toggleString('conditions', value: v),
@@ -554,7 +554,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateFeaturesLabel),
             _CountedChipWrap<String>(
               values: RE_FEATURE_KEYS,
-              labels: _featureLabels,
+              labels: _featureLabels(l10n),
               selected: filters.features,
               counts: null, // facets not exposed for features
               onToggle: (v) => notifier.toggleString('features', value: v),
@@ -563,7 +563,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateOrientationLabel),
             _SimpleChipWrap<String>(
               values: RE_ORIENTATIONS,
-              labels: _orientationLabels,
+              labels: _orientationLabels(l10n),
               selected: filters.orientation,
               onToggle: (v) => notifier.toggleString('orientation', value: v),
             ),
@@ -571,7 +571,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateFloorLabel),
             _SimpleChipWrap<String>(
               values: RE_FLOOR_BUCKETS,
-              labels: _floorBucketLabels,
+              labels: _floorBucketLabels(l10n),
               selected: filters.floorBuckets,
               onToggle: (v) => notifier.toggleString('floorBuckets', value: v),
             ),
@@ -920,53 +920,57 @@ class _Prompt extends StatelessWidget {
 }
 
 // ---- Localized label maps for the RE constant lists ----
+//
+// The canonical `RE_*` lists carry only wire values; these builders resolve
+// them to human-readable copy from the active locale's ARB. Built per-build
+// (cheap: five small map literals) so a locale switch re-renders correctly.
 
-const Map<String, String> _propertyTypeLabels = {
-  'piso': 'Piso',
-  'casa': 'Casa',
-  'atico': 'Ático',
-  'estudio': 'Estudio',
-  'duplex': 'Dúplex',
-  'chalet': 'Chalet',
-  'loft': 'Loft',
-  'local': 'Local',
-  'oficina': 'Oficina',
-  'terreno': 'Terreno',
-  'garaje': 'Garaje',
-};
+Map<String, String> _propertyTypeLabels(AppLocalizations l10n) => {
+      'piso': l10n.realEstatePropertyTypeFlat,
+      'casa': l10n.realEstatePropertyTypeHouse,
+      'atico': l10n.realEstatePropertyTypePenthouse,
+      'estudio': l10n.realEstatePropertyTypeStudio,
+      'duplex': l10n.realEstatePropertyTypeDuplex,
+      'chalet': l10n.realEstatePropertyTypeChalet,
+      'loft': l10n.realEstatePropertyTypeLoft,
+      'local': l10n.realEstatePropertyTypeCommercial,
+      'oficina': l10n.realEstatePropertyTypeOffice,
+      'terreno': l10n.realEstatePropertyTypeLand,
+      'garaje': l10n.realEstatePropertyTypeGarage,
+    };
 
-const Map<String, String> _conditionLabels = {
-  'obra_nueva': 'Obra nueva',
-  'buen_estado': 'Buen estado',
-  'a_reformar': 'A reformar',
-};
+Map<String, String> _conditionLabels(AppLocalizations l10n) => {
+      'obra_nueva': l10n.realEstateConditionNew,
+      'buen_estado': l10n.realEstateConditionGood,
+      'a_reformar': l10n.realEstateConditionToRenovate,
+    };
 
-const Map<String, String> _orientationLabels = {
-  'norte': 'Norte',
-  'sur': 'Sur',
-  'este': 'Este',
-  'oeste': 'Oeste',
-};
+Map<String, String> _orientationLabels(AppLocalizations l10n) => {
+      'norte': l10n.realEstateOrientationNorth,
+      'sur': l10n.realEstateOrientationSouth,
+      'este': l10n.realEstateOrientationEast,
+      'oeste': l10n.realEstateOrientationWest,
+    };
 
-const Map<String, String> _floorBucketLabels = {
-  'bajos': 'Plantas bajas',
-  'intermedias': 'Plantas intermedias',
-  'ultima': 'Última planta',
-};
+Map<String, String> _floorBucketLabels(AppLocalizations l10n) => {
+      'bajos': l10n.realEstateFloorBucketLow,
+      'intermedias': l10n.realEstateFloorBucketMid,
+      'ultima': l10n.realEstateFloorBucketTop,
+    };
 
-const Map<String, String> _featureLabels = {
-  'elevator': 'Ascensor',
-  'parking': 'Parking',
-  'terrace': 'Terraza',
-  'balcony': 'Balcón',
-  'garden': 'Jardín',
-  'pool': 'Piscina',
-  'storage_room': 'Trastero',
-  'air_conditioning': 'Aire acondicionado',
-  'heating': 'Calefacción',
-  'built_in_wardrobes': 'Armarios empotrados',
-  'furnished': 'Amueblado',
-  'exterior': 'Exterior',
-  'accessible': 'Accesible',
-  'luxury': 'Lujo',
-};
+Map<String, String> _featureLabels(AppLocalizations l10n) => {
+      'elevator': l10n.realEstateFeatureElevator,
+      'parking': l10n.realEstateFeatureParking,
+      'terrace': l10n.realEstateFeatureTerrace,
+      'balcony': l10n.realEstateFeatureBalcony,
+      'garden': l10n.realEstateFeatureGarden,
+      'pool': l10n.realEstateFeaturePool,
+      'storage_room': l10n.realEstateFeatureStorageRoom,
+      'air_conditioning': l10n.realEstateFeatureAirConditioning,
+      'heating': l10n.realEstateFeatureHeating,
+      'built_in_wardrobes': l10n.realEstateFeatureBuiltInWardrobes,
+      'furnished': l10n.realEstateFeatureFurnished,
+      'exterior': l10n.realEstateFeatureExterior,
+      'accessible': l10n.realEstateFeatureAccessible,
+      'luxury': l10n.realEstateFeatureLuxury,
+    };

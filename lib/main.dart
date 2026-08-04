@@ -11,6 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/deeplink/deep_link_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_mode_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/providers/locale_provider.dart';
 
@@ -85,7 +86,7 @@ class _FoxyAdsAppState extends ConsumerState<FoxyAdsApp> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: ref.watch(themeModeProvider),
       routerConfig: _router,
       locale: locale,
       localizationsDelegates: const [

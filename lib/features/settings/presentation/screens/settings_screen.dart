@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_mode_provider.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -15,6 +16,7 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authStateProvider);
     final selectedCountry = ref.watch(selectedCountryProvider);
+    final themeMode = ref.watch(themeModeProvider);
     final isLoggedIn = authState.value != null;
 
     return Scaffold(
@@ -36,11 +38,40 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: '${selectedCountry.flag} ${selectedCountry.name}',
             onTap: () => context.push('/select-country'),
           ),
-          _SettingsTile(
-            icon: Icons.dark_mode_outlined,
-            title: l10n.settingsThemeLabel,
-            subtitle: l10n.settingsThemeLight,
-            onTap: () => _comingSoon(context),
+          Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ExpansionTile(
+              leading: const Icon(
+                Icons.dark_mode_outlined,
+                color: AppColors.primary,
+              ),
+              title: Text(
+                l10n.settingsThemeLabel,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(switch (themeMode) {
+                ThemeMode.system => l10n.settingsThemeSystem,
+                ThemeMode.light => l10n.settingsThemeLight,
+                ThemeMode.dark => l10n.settingsThemeDark,
+              }),
+              children: ThemeMode.values.map((mode) {
+                final label = switch (mode) {
+                  ThemeMode.system => l10n.settingsThemeSystem,
+                  ThemeMode.light => l10n.settingsThemeLight,
+                  ThemeMode.dark => l10n.settingsThemeDark,
+                };
+                return RadioListTile<ThemeMode>(
+                  value: mode,
+                  groupValue: themeMode,
+                  title: Text(label),
+                  onChanged: (selected) {
+                    if (selected != null) {
+                      ref.read(themeModeProvider.notifier).set(selected);
+                    }
+                  },
+                );
+              }).toList(),
+            ),
           ),
           _SettingsTile(
             icon: Icons.notifications_outlined,
@@ -88,9 +119,7 @@ class SettingsScreen extends ConsumerWidget {
                   '🦊',
                   style: TextStyle(fontSize: 48),
                 ),
-                children: [
-                  Text(l10n.settingsAboutDescription),
-                ],
+                children: [Text(l10n.settingsAboutDescription)],
               );
             },
           ),
@@ -168,9 +197,9 @@ class SettingsScreen extends ConsumerWidget {
 
   void _comingSoon(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.settingsComingSoon)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.settingsComingSoon)));
   }
 
   void _showChangePasswordDialog(BuildContext context, WidgetRef ref) {
@@ -198,9 +227,7 @@ class SettingsScreen extends ConsumerWidget {
               final password = controller.text;
               if (password.length < 6) {
                 ScaffoldMessenger.of(dialogContext).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.authPasswordTooShort),
-                  ),
+                  SnackBar(content: Text(l10n.authPasswordTooShort)),
                 );
                 return;
               }

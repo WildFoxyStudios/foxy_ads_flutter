@@ -6,6 +6,7 @@ import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/listings/presentation/screens/listing_detail_screen.dart';
 import '../../features/listings/presentation/screens/create_listing_screen.dart';
 import '../../features/listings/presentation/screens/category_listings_screen.dart';
@@ -291,6 +292,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return PaymentCancelledScreen(listingId: listingId);
         },
       ),
+      // Email verification gate (T1). Gated between `/payment/*` and the
+      // end of the route list so it doesn't shadow any of the static or
+      // dynamic routes above.
+      GoRoute(
+        path: AppRoutes.verifyEmail,
+        name: 'verifyEmail',
+        builder: (context, state) {
+          final redirect = state.uri.queryParameters['redirect'];
+          return VerifyEmailScreen(redirect: redirect);
+        },
+      ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
@@ -337,6 +349,9 @@ class AppRoutes {
   // Payment return targets (Sprint 7 Task 3).
   static const String paymentSuccess = '/payment/success';
   static const String paymentCancelled = '/payment/cancelled';
+
+  // Email verification gate (T1).
+  static const String verifyEmail = '/verify-email';
 }
 
 /// Loads the listing by [listingId] and, if the current user is its owner,

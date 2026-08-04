@@ -11,7 +11,6 @@ class LoginScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
-
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -33,12 +32,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      await authService.signInWithEmail(
+      final response = await authService.signInWithEmail(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
       if (mounted) {
-        context.go('/');
+        final redirect =
+            GoRouterState.of(context).uri.queryParameters['redirect'];
+        final user = response.user;
+        if (redirect != null && user?.emailConfirmedAt == null) {
+          context.go('/verify-email?redirect=${Uri.encodeComponent(redirect)}');
+        } else {
+          context.go('/');
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -63,9 +69,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      await authService.signInWithGoogle();
+      final response = await authService.signInWithGoogle();
       if (mounted) {
-        context.go('/');
+        final redirect =
+            GoRouterState.of(context).uri.queryParameters['redirect'];
+        final user = response.user;
+        if (redirect != null && user?.emailConfirmedAt == null) {
+          context.go('/verify-email?redirect=${Uri.encodeComponent(redirect)}');
+        } else {
+          context.go('/');
+        }
       }
     } catch (e) {
       if (mounted) {

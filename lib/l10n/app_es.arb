@@ -60,6 +60,18 @@
   "authAccountCreatedVerify": "¡Cuenta creada! Revisa tu correo para verificar.",
   "authOrRegisterWith": "O regístrate con",
   "authHasAccountPrompt": "¿Ya tienes cuenta? ",
+  "authVerifyEmailRequired": "Verifica tu correo",
+  "authVerifyEmailBody": "Necesitas verificar tu correo electrónico antes de publicar. Te enviamos un email — revisa tu bandeja.",
+  "authVerifyEmailResend": "Reenviar email de verificación",
+  "authVerifyEmailResent": "Email enviado. Revisa tu bandeja.",
+  "authVerifyEmailResendError": "No se pudo reenviar el email. Inténtalo más tarde.",
+  "authVerifyEmailBanner": "Tu correo aún no está verificado. No podrás publicar hasta verificarlo.",
+  "authVerifyEmailCta": "Verificar correo",
+  "authVerifyEmailSignedInAs": "Sesión iniciada como {email}",
+  "@authVerifyEmailSignedInAs": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+
 
   "homeSearchHint": "¿Qué estás buscando?",
   "homeCategoriesHeading": "Categorías",

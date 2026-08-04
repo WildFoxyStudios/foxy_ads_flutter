@@ -137,6 +137,15 @@ class AuthService {
     await _supabase.auth.resetPasswordForEmail(email);
   }
 
+  // Resend email verification
+  Future<void> resendVerificationEmail(String email) async {
+    try {
+      await _supabase.auth.resend(type: OtpType.signup, email: email);
+    } catch (e) {
+      throw Exception('Could not resend verification email: $e');
+    }
+  }
+
   // Get Current User Profile
   Future<AppUser?> getCurrentUserProfile() async {
     final user = currentUser;

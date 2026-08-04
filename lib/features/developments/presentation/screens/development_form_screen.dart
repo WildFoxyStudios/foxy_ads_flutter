@@ -195,6 +195,13 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
     final userId = auth.value?.id;
     if (userId == null) return;
 
+    if (auth.value?.emailConfirmedAt == null) {
+      context.push(
+        '${AppRoutes.verifyEmail}?redirect=${Uri.encodeComponent(GoRouterState.of(context).uri.toString())}',
+      );
+      return;
+    }
+
     // Coordinates — invalid (non-numeric) input surfaces inline below, not
     // here. Empty input is allowed.
     final latText = _latitudeController.text.trim();
@@ -420,11 +427,25 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
 
   Widget _form() {
     final l10n = AppLocalizations.of(context)!;
+    final auth = ref.watch(authStateProvider);
     return Form(
       key: _formKey,
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (auth.value?.emailConfirmedAt == null)
+            MaterialBanner(
+              backgroundColor: AppColors.warning.withValues(alpha: 0.2),
+              content: Text(l10n.authVerifyEmailBanner),
+              actions: [
+                TextButton(
+                  onPressed: () => context.push(
+                    '${AppRoutes.verifyEmail}?redirect=${Uri.encodeComponent(GoRouterState.of(context).uri.toString())}',
+                  ),
+                  child: Text(l10n.authVerifyEmailCta),
+                ),
+              ],
+            ),
           TextFormField(
             controller: _nameController,
             decoration: InputDecoration(

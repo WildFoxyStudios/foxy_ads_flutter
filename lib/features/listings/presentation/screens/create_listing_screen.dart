@@ -157,6 +157,13 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       return;
     }
 
+    if (user.emailConfirmedAt == null) {
+      context.push(
+        '${AppRoutes.verifyEmail}?redirect=${Uri.encodeComponent(GoRouterState.of(context).uri.toString())}',
+      );
+      return;
+    }
+
     if (_whatsappController.text.isEmpty &&
         _phoneController.text.isEmpty &&
         _emailController.text.isEmpty) {
@@ -382,6 +389,19 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (authState.value?.emailConfirmedAt == null)
+              MaterialBanner(
+                backgroundColor: AppColors.warning.withValues(alpha: 0.2),
+                content: Text(l10n.authVerifyEmailBanner),
+                actions: [
+                  TextButton(
+                    onPressed: () => context.push(
+                      '${AppRoutes.verifyEmail}?redirect=${Uri.encodeComponent(GoRouterState.of(context).uri.toString())}',
+                    ),
+                    child: Text(l10n.authVerifyEmailCta),
+                  ),
+                ],
+              ),
             // Images Section
             Text(
               l10n.listingCreatePhotosHeading,

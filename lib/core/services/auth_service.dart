@@ -140,7 +140,7 @@ class AuthService {
   // Resend email verification
   Future<void> resendVerificationEmail(String email) async {
     try {
-      await _supabase.auth.resend(type: OtpType.signup, email: email);
+      await _supabase.auth.resend(type: OtpType.email, email: email);
     } catch (e) {
       throw Exception('Could not resend verification email: $e');
     }

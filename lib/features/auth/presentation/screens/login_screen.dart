@@ -39,11 +39,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         final redirect =
             GoRouterState.of(context).uri.queryParameters['redirect'];
-        final user = response.user;
-        if (redirect != null && user?.emailConfirmedAt == null) {
-          context.go('/verify-email?redirect=${Uri.encodeComponent(redirect)}');
+        final user = ref.read(authStateProvider).value ?? response.user;
+        if (user?.emailConfirmedAt == null) {
+          context.go(redirect != null
+              ? '/verify-email?redirect=${Uri.encodeComponent(redirect)}'
+              : '/verify-email');
         } else {
-          context.go('/');
+          context.go(redirect ?? '/');
         }
       }
     } catch (e) {
@@ -73,11 +75,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         final redirect =
             GoRouterState.of(context).uri.queryParameters['redirect'];
-        final user = response.user;
-        if (redirect != null && user?.emailConfirmedAt == null) {
-          context.go('/verify-email?redirect=${Uri.encodeComponent(redirect)}');
+        final user = ref.read(authStateProvider).value ?? response.user;
+        if (user?.emailConfirmedAt == null) {
+          context.go(redirect != null
+              ? '/verify-email?redirect=${Uri.encodeComponent(redirect)}'
+              : '/verify-email');
         } else {
-          context.go('/');
+          context.go(redirect ?? '/');
         }
       }
     } catch (e) {

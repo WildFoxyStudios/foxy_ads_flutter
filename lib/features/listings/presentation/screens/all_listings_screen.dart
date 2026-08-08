@@ -13,6 +13,7 @@ import '../../../../core/services/country_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../favorites/presentation/widgets/favorite_toggle.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
+import '../widgets/listing_sort_menu.dart';
 
 final allListingsProvider =
     FutureProvider.family<List<Listing>, ListingSort>((ref, sort) async {
@@ -35,19 +36,6 @@ class AllListingsScreen extends ConsumerStatefulWidget {
 class _AllListingsScreenState extends ConsumerState<AllListingsScreen> {
   ListingSort _sort = ListingSort.newest;
 
-  String _sortLabel(AppLocalizations l10n, ListingSort sort) {
-    switch (sort) {
-      case ListingSort.newest:
-        return l10n.allListingsSortNewest;
-      case ListingSort.oldest:
-        return l10n.allListingsSortOldest;
-      case ListingSort.priceLow:
-        return l10n.allListingsSortPriceLow;
-      case ListingSort.priceHigh:
-        return l10n.allListingsSortPriceHigh;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -61,18 +49,9 @@ class _AllListingsScreenState extends ConsumerState<AllListingsScreen> {
           onPressed: () => context.pop(),
         ),
         actions: [
-          PopupMenuButton<ListingSort>(
-            icon: const Icon(Icons.sort),
-            initialValue: _sort,
-            onSelected: (value) => setState(() => _sort = value),
-            itemBuilder: (context) => ListingSort.values
-                .map(
-                  (sort) => PopupMenuItem<ListingSort>(
-                    value: sort,
-                    child: Text(_sortLabel(l10n, sort)),
-                  ),
-                )
-                .toList(),
+          ListingSortMenu(
+            value: _sort,
+            onChanged: (v) => setState(() => _sort = v),
           ),
         ],
       ),

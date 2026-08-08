@@ -9,11 +9,16 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../../favorites/presentation/widgets/favorite_toggle.dart';
 import '../../../search/presentation/providers/search_filters_provider.dart';
+import '../widgets/listing_sort_menu.dart';
 
-/// Family key: `categoryId` + an optional `subcategoryId`. When
-/// [subcategoryId] is present, listings are additionally filtered by
+/// Family key: `categoryId` + an optional `subcategoryId` + a sort order.
+/// When [subcategoryId] is present, listings are additionally filtered by
 /// `subcategory_id` (the `/category/:categoryId/:subcategoryId` route).
-typedef CategoryListingsArgs = ({String categoryId, String? subcategoryId});
+typedef CategoryListingsArgs = ({
+  String categoryId,
+  String? subcategoryId,
+  ListingSort sort,
+});
 
 final categoryListingsProvider =
     FutureProvider.family<List<Listing>, CategoryListingsArgs>((
@@ -26,11 +31,12 @@ final categoryListingsProvider =
     countryCode: country.code,
     categoryId: args.categoryId,
     subcategoryId: args.subcategoryId,
+    sort: args.sort,
     limit: 50,
   );
 });
 
-class CategoryListingsScreen extends ConsumerWidget {
+class CategoryListingsScreen extends ConsumerStatefulWidget {
   final String categoryId;
   final String categoryName;
   final String? subcategoryId;
@@ -43,9 +49,25 @@ class CategoryListingsScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CategoryListingsScreen> createState() =>
+      _CategoryListingsScreenState();
+}
+
+class _CategoryListingsScreenState
+    extends ConsumerState<CategoryListingsScreen> {
+  ListingSort _sort = ListingSort.newest;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final args = (categoryId: categoryId, subcategoryId: subcategoryId);
+    final categoryId = widget.categoryId;
+    final categoryName = widget.categoryName;
+    final subcategoryId = widget.subcategoryId;
+    final args = (
+      categoryId: categoryId,
+      subcategoryId: subcategoryId,
+      sort: _sort,
+    );
     final listingsAsync = ref.watch(categoryListingsProvider(args));
 
     return Scaffold(
@@ -56,6 +78,10 @@ class CategoryListingsScreen extends ConsumerWidget {
           onPressed: () => context.pop(),
         ),
         actions: [
+          ListingSortMenu(
+            value: _sort,
+            onChanged: (v) => setState(() => _sort = v),
+          ),
           IconButton(
             icon: const Icon(Icons.filter_list),
             // Open the search screen pre-filtered by THIS category so the

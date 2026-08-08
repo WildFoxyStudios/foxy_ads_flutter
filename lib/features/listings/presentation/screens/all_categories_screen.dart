@@ -146,6 +146,9 @@ class AllCategoriesScreen extends ConsumerWidget {
             final hasSubcategories =
                 category.subcategories != null &&
                 category.subcategories!.isNotEmpty;
+            final categoryName = category.nameEs.isNotEmpty
+                ? category.nameEs
+                : category.name;
 
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
@@ -171,9 +174,7 @@ class AllCategoriesScreen extends ConsumerWidget {
                         ),
                       ),
                       title: Text(
-                        category.nameEs.isNotEmpty
-                            ? category.nameEs
-                            : category.name,
+                        categoryName,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
@@ -188,28 +189,51 @@ class AllCategoriesScreen extends ConsumerWidget {
                           fontSize: 12,
                         ),
                       ),
-                      children: category.subcategories!.map((sub) {
-                        return ListTile(
-                          contentPadding: const EdgeInsets.only(
-                            left: 72,
-                            right: 16,
-                          ),
-                          title: Text(
-                            sub.nameEs.isNotEmpty ? sub.nameEs : sub.name,
-                          ),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                          ),
-                          onTap: () => context.push(
-                            AppRoutes.categorySubcategoryListings(
+                      children: [
+                        // "Ver todo en X" link — mirrors web's
+                        // CategoriesClient.tsx view-all button.
+                        TextButton.icon(
+                          onPressed: () => context.push(
+                            AppRoutes.categoryListings(
                               category.id,
-                              sub.id,
-                              sub.nameEs.isNotEmpty ? sub.nameEs : sub.name,
+                              categoryName,
                             ),
                           ),
-                        );
-                      }).toList(),
+                          icon: const Icon(Icons.arrow_forward, size: 16),
+                          label: Text(
+                            l10n.allCategoriesViewAllIn(categoryName),
+                          ),
+                        ),
+                        // Subcategory chip wrap — mirrors web's chip grid.
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: category.subcategories!.map((sub) {
+                              final subLabel = sub.nameEs.isNotEmpty
+                                  ? sub.nameEs
+                                  : sub.name;
+                              return ActionChip(
+                                label: Text(subLabel),
+                                avatar: sub.icon.isNotEmpty
+                                    ? Text(sub.icon)
+                                    : null,
+                                onPressed: () => context.push(
+                                  AppRoutes.categorySubcategoryListings(
+                                    category.id,
+                                    sub.id,
+                                    subLabel,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
                     )
                   : ListTile(
                       leading: Container(

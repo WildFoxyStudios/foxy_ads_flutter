@@ -100,10 +100,11 @@ void main() {
       await tester.tap(find.text('Intermedias'));
       await tester.pumpAndSettle();
 
-      // energyCert: dropdown.
+      // energyCert: dropdown (items render as localized "C (Alta (A-C))"
+      // via the shared `reEnergyLabel` helper — tap by the visible label).
       await tester.tap(find.byType(DropdownButtonFormField<String>).at(2));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('C').last);
+      await tester.tap(find.text('C (Alta (A-C))').last);
       await tester.pumpAndSettle();
 
       // orientation: dropdown.

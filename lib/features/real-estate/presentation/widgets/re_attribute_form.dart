@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/re_attributes.dart';
 import '../../data/re_pricing.dart' show energyBandForLetter;
+import 're_energy_label.dart' show reEnergyLabel;
 
 /// Visual labels for the operation segmented control, keyed by the canonical
 /// RE_OPERATIONS wire value. Built per-build from the active locale.
@@ -373,7 +374,10 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
             ...RE_ENERGY_CERTS.map(
-              (e) => DropdownMenuItem<String>(value: e, child: Text(e)),
+              (e) => DropdownMenuItem<String>(
+                value: e,
+                child: Text(reEnergyLabel(e, l10n) ?? e),
+              ),
             ),
           ],
           onChanged: (v) {

@@ -29,6 +29,7 @@ import '../../../home/presentation/widgets/listing_card.dart';
 import '../../data/re_attributes.dart';
 import '../../data/re_models.dart';
 import '../providers/re_search_provider.dart';
+import '../widgets/re_energy_label.dart' show reEnergyLabel;
 
 class InmueblesEnScreen extends ConsumerStatefulWidget {
   const InmueblesEnScreen({super.key});
@@ -609,7 +610,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
                     ...RE_ENERGY_CERTS.map(
                       (l) => DropdownMenuItem<String?>(
                         value: l,
-                        child: Text(l),
+                        child: Text(reEnergyLabel(l, l10n) ?? l),
                       ),
                     ),
                   ],

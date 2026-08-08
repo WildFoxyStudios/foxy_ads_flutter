@@ -227,6 +227,7 @@ class Listing {
     return featuredUntil!.isAfter(DateTime.now());
   }
 
+  @Deprecated('Use formatPrice in core/utils/format_utils.dart for locale-aware rendering.')
   String get formattedPrice {
     return '${price.toStringAsFixed(price.truncateToDouble() == price ? 0 : 2)} $currency';
   }

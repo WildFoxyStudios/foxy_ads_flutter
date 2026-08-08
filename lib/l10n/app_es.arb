@@ -129,6 +129,10 @@
     "description": "Views count under a listing. ICU plural.",
     "placeholders": { "count": { "type": "int" } }
   },
+  "listingDetailLocationHeading": "Ubicación",
+  "@listingDetailLocationHeading": {
+    "description": "Section heading above the static location mini-map on the listing-detail screen, shown for listings that have coordinates."
+  },
   "listingDetailSellerHeading": "Vendedor",
   "listingDetailMemberSince": "Miembro desde {date}",
   "@listingDetailMemberSince": {

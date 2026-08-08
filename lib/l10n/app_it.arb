@@ -92,6 +92,7 @@
   "listingDetailNegotiable": "Prezzo trattabile",
   "listingDetailDescriptionHeading": "Descrizione",
   "listingDetailViews": "{count, plural, one{1 visualizzazione} other{{count} visualizzazioni}}",
+  "listingDetailLocationHeading": "Posizione",
   "listingDetailSellerHeading": "Venditore",
   "listingDetailMemberSince": "Membro da {date}",
   "listingDetailViewAgency": "Vedi agenzia",

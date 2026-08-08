@@ -21,6 +21,7 @@ import '../../../agency/data/agency_service.dart';
 import '../../../jobs/presentation/widgets/jobs_key_facts.dart';
 import '../../../real-estate/presentation/widgets/re_key_facts.dart';
 import '../widgets/contact_sheet.dart';
+import '../widgets/listing_location_map.dart';
 import '../widgets/report_sheet.dart';
 
 /// Category id for the real-estate vertical, as written to
@@ -411,6 +412,13 @@ class ListingDetailScreen extends ConsumerWidget {
                       if (listing.categoryId == _kJobsCategoryId) ...[
                         const SizedBox(height: 16),
                         JobsKeyFacts(listing: listing),
+                      ],
+
+                      // Location mini-map (Task A4). Renders nothing when
+                      // the listing has no coordinates.
+                      if (listing.hasCoordinates) ...[
+                        const SizedBox(height: 16),
+                        ListingLocationMap(listing: listing),
                       ],
 
                       const Divider(height: 32),

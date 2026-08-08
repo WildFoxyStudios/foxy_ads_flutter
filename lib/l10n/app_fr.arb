@@ -85,6 +85,7 @@
   "listingDetailNegotiable": "Prix négociable",
   "listingDetailDescriptionHeading": "Description",
   "listingDetailViews": "{count, plural, one{1 vue} other{{count} vues}}",
+  "listingDetailLocationHeading": "Localisation",
   "listingDetailSellerHeading": "Vendeur",
   "listingDetailMemberSince": "Membre depuis {date}",
   "listingDetailViewAgency": "Voir l'agence",

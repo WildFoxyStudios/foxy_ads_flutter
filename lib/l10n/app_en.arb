@@ -955,5 +955,31 @@
   "@realEstateViewNResults": {
     "description": "Pinned button label in the mobile real-estate filter bottom sheet. {count} is the live number of results matching the currently applied filters.",
     "placeholders": { "count": { "type": "int" } }
-  }
+  },
+
+  "jobsContractLabel": "Contract",
+  "jobsModalityLabel": "Modality",
+  "jobsScheduleLabel": "Schedule",
+  "jobsSalaryLabel": "Salary",
+  "jobsExperienceLabel": "Experience",
+  "jobsCategoryLabel": "Category",
+  "jobsContractTypeFullTime": "Full time",
+  "jobsContractTypePartTime": "Part time",
+  "jobsContractTypeFreelance": "Freelance",
+  "jobsContractTypeInternship": "Internship",
+  "jobsContractTypeTemporary": "Temporary",
+  "jobsModalityOnsite": "Onsite",
+  "jobsModalityRemote": "Remote",
+  "jobsModalityHybrid": "Hybrid",
+  "jobsScheduleToBeAgreed": "To be agreed",
+  "jobsScheduleDaytime": "Daytime",
+  "jobsScheduleNighttime": "Nighttime",
+  "jobsScheduleWeekends": "Weekends",
+  "jobsExperienceNone": "No experience",
+  "jobsExperienceJunior": "Junior",
+  "jobsExperienceSenior": "Senior",
+  "jobsExperienceExpert": "Expert",
+  "jobsSalaryPeriodMonth": "/mo",
+  "jobsSalaryPeriodHour": "/h",
+  "jobsSalaryPeriodYear": "/yr"
 }

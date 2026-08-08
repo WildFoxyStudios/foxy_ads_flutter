@@ -18,6 +18,7 @@ import '../../../../core/widgets/image_lightbox.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../ads/ad_banner.dart';
 import '../../../agency/data/agency_service.dart';
+import '../../../jobs/presentation/widgets/jobs_key_facts.dart';
 import '../../../real-estate/presentation/widgets/re_key_facts.dart';
 import '../widgets/contact_sheet.dart';
 import '../widgets/report_sheet.dart';
@@ -28,6 +29,13 @@ import '../widgets/report_sheet.dart';
 /// literal). Used here to decide whether to render `ReKeyFacts` below the
 /// description.
 const _kRealEstateCategoryId = 'real_estate';
+
+/// Category id for the jobs vertical, as written to `listings.category_id`
+/// (see `category_model.dart`, which registers the `jobs` category; the
+/// create flow does not yet gate a jobs attribute form on this literal —
+/// P9 B3, still pending). Used here to decide whether to render
+/// `JobsKeyFacts` below the description.
+const _kJobsCategoryId = 'jobs';
 
 final listingDetailProvider = FutureProvider.family<Listing?, String>((
   ref,
@@ -395,6 +403,14 @@ class ListingDetailScreen extends ConsumerWidget {
                       if (listing.categoryId == _kRealEstateCategoryId) ...[
                         const SizedBox(height: 16),
                         ReKeyFacts(listing: listing),
+                      ],
+
+                      // Jobs key facts table (Task A3). Renders nothing for
+                      // non-jobs listings or listings without a recognized
+                      // attribute set.
+                      if (listing.categoryId == _kJobsCategoryId) ...[
+                        const SizedBox(height: 16),
+                        JobsKeyFacts(listing: listing),
                       ],
 
                       const Divider(height: 32),

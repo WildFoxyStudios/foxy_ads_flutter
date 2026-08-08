@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/models/category_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -259,11 +258,3 @@ class AllCategoriesScreen extends ConsumerWidget {
     }
   }
 }
-
-// Provider para categorías con subcategorías
-final categoriesWithSubcategoriesProvider = FutureProvider<List<Category>>((
-  ref,
-) async {
-  final listingService = ref.read(listingServiceProvider);
-  return await listingService.getCategoriesWithSubcategories();
-});

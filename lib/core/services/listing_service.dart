@@ -68,6 +68,16 @@ final listingServiceProvider = Provider<ListingService>((ref) {
   return ListingService(ref.watch(supabaseClientProvider));
 });
 
+/// Provider para categorías con subcategorías. Exposed at the service layer so
+/// multiple screens (all-categories index + category-listings chip row) can
+/// share a single fetch rather than each declaring its own `FutureProvider`.
+final categoriesWithSubcategoriesProvider = FutureProvider<List<Category>>((
+  ref,
+) async {
+  final listingService = ref.read(listingServiceProvider);
+  return await listingService.getCategoriesWithSubcategories();
+});
+
 class ListingService {
   final SupabaseClient _supabase;
 

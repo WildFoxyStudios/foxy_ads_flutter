@@ -93,6 +93,7 @@
   "listingDetailDescriptionHeading": "Description",
   "listingDetailViews": "{count, plural, one{1 view} other{{count} views}}",
   "listingDetailLocationHeading": "Location",
+  "listingDetailRelatedHeading": "You might also like",
   "listingDetailSellerHeading": "Seller",
   "listingDetailMemberSince": "Member since {date}",
   "listingDetailViewAgency": "View agency",

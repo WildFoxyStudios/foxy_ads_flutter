@@ -22,6 +22,7 @@ import '../../../jobs/presentation/widgets/jobs_key_facts.dart';
 import '../../../real-estate/presentation/widgets/re_key_facts.dart';
 import '../widgets/contact_sheet.dart';
 import '../widgets/listing_location_map.dart';
+import '../widgets/related_listings_rail.dart';
 import '../widgets/report_sheet.dart';
 
 /// Category id for the real-estate vertical, as written to
@@ -541,6 +542,11 @@ class ListingDetailScreen extends ConsumerWidget {
 
                       const Divider(height: 32),
                       const Center(child: AdBanner()),
+
+                      // Related listings rail (Task A5). Renders nothing
+                      // when there are no other listings in the same
+                      // category/country.
+                      RelatedListingsRail(listing: listing),
 
                       const SizedBox(height: 100),
                     ],

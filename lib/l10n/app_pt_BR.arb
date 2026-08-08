@@ -86,6 +86,7 @@
   "listingDetailDescriptionHeading": "Descrição",
   "listingDetailViews": "{count, plural, one{1 visualização} other{{count} visualizações}}",
   "listingDetailLocationHeading": "Localização",
+  "listingDetailRelatedHeading": "Você também pode gostar",
   "listingDetailSellerHeading": "Vendedor(a)",
   "listingDetailMemberSince": "Membro desde {date}",
   "listingDetailViewAgency": "Ver agência",

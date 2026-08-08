@@ -133,6 +133,10 @@
   "@listingDetailLocationHeading": {
     "description": "Section heading above the static location mini-map on the listing-detail screen, shown for listings that have coordinates."
   },
+  "listingDetailRelatedHeading": "También te puede interesar",
+  "@listingDetailRelatedHeading": {
+    "description": "Section heading above the horizontal rail of related (same-category) listings at the bottom of the listing-detail screen."
+  },
   "listingDetailSellerHeading": "Vendedor",
   "listingDetailMemberSince": "Miembro desde {date}",
   "@listingDetailMemberSince": {

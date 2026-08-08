@@ -86,6 +86,7 @@
   "listingDetailDescriptionHeading": "Beschreibung",
   "listingDetailViews": "{count, plural, one{1 Aufruf} other{{count} Aufrufe}}",
   "listingDetailLocationHeading": "Standort",
+  "listingDetailRelatedHeading": "Das könnte dir auch gefallen",
   "listingDetailSellerHeading": "Verkäufer",
   "listingDetailMemberSince": "Mitglied seit {date}",
   "listingDetailViewAgency": "Agentur anzeigen",

@@ -38,6 +38,12 @@ Listing _listingFixture() {
   );
 }
 
+/// Variant of [_listingFixture] with a price drop: previousPrice 1200,
+/// current price 900 -> a 25% drop.
+Listing _listingFixtureWithDrop() {
+  return _listingFixture().copyWith(price: 900, previousPrice: 1200);
+}
+
 Widget _wrap({
   required Widget home,
   required Locale locale,
@@ -122,6 +128,29 @@ void main() {
       ))).data!;
 
       expect(esPrice, isNot(equals(enPrice)));
+    });
+  });
+
+  group('ListingCard price-drop badge', () {
+    testWidgets('shows the drop chip when priceDropPct is set', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          locale: const Locale('es'),
+          home: ListingCard(listing: _listingFixtureWithDrop(), onTap: () {}),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('↓25%'), findsOneWidget);
+    });
+
+    testWidgets('does not show a drop chip when priceDropPct is null', (tester) async {
+      await tester.pumpWidget(
+        _wrap(locale: const Locale('es'), home: ListingCard(listing: _listingFixture(), onTap: () {})),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('↓'), findsNothing);
     });
   });
 

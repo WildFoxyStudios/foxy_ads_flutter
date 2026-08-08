@@ -30,6 +30,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:foxy_ads/core/models/listing_model.dart';
 import 'package:foxy_ads/core/services/auth_service.dart';
 import 'package:foxy_ads/core/services/favorite_service.dart';
+import 'package:foxy_ads/core/utils/format_utils.dart';
 import 'package:foxy_ads/features/listings/presentation/screens/listing_detail_screen.dart';
 import 'package:foxy_ads/l10n/app_localizations.dart';
 
@@ -74,10 +75,28 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Coche familiar en muy buen estado'), findsOneWidget);
-      expect(find.text('15000 EUR'), findsOneWidget);
+      // Price is now rendered locale-aware via formatPrice (es locale here)
+      // instead of the deprecated `Listing.formattedPrice`.
+      expect(find.text(formatPrice(15000, 'EUR', 'es')), findsOneWidget);
       // Seller heading + seller name.
       expect(find.text('Vendedor'), findsOneWidget);
       expect(find.text('Javier'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'shows previous price strikethrough and drop badge when previousPrice indicates a drop',
+    (tester) async {
+      final listing = _fixtureListing().copyWith(
+        price: 12000,
+        previousPrice: 15000,
+      );
+      await tester.pumpWidget(_buildTestApp(listing));
+      await tester.pumpAndSettle();
+
+      expect(find.text(formatPrice(12000, 'EUR', 'es')), findsOneWidget);
+      expect(find.text(formatPrice(15000, 'EUR', 'es')), findsOneWidget);
+      expect(find.text('↓20%'), findsOneWidget);
     },
   );
 

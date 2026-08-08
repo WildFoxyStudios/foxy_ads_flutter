@@ -13,6 +13,7 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/util/site_url.dart';
 import '../../../../core/util/text_util.dart';
+import '../../../../core/utils/format_utils.dart';
 import '../../../../core/widgets/image_lightbox.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../ads/ad_banner.dart';
@@ -248,14 +249,58 @@ class ListingDetailScreen extends ConsumerWidget {
                           ),
                         ),
 
-                      // Price
-                      Text(
-                        listing.formattedPrice,
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
+                      // Price (+ price-drop badge, when previousPrice
+                      // indicates a drop)
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 10,
+                        runSpacing: 4,
+                        children: [
+                          Text(
+                            formatPrice(
+                              listing.price,
+                              listing.currency,
+                              l10n.localeName,
+                            ),
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          if (listing.priceDropPct != null) ...[
+                            Text(
+                              formatPrice(
+                                listing.previousPrice!,
+                                listing.currency,
+                                l10n.localeName,
+                              ),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: AppColors.textSecondary,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.error,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                '↓${listing.priceDropPct!.round()}%',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       if (listing.isNegotiable)
                         Padding(

@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:foxy_ads/firebase_options.dart';
 import 'package:foxy_ads/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/deeplink/deep_link_service.dart';
@@ -15,7 +14,6 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/providers/locale_provider.dart';
-import 'features/ads/ad_config.dart';
 import 'features/chat/presentation/widgets/chat_bubble.dart';
 
 Future<void> main() async {
@@ -30,16 +28,13 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
   );
 
-  // AdMob (Sprint 10, Task 3): gated behind kAdsEnabled, which defaults to
-  // false. Initializing the Google Mobile Ads SDK — or loading any ad —
-  // WITHOUT the AdMob app-id <meta-data> in AndroidManifest.xml (and the
-  // iOS equivalent in Info.plist) crashes the app on launch. Since those
-  // manifests are user-owned WIP files this task doesn't touch, ads stay
-  // off until the user adds that config and flips the flag. See
+  // AdMob is intentionally NOT initialized here while disabled: the
+  // google_mobile_ads package's native MobileAdsInitProvider runs at
+  // process start (before any Dart code) and crashes the app when the
+  // AdMob app-id <meta-data> is missing from AndroidManifest.xml. The
+  // package has been removed from pubspec.yaml; re-add it together with
+  // the manifest meta-data when ads are ready to ship. See
   // docs/ADMOB_SETUP.md.
-  if (kAdsEnabled) {
-    await MobileAds.instance.initialize();
-  }
 
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([

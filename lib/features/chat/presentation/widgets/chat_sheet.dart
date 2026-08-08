@@ -255,11 +255,11 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
 
   Widget _buildResultsRow(List<Listing> results) {
     // `ListingCard` splits its height 3:2 between the image and the text
-    // content (price + 2-line title + location); at a narrow card width the
-    // content needs ~230px total to avoid overflowing, more than a plain
-    // `width / 0.7` (the grid's aspect ratio elsewhere) would give it.
+    // content (price + 2-line title + location + posted-date row); at a
+    // narrow card width the content needs ~280px total to avoid
+    // overflowing (was ~230px before the date row).
     return SizedBox(
-      height: 240,
+      height: 280,
       width: MediaQuery.of(context).size.width * 0.9,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

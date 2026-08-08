@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
+import '../../../../core/utils/format_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class ListingCard extends StatelessWidget {
@@ -162,7 +163,7 @@ class ListingCard extends StatelessWidget {
                   children: [
                     // Price
                     Text(
-                      listing.formattedPrice,
+                      formatPrice(listing.price, listing.currency, l10n.localeName),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -171,7 +172,7 @@ class ListingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     // Title
-                    Expanded(
+                    Flexible(
                       child: Text(
                         listing.title,
                         style: const TextStyle(
@@ -207,6 +208,28 @@ class ListingCard extends StatelessWidget {
                         ],
                       ),
                     ],
+                    // Posted date
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                        const SizedBox(width: 2),
+                        Expanded(
+                          child: Text(
+                            formatCardDate(listing.createdAt, l10n),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

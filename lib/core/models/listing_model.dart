@@ -14,6 +14,8 @@ class Listing {
   final String? email;
   final String? location;
   final String? city;
+  final double? latitude;
+  final double? longitude;
   final bool isNegotiable;
   final bool isFeatured;
   final DateTime? featuredUntil;
@@ -58,6 +60,8 @@ class Listing {
     this.email,
     this.location,
     this.city,
+    this.latitude,
+    this.longitude,
     this.isNegotiable = false,
     this.isFeatured = false,
     this.featuredUntil,
@@ -90,6 +94,8 @@ class Listing {
       email: json['email'] as String?,
       location: json['location'] as String?,
       city: json['city'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
       isNegotiable: json['is_negotiable'] as bool? ?? false,
       isFeatured: json['is_featured'] as bool? ?? false,
       featuredUntil: json['featured_until'] != null
@@ -131,6 +137,8 @@ class Listing {
       'phone': phone,
       'email': email,
       'city': city,
+      'latitude': latitude,
+      'longitude': longitude,
       'is_negotiable': isNegotiable,
       'is_featured': isFeatured,
       'featured_until': featuredUntil?.toIso8601String(),
@@ -176,6 +184,8 @@ class Listing {
     String? email,
     String? location,
     String? city,
+    double? latitude,
+    double? longitude,
     bool? isNegotiable,
     bool? isFeatured,
     DateTime? featuredUntil,
@@ -206,6 +216,8 @@ class Listing {
       email: email ?? this.email,
       location: location ?? this.location,
       city: city ?? this.city,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       isNegotiable: isNegotiable ?? this.isNegotiable,
       isFeatured: isFeatured ?? this.isFeatured,
       featuredUntil: featuredUntil ?? this.featuredUntil,
@@ -233,4 +245,6 @@ class Listing {
   }
 
   String get mainImage => images.isNotEmpty ? images.first : '';
+
+  bool get hasCoordinates => latitude != null && longitude != null;
 }

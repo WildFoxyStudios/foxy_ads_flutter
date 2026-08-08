@@ -18,8 +18,16 @@ import '../../../../core/widgets/image_lightbox.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../ads/ad_banner.dart';
 import '../../../agency/data/agency_service.dart';
+import '../../../real-estate/presentation/widgets/re_key_facts.dart';
 import '../widgets/contact_sheet.dart';
 import '../widgets/report_sheet.dart';
+
+/// Category id for the real-estate vertical, as written to
+/// `listings.category_id` (see `category_model.dart` and
+/// `create_listing_screen.dart`, which gates `ReAttributeForm` on the same
+/// literal). Used here to decide whether to render `ReKeyFacts` below the
+/// description.
+const _kRealEstateCategoryId = 'real_estate';
 
 final listingDetailProvider = FutureProvider.family<Listing?, String>((
   ref,
@@ -380,6 +388,15 @@ class ListingDetailScreen extends ConsumerWidget {
                           height: 1.5,
                         ),
                       ),
+
+                      // Real-estate key facts + extras table (Task A2).
+                      // Renders nothing for non-RE listings or listings
+                      // without a recognized attribute set.
+                      if (listing.categoryId == _kRealEstateCategoryId) ...[
+                        const SizedBox(height: 16),
+                        ReKeyFacts(listing: listing),
+                      ],
+
                       const Divider(height: 32),
 
                       // Seller Info

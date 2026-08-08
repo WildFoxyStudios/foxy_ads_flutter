@@ -13,6 +13,7 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/util/site_url.dart';
 import '../../../../core/util/text_util.dart';
+import '../../../../core/widgets/image_lightbox.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../ads/ad_banner.dart';
 import '../../../agency/data/agency_service.dart';
@@ -172,14 +173,22 @@ class ListingDetailScreen extends ConsumerWidget {
                       ? PageView.builder(
                           itemCount: listing.images.length,
                           itemBuilder: (context, index) {
-                            return CachedNetworkImage(
-                              imageUrl: listing.images[index],
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) =>
-                                  Container(color: AppColors.shimmer),
-                              errorWidget: (context, url, error) => Container(
-                                color: AppColors.shimmer,
-                                child: const Icon(Icons.broken_image),
+                            return GestureDetector(
+                              onTap: () => showImageLightbox(
+                                context,
+                                images: listing.images,
+                                initialIndex: index,
+                              ),
+                              child: CachedNetworkImage(
+                                imageUrl: listing.images[index],
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    Container(color: AppColors.shimmer),
+                                errorWidget: (context, url, error) =>
+                                    Container(
+                                      color: AppColors.shimmer,
+                                      child: const Icon(Icons.broken_image),
+                                    ),
                               ),
                             );
                           },

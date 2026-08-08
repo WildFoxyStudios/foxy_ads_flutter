@@ -13,8 +13,15 @@ class MainNavigationShell extends StatelessWidget {
     final String location = GoRouterState.of(context).uri.path;
     if (location == '/') return 0;
     if (location == '/search') return 1;
-    if (location == '/favorites') return 3;
-    if (location == '/profile') return 4;
+    // Real-estate surface: the bespoke `/inmuebles-en*` routes and the
+    // web-canonical `/categoria/real_estate*` aliases both highlight the
+    // Inmuebles tab.
+    if (location.startsWith('/inmuebles-en') ||
+        location.startsWith('/categoria/real_estate')) {
+      return 2;
+    }
+    if (location == '/favorites') return 4;
+    if (location == '/profile') return 5;
     return 0;
   }
 
@@ -27,12 +34,15 @@ class MainNavigationShell extends StatelessWidget {
         context.go('/search');
         break;
       case 2:
-        context.push('/create-listing');
+        context.go('/inmuebles-en');
         break;
       case 3:
-        context.go('/favorites');
+        context.push('/create-listing');
         break;
       case 4:
+        context.go('/favorites');
+        break;
+      case 5:
         context.go('/profile');
         break;
     }
@@ -78,14 +88,23 @@ class MainNavigationShell extends StatelessWidget {
                     onTap: () => _onItemTapped(context, 1),
                   ),
                 ),
-                _PostAdButton(onTap: () => _onItemTapped(context, 2)),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.apartment_outlined,
+                    activeIcon: Icons.apartment,
+                    label: l10n.navRealEstate,
+                    isSelected: _calculateSelectedIndex(context) == 2,
+                    onTap: () => _onItemTapped(context, 2),
+                  ),
+                ),
+                _PostAdButton(onTap: () => _onItemTapped(context, 3)),
                 Expanded(
                   child: _NavItem(
                     icon: Icons.favorite_outline,
                     activeIcon: Icons.favorite,
                     label: l10n.navFavorites,
-                    isSelected: _calculateSelectedIndex(context) == 3,
-                    onTap: () => _onItemTapped(context, 3),
+                    isSelected: _calculateSelectedIndex(context) == 4,
+                    onTap: () => _onItemTapped(context, 4),
                   ),
                 ),
                 Expanded(
@@ -93,8 +112,8 @@ class MainNavigationShell extends StatelessWidget {
                     icon: Icons.person_outline,
                     activeIcon: Icons.person,
                     label: l10n.navProfile,
-                    isSelected: _calculateSelectedIndex(context) == 4,
-                    onTap: () => _onItemTapped(context, 4),
+                    isSelected: _calculateSelectedIndex(context) == 5,
+                    onTap: () => _onItemTapped(context, 5),
                   ),
                 ),
               ],

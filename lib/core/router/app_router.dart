@@ -95,6 +95,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'search',
             builder: (context, state) => const SearchScreen(),
           ),
+          // Real-estate faceted search — a first-class bottom-nav tab, so it
+          // lives inside the shell (keeps the bottom bar). The `:city`
+          // drill-down + `/categoria/real_estate*` deep-link aliases stay
+          // outside the shell (they're pushed, with a back button).
+          GoRoute(
+            path: '/inmuebles-en',
+            name: 'realEstateSearch',
+            builder: (context, state) => const InmueblesEnScreen(),
+          ),
           GoRoute(
             path: '/favorites',
             name: 'favorites',
@@ -212,12 +221,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Real-estate faceted search
-      GoRoute(
-        path: '/inmuebles-en',
-        name: 'realEstateSearch',
-        builder: (context, state) => const InmueblesEnScreen(),
-      ),
       // City landing — pre-filtered search for a single city
       GoRoute(
         path: '/inmuebles-en/:city',

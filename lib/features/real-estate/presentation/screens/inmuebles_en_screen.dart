@@ -29,7 +29,9 @@ import '../../../home/presentation/widgets/listing_card.dart';
 import '../../data/re_attributes.dart';
 import '../../data/re_models.dart';
 import '../providers/re_search_provider.dart';
+import '../widgets/re_active_filters.dart';
 import '../widgets/re_energy_label.dart' show reEnergyLabel;
+import '../widgets/re_filter_labels.dart';
 
 class InmueblesEnScreen extends ConsumerStatefulWidget {
   const InmueblesEnScreen({super.key});
@@ -161,6 +163,28 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+
+          // Active filter chip strip — mirrors the AppBar clear-all button
+          // and clears the price/m² text controllers when their range chip
+          // is removed (the notifier has no visibility into local text
+          // state).
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: ReActiveFilters(
+              onRangeCleared: (field) {
+                switch (field) {
+                  case ReRangeField.price:
+                    _priceMinController.clear();
+                    _priceMaxController.clear();
+                    break;
+                  case ReRangeField.area:
+                    _m2MinController.clear();
+                    _m2MaxController.clear();
+                    break;
+                }
+              },
             ),
           ),
 
@@ -433,7 +457,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstatePropertyTypeLabel),
             _CountedChipWrap<String>(
               values: RE_PROPERTY_TYPES,
-              labels: _propertyTypeLabels(l10n),
+              labels: propertyTypeLabels(l10n),
               selected: filters.propertyTypes,
               counts: counts.propertyType,
               onToggle: (v) => notifier.toggleString(
@@ -547,7 +571,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateConditionLabel),
             _CountedChipWrap<String>(
               values: RE_CONDITIONS,
-              labels: _conditionLabels(l10n),
+              labels: conditionLabels(l10n),
               selected: filters.conditions,
               counts: counts.condition,
               onToggle: (v) => notifier.toggleString('conditions', value: v),
@@ -556,7 +580,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateFeaturesLabel),
             _CountedChipWrap<String>(
               values: RE_FEATURE_KEYS,
-              labels: _featureLabels(l10n),
+              labels: featureLabels(l10n),
               selected: filters.features,
               counts: null, // facets not exposed for features
               onToggle: (v) => notifier.toggleString('features', value: v),
@@ -565,7 +589,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateOrientationLabel),
             _SimpleChipWrap<String>(
               values: RE_ORIENTATIONS,
-              labels: _orientationLabels(l10n),
+              labels: orientationLabels(l10n),
               selected: filters.orientation,
               onToggle: (v) => notifier.toggleString('orientation', value: v),
             ),
@@ -573,7 +597,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateFloorLabel),
             _SimpleChipWrap<String>(
               values: RE_FLOOR_BUCKETS,
-              labels: _floorBucketLabels(l10n),
+              labels: floorBucketLabels(l10n),
               selected: filters.floorBuckets,
               onToggle: (v) => notifier.toggleString('floorBuckets', value: v),
             ),
@@ -581,11 +605,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
             _SectionLabel(l10n.realEstateEnergyBandLabel),
             _SimpleChipWrap<String>(
               values: const ['alta', 'media', 'baja'],
-              labels: {
-                'alta': l10n.realEstateEnergyBandHigh,
-                'media': l10n.realEstateEnergyBandMid,
-                'baja': l10n.realEstateEnergyBandLow,
-              },
+              labels: energyBandLabels(l10n),
               selected: filters.energyBands,
               onToggle: (v) => notifier.toggleString('energyBands', value: v),
             ),
@@ -921,58 +941,7 @@ class _Prompt extends StatelessWidget {
   }
 }
 
-// ---- Localized label maps for the RE constant lists ----
-//
-// The canonical `RE_*` lists carry only wire values; these builders resolve
-// them to human-readable copy from the active locale's ARB. Built per-build
-// (cheap: five small map literals) so a locale switch re-renders correctly.
-
-Map<String, String> _propertyTypeLabels(AppLocalizations l10n) => {
-      'piso': l10n.realEstatePropertyTypeFlat,
-      'casa': l10n.realEstatePropertyTypeHouse,
-      'atico': l10n.realEstatePropertyTypePenthouse,
-      'estudio': l10n.realEstatePropertyTypeStudio,
-      'duplex': l10n.realEstatePropertyTypeDuplex,
-      'chalet': l10n.realEstatePropertyTypeChalet,
-      'loft': l10n.realEstatePropertyTypeLoft,
-      'local': l10n.realEstatePropertyTypeCommercial,
-      'oficina': l10n.realEstatePropertyTypeOffice,
-      'terreno': l10n.realEstatePropertyTypeLand,
-      'garaje': l10n.realEstatePropertyTypeGarage,
-    };
-
-Map<String, String> _conditionLabels(AppLocalizations l10n) => {
-      'obra_nueva': l10n.realEstateConditionNew,
-      'buen_estado': l10n.realEstateConditionGood,
-      'a_reformar': l10n.realEstateConditionToRenovate,
-    };
-
-Map<String, String> _orientationLabels(AppLocalizations l10n) => {
-      'norte': l10n.realEstateOrientationNorth,
-      'sur': l10n.realEstateOrientationSouth,
-      'este': l10n.realEstateOrientationEast,
-      'oeste': l10n.realEstateOrientationWest,
-    };
-
-Map<String, String> _floorBucketLabels(AppLocalizations l10n) => {
-      'bajos': l10n.realEstateFloorBucketLow,
-      'intermedias': l10n.realEstateFloorBucketMid,
-      'ultima': l10n.realEstateFloorBucketTop,
-    };
-
-Map<String, String> _featureLabels(AppLocalizations l10n) => {
-      'elevator': l10n.realEstateFeatureElevator,
-      'parking': l10n.realEstateFeatureParking,
-      'terrace': l10n.realEstateFeatureTerrace,
-      'balcony': l10n.realEstateFeatureBalcony,
-      'garden': l10n.realEstateFeatureGarden,
-      'pool': l10n.realEstateFeaturePool,
-      'storage_room': l10n.realEstateFeatureStorageRoom,
-      'air_conditioning': l10n.realEstateFeatureAirConditioning,
-      'heating': l10n.realEstateFeatureHeating,
-      'built_in_wardrobes': l10n.realEstateFeatureBuiltInWardrobes,
-      'furnished': l10n.realEstateFeatureFurnished,
-      'exterior': l10n.realEstateFeatureExterior,
-      'accessible': l10n.realEstateFeatureAccessible,
-      'luxury': l10n.realEstateFeatureLuxury,
-    };
+// Localized label maps for the RE constant lists now live in
+// `../widgets/re_filter_labels.dart` (shared with `ReActiveFilters`, the
+// active-filter chip strip mounted above, so both surfaces resolve wire
+// values to the exact same human-readable copy).

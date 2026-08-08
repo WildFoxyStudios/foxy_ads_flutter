@@ -1225,6 +1225,14 @@
   "realEstateViewList": "Lista",
   "realEstateViewMap": "Mapa",
 
+  "locationPickerHeading": "Ubicación en el mapa",
+  "@locationPickerHeading": {
+    "description": "Section heading above the interactive pick-on-map widget in the create/edit listing form (real estate only)."
+  },
+  "locationPickerHint": "Toca el mapa para marcar la ubicación exacta",
+  "locationPickerPicked": "Ubicación marcada",
+  "locationPickerClear": "Quitar ubicación",
+
   "realEstateViewNResults": "Ver {count} resultados",
   "@realEstateViewNResults": {
     "description": "Pinned button label in the mobile real-estate filter bottom sheet. {count} is the live number of results matching the currently applied filters.",

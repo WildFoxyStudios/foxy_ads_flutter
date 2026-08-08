@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 import 'dart:io';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
@@ -14,6 +15,7 @@ import '../../../../core/services/country_service.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../real-estate/presentation/widgets/re_attribute_form.dart';
+import '../../../real-estate/presentation/widgets/location_picker_map.dart';
 import 'listing_detail_screen.dart' show listingDetailProvider;
 import '../../../profile/presentation/screens/my_listings_screen.dart'
     show myListingsProvider;
@@ -63,6 +65,14 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   // post-frame `onValidityChanged` callback fires.
   bool _reAttributesValid = false;
 
+  // Pick-on-map coordinates (real_estate only). Populated by
+  // `LocationPickerMap.onChanged` when the user taps the map; stay null
+  // otherwise. OPTIONAL — a listing can publish without ever setting these,
+  // so `_submitListing` never gates on them the way it does on
+  // `_reAttributesValid`.
+  double? _latitude;
+  double? _longitude;
+
   // Edit-mode only state. Left at their defaults (null / empty) on the
   // create path, so create behavior is unaffected.
   List<String> _existingImageUrls = [];
@@ -84,6 +94,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       _emailController.text = existing.email ?? '';
       _cityController.text = existing.city ?? '';
       _isNegotiable = existing.isNegotiable;
+      _latitude = existing.latitude;
+      _longitude = existing.longitude;
       _existingImageUrls = List.from(existing.images);
       _prefillCategoryId = existing.categoryId;
       _existingSubcategoryId = existing.subcategoryId;
@@ -233,6 +245,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           city: _cityController.text.trim().isNotEmpty
               ? _cityController.text.trim()
               : null,
+          latitude: _latitude,
+          longitude: _longitude,
           isNegotiable: _isNegotiable,
           createdAt: DateTime.now(),
         );
@@ -278,6 +292,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           'city': _cityController.text.trim().isNotEmpty
               ? _cityController.text.trim()
               : null,
+          'latitude': _latitude,
+          'longitude': _longitude,
           'whatsapp': _whatsappController.text.trim().isNotEmpty
               ? _whatsappController.text.trim()
               : null,
@@ -659,6 +675,8 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                     if (value?.id != 'real_estate') {
                       _reAttributes = null;
                       _reAttributesValid = false;
+                      _latitude = null;
+                      _longitude = null;
                     }
                   });
                 },
@@ -764,6 +782,31 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               ),
             ),
             const SizedBox(height: 24),
+
+            // Pick-on-map latitude/longitude: rendered only for real_estate,
+            // same gate as the attribute form below. Without this, RE
+            // listings created via the app never write coordinates and
+            // never show up as pins on the search map (`ReMapView`) or the
+            // detail mini-map (`ListingLocationMap`). The pick is OPTIONAL —
+            // `_latitude`/`_longitude` stay null until (if ever) the user
+            // taps the map, and submit never blocks on them.
+            if (_selectedCategory?.id == 'real_estate') ...[
+              LocationPickerMap(
+                initialCenter: centroidForCountry(
+                  _existingCountryCode ?? country.code,
+                ),
+                initialValue: (_latitude != null && _longitude != null)
+                    ? LatLng(_latitude!, _longitude!)
+                    : null,
+                onChanged: (latlng) {
+                  setState(() {
+                    _latitude = latlng?.latitude;
+                    _longitude = latlng?.longitude;
+                  });
+                },
+              ),
+              const SizedBox(height: 24),
+            ],
 
             // Real-estate attributes: rendered only when the user picks the
             // real_estate category. The form encodes the values into a JSONB

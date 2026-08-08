@@ -959,6 +959,11 @@
   "realEstateViewList": "Elenco",
   "realEstateViewMap": "Mappa",
 
+  "locationPickerHeading": "Posizione sulla mappa",
+  "locationPickerHint": "Tocca la mappa per segnare la posizione esatta",
+  "locationPickerPicked": "Posizione segnata",
+  "locationPickerClear": "Rimuovi posizione",
+
   "realEstateViewNResults": "Vedi {count} risultati",
   "@realEstateViewNResults": {
     "description": "Pinned button label in the mobile real-estate filter bottom sheet. {count} is the live number of results matching the currently applied filters.",

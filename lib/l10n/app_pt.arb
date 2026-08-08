@@ -833,5 +833,52 @@
   "allListingsSortOldest": "Mais antigos",
   "allListingsSortPriceLow": "Preço: do menor ao maior",
   "allListingsSortPriceHigh": "Preço: do maior ao menor",
-  "allListingsViewAll": "Ver todos os anúncios"
+  "allListingsViewAll": "Ver todos os anúncios",
+
+  "listingCardToday": "Hoje",
+  "listingCardYesterday": "Ontem",
+  "listingCardDaysAgo": "Há {count} dias",
+  "@listingCardDaysAgo": {
+    "description": "Relative date label on the listing card. {count} is the number of days ago (>= 2).",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "listingCardMonthsAgo": "Há {count} meses",
+  "@listingCardMonthsAgo": {
+    "description": "Relative date label on the listing card. {count} is the number of months ago (>= 2 and < 12).",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "listingCardOverAYear": "Há mais de um ano",
+
+  "categoryDetailAllSubcategories": "Todas",
+  "allCategoriesViewAllIn": "Ver tudo em {category}",
+  "@allCategoriesViewAllIn": {
+    "description": "CTA link/button on a category tile to drill into the category. {category} is the category display name.",
+    "placeholders": { "category": { "type": "String" } }
+  },
+
+  "realEstateEnergyLetterOption": "{letter} ({band})",
+  "@realEstateEnergyLetterOption": {
+    "description": "Option label in the energy-letter dropdown. {letter} is the letter (A–G), {band} is the band label (e.g. 'Alta', 'Média', 'Baixa').",
+    "placeholders": {
+      "letter": { "type": "String" },
+      "band": { "type": "String" }
+    }
+  },
+
+  "realEstateActiveFiltersLabel": "Filtros ativos",
+  "realEstateRemoveFilter": "Remover {value}",
+  "@realEstateRemoveFilter": {
+    "description": "Tooltip/label on an active-filter chip. {value} is the chip's display value.",
+    "placeholders": { "value": { "type": "String" } }
+  },
+  "realEstateClearAllFilters": "Limpar tudo",
+  "realEstateSaveSearch": "Salvar busca",
+  "realEstateSaveSearchTitle": "Dê um nome à sua busca",
+  "realEstateSaveSearchHint": "Ex. Apartamentos em Madrid",
+  "realEstateSaveSearchSaved": "Busca salva",
+  "realEstateSaveSearchFailed": "Não foi possível salvar a busca",
+  "realEstateSaveSearchLoginRequired": "Entre para salvar buscas",
+
+  "realEstatePromocionesCta": "Ver imóveis novos",
+  "realEstatePromocionesCtaSubtitle": "Empreendimentos de construção nova"
 }

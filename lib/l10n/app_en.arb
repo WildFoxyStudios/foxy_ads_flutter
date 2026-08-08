@@ -878,5 +878,52 @@
   "allListingsSortOldest": "Oldest first",
   "allListingsSortPriceLow": "Price: low to high",
   "allListingsSortPriceHigh": "Price: high to low",
-  "allListingsViewAll": "View all listings"
+  "allListingsViewAll": "View all listings",
+
+  "listingCardToday": "Today",
+  "listingCardYesterday": "Yesterday",
+  "listingCardDaysAgo": "{count} days ago",
+  "@listingCardDaysAgo": {
+    "description": "Relative date label on the listing card. {count} is the number of days ago (>= 2).",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "listingCardMonthsAgo": "{count} months ago",
+  "@listingCardMonthsAgo": {
+    "description": "Relative date label on the listing card. {count} is the number of months ago (>= 2 and < 12).",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "listingCardOverAYear": "Over a year ago",
+
+  "categoryDetailAllSubcategories": "All",
+  "allCategoriesViewAllIn": "View all in {category}",
+  "@allCategoriesViewAllIn": {
+    "description": "CTA link/button on a category tile to drill into the category. {category} is the category display name.",
+    "placeholders": { "category": { "type": "String" } }
+  },
+
+  "realEstateEnergyLetterOption": "{letter} ({band})",
+  "@realEstateEnergyLetterOption": {
+    "description": "Option label in the energy-letter dropdown. {letter} is the letter (A–G), {band} is the band label (e.g. 'High', 'Mid', 'Low').",
+    "placeholders": {
+      "letter": { "type": "String" },
+      "band": { "type": "String" }
+    }
+  },
+
+  "realEstateActiveFiltersLabel": "Active filters",
+  "realEstateRemoveFilter": "Remove {value}",
+  "@realEstateRemoveFilter": {
+    "description": "Tooltip/label on an active-filter chip. {value} is the chip's display value.",
+    "placeholders": { "value": { "type": "String" } }
+  },
+  "realEstateClearAllFilters": "Clear all",
+  "realEstateSaveSearch": "Save search",
+  "realEstateSaveSearchTitle": "Name your search",
+  "realEstateSaveSearchHint": "e.g. Apartments in Madrid",
+  "realEstateSaveSearchSaved": "Search saved",
+  "realEstateSaveSearchFailed": "Couldn't save the search",
+  "realEstateSaveSearchLoginRequired": "Sign in to save searches",
+
+  "realEstatePromocionesCta": "View new developments",
+  "realEstatePromocionesCtaSubtitle": "New construction developments"
 }

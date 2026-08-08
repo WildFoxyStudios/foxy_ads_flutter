@@ -174,6 +174,42 @@ void main() {
     });
   });
 
+  group('resolveDeepLink T7: /categoria/real_estate aliases', () {
+    // /categoria/real_estate -> /categoria/real_estate (the GoRoute then
+    // renders InmueblesEnScreen). The resolver only maps the inbound path;
+    // the seed behavior lives in _ReAliasWrapper (T7 Plan 7).
+    test('https: /categoria/real_estate -> /categoria/real_estate', () {
+      expect(
+          resolveDeepLink(
+              Uri.parse('https://foxyads.app/categoria/real_estate')),
+          Uri(path: '/categoria/real_estate'));
+    });
+    test('foxyads://: /categoria/real_estate -> /categoria/real_estate', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://categoria/real_estate')),
+          Uri(path: '/categoria/real_estate'));
+    });
+    // /categoria/real_estate/:subId -> /categoria/real_estate/:subId
+    // (subId passed through verbatim — the wrapper decides whether to seed
+    // a filter or no-op based on RE_PROPERTY_TYPES).
+    test('https: /categoria/real_estate/piso -> /categoria/real_estate/piso', () {
+      expect(
+          resolveDeepLink(
+              Uri.parse('https://foxyads.app/categoria/real_estate/piso')),
+          Uri(path: '/categoria/real_estate/piso'));
+    });
+    test('https: /categoria/real_estate/nonsense -> preserved (wrapper no-ops)', () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'https://foxyads.app/categoria/real_estate/nonsense')),
+          Uri(path: '/categoria/real_estate/nonsense'));
+    });
+    // /categoria/<other> stays rejected (no shadowing).
+    test('https: /categoria/<other> rejected', () {
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/categoria/motos')),
+          isNull);
+    });
+  });
+
   group('resolveDeepLink guards -> null (caller sends home)', () {
     test('bad id', () {
       expect(resolveDeepLink(Uri.parse('https://foxyads.app/anuncio/not-a-uuid')),

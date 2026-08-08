@@ -59,6 +59,19 @@ Uri? resolveDeepLink(Uri uri) {
       if (segments.length == 1) return Uri(path: '/inmuebles-en');
       if (segments.length == 2) return Uri(path: '/inmuebles-en/${segments[1]}');
       return null;
+    case 'categoria':
+      // /categoria/real_estate -> /inmuebles-en
+      // /categoria/real_estate/:subId -> /inmuebles-en/:subId (the
+      // /categoria/real_estate/:subId GoRoute wraps in `_ReAliasWrapper`,
+      // which seeds the property-type filter post-frame). Unknown subIds
+      // pass through unchanged — the wrapper no-ops on them.
+      if (segments.length == 2 && segments[1] == 'real_estate') {
+        return Uri(path: '/categoria/real_estate');
+      }
+      if (segments.length == 3 && segments[1] == 'real_estate') {
+        return Uri(path: '/categoria/real_estate/${segments[2]}');
+      }
+      return null;
     case 'ayuda':
     case 'contacto':
     case 'privacidad':

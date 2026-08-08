@@ -15,6 +15,8 @@ import '../../features/listings/presentation/screens/all_listings_screen.dart';
 import '../../features/real-estate/presentation/screens/inmuebles_en_screen.dart';
 import '../../features/real-estate/presentation/screens/city_landing_screen.dart';
 import '../../features/real-estate/presentation/screens/valuation_screen.dart';
+import '../../features/real-estate/data/re_attributes.dart';
+import '../../features/real-estate/presentation/providers/re_search_provider.dart';
 import '../../features/developments/presentation/screens/promociones_screen.dart';
 import '../../features/developments/presentation/screens/promocion_detail_screen.dart';
 import '../../features/developments/presentation/screens/development_form_screen.dart';
@@ -225,6 +227,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return CityLandingScreen(city: city);
         },
       ),
+      // /categoria/real_estate -> /inmuebles-en (web-canonical alias).
+      // MUST be declared after `/inmuebles-en/:city` so the static path
+      // isn't shadowed by the dynamic `:city` route.
+      GoRoute(
+        path: '/categoria/real_estate',
+        name: 'categoriaRealEstate',
+        builder: (context, state) => const InmueblesEnScreen(),
+      ),
+      // /categoria/real_estate/:subId -> /inmuebles-en with a propertyType
+      // pre-selected via the wrapper. Unknown subIds no-op (wrapper renders
+      // the unfiltered screen). Same priority note as the route above.
+      GoRoute(
+        path: '/categoria/real_estate/:subId',
+        name: 'categoriaRealEstateSub',
+        builder: (context, state) {
+          final subId = state.pathParameters['subId']!;
+          return _ReAliasWrapper(subId: subId);
+        },
+      ),
       // Property valuation form
       GoRoute(
         path: '/valorar',
@@ -378,6 +399,13 @@ class AppRoutes {
   static const String promociones = '/promociones';
   static const String allListings = '/anuncios';
 
+  // Web-canonical real-estate aliases (Plan 7 T7). Mirror the web's
+  // /categoria/real_estate/* paths so shared links from the marketing site
+  // land on the right screen in-app.
+  static const String categoriaRealEstate = '/categoria/real_estate';
+  static String categoriaRealEstateSub(String subId) =>
+      '/categoria/real_estate/$subId';
+
   static String listingDetail(String id) => '/listing/$id';
   static String editListing(String id) => '/edit-listing/$id';
   static String categoryListings(String categoryId, String name) =>
@@ -441,4 +469,48 @@ class _EditListingRoute extends ConsumerWidget {
       },
     );
   }
+}
+
+/// Routes /categoria/real_estate/:subId into [InmueblesEnScreen] with a
+/// property-type filter pre-selected. Used only by the Plan 7 web-canonical
+/// alias routes; the canonical /inmuebles-en path stays unwrapped so its
+/// initial filter state is always defaults.
+///
+/// Why a wrapper and not a constructor arg on [InmueblesEnScreen]:
+///   * The screen holds four `TextEditingController`s in its state; passing
+///     a "seed" filter through the constructor would also require seeding
+///     the controllers, which is a deeper refactor than this alias warrants.
+///   * Toggling the filter via the existing `reSearchFiltersProvider` from
+///     a post-frame callback keeps the alias additive — no new constructor
+///     signature, no new provider.
+///
+/// The check is against `RE_PROPERTY_TYPES` (the wire-value list) so an
+/// unknown subId (e.g. `/categoria/real_estate/nonsense`) renders the screen
+/// in its default unfiltered state rather than throwing or seeding garbage.
+class _ReAliasWrapper extends ConsumerStatefulWidget {
+  const _ReAliasWrapper({required this.subId});
+  final String subId;
+
+  @override
+  ConsumerState<_ReAliasWrapper> createState() => _ReAliasWrapperState();
+}
+
+class _ReAliasWrapperState extends ConsumerState<_ReAliasWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // Defer the provider mutation until after the first frame so we never
+    // mutate state during `build` (Riverpod asserts in profile mode).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (!RE_PROPERTY_TYPES.contains(widget.subId)) return;
+      ref.read(reSearchFiltersProvider.notifier).toggleString(
+            'propertyTypes',
+            value: widget.subId,
+          );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const InmueblesEnScreen();
 }

@@ -11,6 +11,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../favorites/presentation/widgets/favorite_toggle.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 
 final allListingsProvider =
@@ -107,9 +108,12 @@ class _AllListingsScreenState extends ConsumerState<AllListingsScreen> {
             itemCount: listings.length,
             itemBuilder: (context, index) {
               final listing = listings[index];
+              final fav = favoriteBinding(ref, listing.id);
               return ListingCard(
                 listing: listing,
                 onTap: () => context.push('/listing/${listing.id}'),
+                onFavorite: fav.onFavorite,
+                isFavorite: fav.isFavorite,
               );
             },
           );

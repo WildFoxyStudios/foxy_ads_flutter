@@ -10,6 +10,7 @@ import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../ads/ad_banner.dart';
+import '../../../favorites/presentation/widgets/favorite_toggle.dart';
 import '../widgets/category_card.dart';
 import '../widgets/listing_card.dart';
 import '../widgets/featured_listing_card.dart';
@@ -355,9 +356,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final listing = listings[index];
+                    final fav = favoriteBinding(ref, listing.id);
                     return ListingCard(
                       listing: listing,
                       onTap: () => context.push('/listing/${listing.id}'),
+                      onFavorite: fav.onFavorite,
+                      isFavorite: fav.isFavorite,
                     );
                   }, childCount: listings.length),
                 ),

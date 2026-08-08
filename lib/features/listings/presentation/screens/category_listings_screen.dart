@@ -7,6 +7,7 @@ import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
+import '../../../favorites/presentation/widgets/favorite_toggle.dart';
 import '../../../search/presentation/providers/search_filters_provider.dart';
 
 /// Family key: `categoryId` + an optional `subcategoryId`. When
@@ -112,9 +113,12 @@ class CategoryListingsScreen extends ConsumerWidget {
             itemCount: listings.length,
             itemBuilder: (context, index) {
               final listing = listings[index];
+              final fav = favoriteBinding(ref, listing.id);
               return ListingCard(
                 listing: listing,
                 onTap: () => context.push('/listing/${listing.id}'),
+                onFavorite: fav.onFavorite,
+                isFavorite: fav.isFavorite,
               );
             },
           );

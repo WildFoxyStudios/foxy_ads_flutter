@@ -9,6 +9,7 @@ import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/models/saved_search_model.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../real-estate/presentation/providers/re_search_provider.dart';
 import '../providers/saved_searches_provider.dart';
 import '../providers/search_filters_provider.dart';
 
@@ -32,6 +33,36 @@ class SavedSearchesScreen extends ConsumerWidget {
     if (filters.minPrice != null || filters.maxPrice != null) {
       final min = filters.minPrice?.toStringAsFixed(0) ?? '0';
       final max = filters.maxPrice?.toStringAsFixed(0) ?? '∞';
+      parts.add(l10n.savedSearchesPriceRange(min, max));
+    }
+    if (parts.isEmpty) return l10n.savedSearchesNoFilters;
+    return parts.join(' · ');
+  }
+
+  /// Mirrors [_filterSummary] but for the RE payload shape: operation, city,
+  /// property-type count, and price range — reuses existing l10n keys
+  /// (no new copy needed) instead of the exhaustive facet list the search
+  /// screen itself renders.
+  String _reFilterSummary(ReSearchFilters filters, AppLocalizations l10n) {
+    final parts = <String>[];
+    final opLabel = switch (filters.operation) {
+      'venta' => l10n.realEstateOperationSale,
+      'alquiler' => l10n.realEstateOperationRent,
+      'alquiler_temporal' => l10n.realEstateOperationTemp,
+      _ => null,
+    };
+    if (opLabel != null) parts.add(opLabel);
+    if (filters.city != null && filters.city!.isNotEmpty) {
+      parts.add(filters.city!);
+    }
+    if (filters.propertyTypes.isNotEmpty) {
+      parts.add(
+        '${filters.propertyTypes.length} × ${l10n.realEstatePropertyTypeLabel}',
+      );
+    }
+    if (filters.priceMin != null || filters.priceMax != null) {
+      final min = filters.priceMin?.toStringAsFixed(0) ?? '0';
+      final max = filters.priceMax?.toStringAsFixed(0) ?? '∞';
       parts.add(l10n.savedSearchesPriceRange(min, max));
     }
     if (parts.isEmpty) return l10n.savedSearchesNoFilters;
@@ -87,10 +118,19 @@ class SavedSearchesScreen extends ConsumerWidget {
     WidgetRef ref,
     SavedSearch search,
   ) async {
-    ref.read(searchFiltersProvider.notifier).setAll(search.filters);
     final service = ref.read(savedSearchesServiceProvider);
     // Non-essential bookkeeping: must never block re-running the search.
     unawaited(service.touchSeen(search.id).catchError((_) {}));
+
+    if (search.isRealEstate) {
+      ref
+          .read(reSearchFiltersProvider.notifier)
+          .setAll(ReSearchFilters.fromJson(search.rawQuery));
+      if (context.mounted) context.go('/inmuebles-en');
+      return;
+    }
+
+    ref.read(searchFiltersProvider.notifier).setAll(search.filters);
     // Propagate the saved query into the URL so the SearchScreen's
     // `_hydrateFromUrlOnce` can pre-fill the TextField + immediately re-run
     // a search on first frame, matching the deep-link `/search?q=foo` UX.
@@ -171,7 +211,14 @@ class SavedSearchesScreen extends ConsumerWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  _filterSummary(search.filters, l10n),
+                                  search.isRealEstate
+                                      ? _reFilterSummary(
+                                          ReSearchFilters.fromJson(
+                                            search.rawQuery,
+                                          ),
+                                          l10n,
+                                        )
+                                      : _filterSummary(search.filters, l10n),
                                   style: TextStyle(
                                     color: AppColors.textSecondary,
                                     fontSize: 13,

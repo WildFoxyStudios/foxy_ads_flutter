@@ -923,6 +923,7 @@
   "realEstateSaveSearchSaved": "Ricerca salvata",
   "realEstateSaveSearchFailed": "Impossibile salvare la ricerca",
   "realEstateSaveSearchLoginRequired": "Accedi per salvare le ricerche",
+  "realEstateSaveSearchDefaultLabel": "Ricerca immobiliare",
 
   "realEstatePromocionesCta": "Vedi nuove costruzioni",
   "realEstatePromocionesCtaSubtitle": "Promozioni di nuova costruzione"

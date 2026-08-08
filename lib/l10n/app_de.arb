@@ -878,6 +878,7 @@
   "realEstateSaveSearchSaved": "Suche gespeichert",
   "realEstateSaveSearchFailed": "Suche konnte nicht gespeichert werden",
   "realEstateSaveSearchLoginRequired": "Anmelden, um Suchen zu speichern",
+  "realEstateSaveSearchDefaultLabel": "Immobiliensuche",
 
   "realEstatePromocionesCta": "Neubauten ansehen",
   "realEstatePromocionesCtaSubtitle": "Neubau-Projekte"

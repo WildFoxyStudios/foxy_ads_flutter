@@ -878,6 +878,7 @@
   "realEstateSaveSearchSaved": "Busca salva",
   "realEstateSaveSearchFailed": "Não foi possível salvar a busca",
   "realEstateSaveSearchLoginRequired": "Entre para salvar buscas",
+  "realEstateSaveSearchDefaultLabel": "Busca de imóveis",
 
   "realEstatePromocionesCta": "Ver imóveis novos",
   "realEstatePromocionesCtaSubtitle": "Empreendimentos de construção nova"

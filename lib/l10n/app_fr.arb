@@ -878,6 +878,7 @@
   "realEstateSaveSearchSaved": "Recherche enregistrée",
   "realEstateSaveSearchFailed": "Impossible d'enregistrer la recherche",
   "realEstateSaveSearchLoginRequired": "Connectez-vous pour enregistrer des recherches",
+  "realEstateSaveSearchDefaultLabel": "Recherche immobilière",
 
   "realEstatePromocionesCta": "Voir les programmes neufs",
   "realEstatePromocionesCtaSubtitle": "Programmes de construction neuve"

@@ -923,6 +923,7 @@
   "realEstateSaveSearchSaved": "Search saved",
   "realEstateSaveSearchFailed": "Couldn't save the search",
   "realEstateSaveSearchLoginRequired": "Sign in to save searches",
+  "realEstateSaveSearchDefaultLabel": "Real estate search",
 
   "realEstatePromocionesCta": "View new developments",
   "realEstatePromocionesCtaSubtitle": "New construction developments"

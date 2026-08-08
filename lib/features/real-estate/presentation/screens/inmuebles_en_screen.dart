@@ -23,10 +23,12 @@ import '../../../../core/models/country_model.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
+import '../../../search/presentation/providers/saved_searches_provider.dart';
 import '../../data/re_attributes.dart';
 import '../../data/re_models.dart';
 import '../providers/re_search_provider.dart';
@@ -72,6 +74,87 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
     ref.read(reSearchFiltersProvider.notifier).clear();
   }
 
+  /// Human label pre-filled in the save-search dialog: "<operation> ·
+  /// <city>", falling back to whichever half is present, or a generic
+  /// Spanish default when neither is set.
+  String _defaultSaveLabel(ReSearchFilters filters, AppLocalizations l10n) {
+    final opLabel = switch (filters.operation) {
+      'venta' => l10n.realEstateOperationSale,
+      'alquiler' => l10n.realEstateOperationRent,
+      'alquiler_temporal' => l10n.realEstateOperationTemp,
+      _ => null,
+    };
+    final parts = [
+      opLabel,
+      filters.city,
+    ].whereType<String>().where((s) => s.isNotEmpty).toList();
+    if (parts.isEmpty) return l10n.realEstateSaveSearchDefaultLabel;
+    return parts.join(' · ');
+  }
+
+  Future<void> _saveSearch(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final user = ref.read(authStateProvider).value;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.realEstateSaveSearchLoginRequired)),
+      );
+      return;
+    }
+
+    final filters = ref.read(reSearchFiltersProvider);
+    final country = ref.read(selectedCountryProvider);
+    final controller = TextEditingController(
+      text: _defaultSaveLabel(filters, l10n),
+    );
+
+    final label = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.realEstateSaveSearchTitle),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: InputDecoration(hintText: l10n.realEstateSaveSearchHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(controller.text.trim()),
+            child: Text(l10n.realEstateSaveSearch),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+
+    if (label == null || label.isEmpty) return;
+    if (!context.mounted) return;
+
+    try {
+      final service = ref.read(savedSearchesServiceProvider);
+      await service.createRealEstate(
+        label: label,
+        filters: filters,
+        countryCode: country.code,
+      );
+      ref.invalidate(savedSearchesProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.realEstateSaveSearchSaved)),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.realEstateSaveSearchFailed)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -86,6 +169,12 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
+          if (filters.isActive)
+            IconButton(
+              tooltip: l10n.realEstateSaveSearch,
+              icon: const Icon(Icons.bookmark_add),
+              onPressed: () => _saveSearch(context),
+            ),
           if (filters.isActive)
             IconButton(
               tooltip: l10n.realEstateClearTooltip,

@@ -1183,6 +1183,7 @@
   "realEstateSaveSearchSaved": "Búsqueda guardada",
   "realEstateSaveSearchFailed": "No se pudo guardar la búsqueda",
   "realEstateSaveSearchLoginRequired": "Inicia sesión para guardar búsquedas",
+  "realEstateSaveSearchDefaultLabel": "Búsqueda inmobiliaria",
 
   "realEstatePromocionesCta": "Ver obra nueva",
   "realEstatePromocionesCtaSubtitle": "Promociones de nueva construcción"

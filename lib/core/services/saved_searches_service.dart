@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/saved_search_model.dart';
 import '../providers/supabase_provider.dart';
 import '../../features/search/presentation/providers/search_filters_provider.dart';
+import '../../features/real-estate/presentation/providers/re_search_provider.dart';
 
 final savedSearchesServiceProvider = Provider<SavedSearchesService>((ref) {
   return SavedSearchesService(ref.watch(supabaseClientProvider));
@@ -49,6 +50,25 @@ class SavedSearchesService {
         .single();
 
     return SavedSearch.fromRow(response);
+  }
+
+  /// Same insert path as [create], but for the real-estate search screen:
+  /// the `query` column gets `jsonEncode(filters.toJson())` from
+  /// [ReSearchFilters] (which stamps the `'_kind': 're'` discriminator)
+  /// instead of the non-RE [SearchFilters] shape. No `categoryId` — RE
+  /// listings don't need it, `isRealEstate` on the decoded row is enough to
+  /// tell the two payload shapes apart.
+  Future<void> createRealEstate({
+    required String label,
+    required ReSearchFilters filters,
+    String? countryCode,
+  }) async {
+    await _supabase.from('saved_searches').insert({
+      'user_id': _supabase.auth.currentUser!.id,
+      'label': label,
+      'query': jsonEncode(filters.toJson()),
+      'country_code': countryCode,
+    });
   }
 
   Future<void> delete(String id) async {

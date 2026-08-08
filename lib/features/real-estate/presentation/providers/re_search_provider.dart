@@ -259,6 +259,76 @@ class ReSearchFilters {
         sort,
         cityExact,
       );
+
+  /// Serializes to the shape persisted in `saved_searches.query`. Only
+  /// non-null/non-empty fields are emitted (keeps the payload small); the
+  /// `'_kind': 're'` discriminator lets [SavedSearch.isRealEstate]
+  /// distinguish this from the non-RE `SearchFilters` payload without a
+  /// dedicated column.
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{'_kind': 're'};
+    if (state != null) json['state'] = state;
+    if (city != null) json['city'] = city;
+    if (operation != null) json['operation'] = operation;
+    if (propertyTypes.isNotEmpty) json['propertyTypes'] = propertyTypes;
+    if (priceMin != null) json['priceMin'] = priceMin;
+    if (priceMax != null) json['priceMax'] = priceMax;
+    if (m2Min != null) json['m2Min'] = m2Min;
+    if (m2Max != null) json['m2Max'] = m2Max;
+    if (rooms.isNotEmpty) json['rooms'] = rooms;
+    if (bathrooms.isNotEmpty) json['bathrooms'] = bathrooms;
+    if (conditions.isNotEmpty) json['conditions'] = conditions;
+    if (features.isNotEmpty) json['features'] = features;
+    if (floorBuckets.isNotEmpty) json['floorBuckets'] = floorBuckets;
+    if (energyBands.isNotEmpty) json['energyBands'] = energyBands;
+    if (orientation.isNotEmpty) json['orientation'] = orientation;
+    if (energyLetter != null) json['energyLetter'] = energyLetter;
+    if (petsAllowed != null) json['petsAllowed'] = petsAllowed;
+    if (postedWithinDays != null) {
+      json['postedWithinDays'] = postedWithinDays;
+    }
+    if (sort != ReSort.relevance) json['sort'] = sort.name;
+    if (cityExact) json['cityExact'] = cityExact;
+    return json;
+  }
+
+  /// Inverse of [toJson]. Tolerant of missing keys (defaults match the
+  /// constructor's defaults) so partially-populated or older payloads still
+  /// parse.
+  factory ReSearchFilters.fromJson(Map<String, dynamic> json) {
+    List<String> stringList(String key) =>
+        (json[key] as List?)?.map((e) => e as String).toList() ??
+        const <String>[];
+    List<int> intList(String key) =>
+        (json[key] as List?)?.map((e) => (e as num).toInt()).toList() ??
+        const <int>[];
+
+    return ReSearchFilters(
+      state: json['state'] as String?,
+      city: json['city'] as String?,
+      operation: json['operation'] as String?,
+      propertyTypes: stringList('propertyTypes'),
+      priceMin: json['priceMin'] as num?,
+      priceMax: json['priceMax'] as num?,
+      m2Min: json['m2Min'] as num?,
+      m2Max: json['m2Max'] as num?,
+      rooms: intList('rooms'),
+      bathrooms: intList('bathrooms'),
+      conditions: stringList('conditions'),
+      features: stringList('features'),
+      floorBuckets: stringList('floorBuckets'),
+      energyBands: stringList('energyBands'),
+      orientation: stringList('orientation'),
+      energyLetter: json['energyLetter'] as String?,
+      petsAllowed: json['petsAllowed'] as bool?,
+      postedWithinDays: json['postedWithinDays'] as int?,
+      sort: ReSort.values.firstWhere(
+        (s) => s.name == json['sort'],
+        orElse: () => ReSort.relevance,
+      ),
+      cityExact: json['cityExact'] as bool? ?? false,
+    );
+  }
 }
 
 bool _listEq<T>(List<T> a, List<T> b) {

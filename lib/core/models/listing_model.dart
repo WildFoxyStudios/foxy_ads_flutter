@@ -16,6 +16,8 @@ class Listing {
   final String? city;
   final double? latitude;
   final double? longitude;
+  final String? state;
+  final double? previousPrice;
   final bool isNegotiable;
   final bool isFeatured;
   final DateTime? featuredUntil;
@@ -62,6 +64,8 @@ class Listing {
     this.city,
     this.latitude,
     this.longitude,
+    this.state,
+    this.previousPrice,
     this.isNegotiable = false,
     this.isFeatured = false,
     this.featuredUntil,
@@ -96,6 +100,8 @@ class Listing {
       city: json['city'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
+      state: json['state'] as String?,
+      previousPrice: (json['previous_price'] as num?)?.toDouble(),
       isNegotiable: json['is_negotiable'] as bool? ?? false,
       isFeatured: json['is_featured'] as bool? ?? false,
       featuredUntil: json['featured_until'] != null
@@ -139,6 +145,8 @@ class Listing {
       'city': city,
       'latitude': latitude,
       'longitude': longitude,
+      'state': state,
+      'previous_price': previousPrice,
       'is_negotiable': isNegotiable,
       'is_featured': isFeatured,
       'featured_until': featuredUntil?.toIso8601String(),
@@ -164,6 +172,9 @@ class Listing {
       'phone': phone,
       'email': email,
       'city': city,
+      'latitude': latitude,
+      'longitude': longitude,
+      'state': state,
       'is_negotiable': isNegotiable,
     };
   }
@@ -186,6 +197,8 @@ class Listing {
     String? city,
     double? latitude,
     double? longitude,
+    String? state,
+    double? previousPrice,
     bool? isNegotiable,
     bool? isFeatured,
     DateTime? featuredUntil,
@@ -218,6 +231,8 @@ class Listing {
       city: city ?? this.city,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      state: state ?? this.state,
+      previousPrice: previousPrice ?? this.previousPrice,
       isNegotiable: isNegotiable ?? this.isNegotiable,
       isFeatured: isFeatured ?? this.isFeatured,
       featuredUntil: featuredUntil ?? this.featuredUntil,
@@ -247,4 +262,14 @@ class Listing {
   String get mainImage => images.isNotEmpty ? images.first : '';
 
   bool get hasCoordinates => latitude != null && longitude != null;
+
+  /// Percentage drop from `previousPrice` to the current `price`, when a
+  /// valid, higher previous price is present (used for the price-drop
+  /// badge). Returns null when there's no drop to show.
+  double? get priceDropPct {
+    if (previousPrice == null || previousPrice! <= price || previousPrice! <= 0) {
+      return null;
+    }
+    return ((previousPrice! - price) / previousPrice! * 100);
+  }
 }

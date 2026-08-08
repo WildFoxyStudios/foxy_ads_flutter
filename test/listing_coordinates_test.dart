@@ -59,4 +59,77 @@ void main() {
     expect(listing.longitude, -3.0);
     expect(listing.hasCoordinates, isTrue);
   });
+
+  test('Listing.fromJson parses previous_price and computes priceDropPct', () {
+    final json = {
+      ..._baseJson(),
+      'price': 150,
+      'previous_price': 200,
+    };
+
+    final listing = Listing.fromJson(json);
+
+    expect(listing.previousPrice, 200);
+    expect(listing.priceDropPct, closeTo(25.0, 0.0001));
+  });
+
+  test('Listing.fromJson leaves previousPrice/priceDropPct null when absent', () {
+    final json = {
+      ..._baseJson(),
+      'price': 150,
+    };
+
+    final listing = Listing.fromJson(json);
+
+    expect(listing.previousPrice, isNull);
+    expect(listing.priceDropPct, isNull);
+  });
+
+  test('priceDropPct is null when previousPrice is not greater than price', () {
+    final json = {
+      ..._baseJson(),
+      'price': 150,
+      'previous_price': 100,
+    };
+
+    final listing = Listing.fromJson(json);
+
+    expect(listing.priceDropPct, isNull);
+  });
+
+  test('Listing.fromJson parses state', () {
+    final json = {
+      ..._baseJson(),
+      'state': 'Madrid',
+    };
+
+    final listing = Listing.fromJson(json);
+
+    expect(listing.state, 'Madrid');
+  });
+
+  test('toInsertJson includes latitude/longitude/state/subcategory_id', () {
+    final listing = Listing(
+      id: 'l-1',
+      userId: 'u-1',
+      categoryId: 'real_estate',
+      subcategoryId: 'apartment',
+      countryCode: 'ES',
+      title: 'Piso en venta',
+      description: 'Un piso muy bueno.',
+      price: 150000,
+      images: const [],
+      latitude: 40.4,
+      longitude: -3.7,
+      state: 'Madrid',
+      createdAt: DateTime(2026, 8, 1),
+    );
+
+    final insertJson = listing.toInsertJson();
+
+    expect(insertJson['latitude'], 40.4);
+    expect(insertJson['longitude'], -3.7);
+    expect(insertJson['state'], 'Madrid');
+    expect(insertJson['subcategory_id'], 'apartment');
+  });
 }

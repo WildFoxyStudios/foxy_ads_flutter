@@ -29,6 +29,25 @@ final createListingCategoriesProvider = FutureProvider<List<Category>>((
   return await listingService.getCategories();
 });
 
+/// Merges floor-plan URLs into a real-estate attributes map for the create
+/// and edit submit paths (P9 B5). [reAttributes] is the `ReAttributeForm`
+/// output (nullable / possibly empty); [floorPlanUrls] is the uploaded +
+/// kept-existing floor-plan URL list for this submit. Returns `null` — so
+/// the caller omits the `attributes` key entirely — when the combined map
+/// would be empty (e.g. a bare RE listing with no attribute form values and
+/// no floor plans). Top-level and pure so it's unit-testable without a
+/// widget harness.
+Map<String, dynamic>? mergeReAttributesWithFloorPlans(
+  Map<String, dynamic>? reAttributes,
+  List<String> floorPlanUrls,
+) {
+  final merged = Map<String, dynamic>.from(reAttributes ?? {});
+  if (floorPlanUrls.isNotEmpty) {
+    merged['floor_plan_urls'] = floorPlanUrls;
+  }
+  return merged.isEmpty ? null : merged;
+}
+
 class CreateListingScreen extends ConsumerStatefulWidget {
   final Listing? existing;
 
@@ -97,6 +116,14 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   String? _existingCountryCode;
   String? _existingCurrency;
 
+  // Floor-plan images (real_estate only). Mirrors the main image picker
+  // (`_selectedImages` / `_existingImageUrls`) but uploads into
+  // `attributes.floor_plan_urls` instead of the listing's `images` column.
+  // Populated from `existing.attributes['floor_plan_urls']` in initState on
+  // the edit path; stay empty on create until the user picks some.
+  List<XFile> _selectedFloorPlans = [];
+  List<String> _existingFloorPlanUrls = [];
+
   @override
   void initState() {
     super.initState();
@@ -118,6 +145,10 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       _subcategoryId = existing.subcategoryId;
       _existingCountryCode = existing.countryCode;
       _existingCurrency = existing.currency;
+      final floorPlans = existing.attributes?['floor_plan_urls'];
+      if (floorPlans is List) {
+        _existingFloorPlanUrls = floorPlans.map((e) => e.toString()).toList();
+      }
     }
   }
 
@@ -172,6 +203,47 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   void _removeExistingImage(int index) {
     setState(() {
       _existingImageUrls.removeAt(index);
+    });
+  }
+
+  Future<void> _pickFloorPlans() async {
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> images = await picker.pickMultiImage(
+      maxWidth: 1200,
+      maxHeight: 1200,
+      imageQuality: 85,
+    );
+
+    if (images.isNotEmpty) {
+      setState(() {
+        _selectedFloorPlans.addAll(images);
+        final maxNewFloorPlans = 10 - _existingFloorPlanUrls.length;
+        if (_selectedFloorPlans.length > maxNewFloorPlans) {
+          _selectedFloorPlans = _selectedFloorPlans
+              .take(maxNewFloorPlans < 0 ? 0 : maxNewFloorPlans)
+              .toList();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)!.listingCreateMaxFloorPlans,
+              ),
+              backgroundColor: AppColors.warning,
+            ),
+          );
+        }
+      });
+    }
+  }
+
+  void _removeFloorPlan(int index) {
+    setState(() {
+      _selectedFloorPlans.removeAt(index);
+    });
+  }
+
+  void _removeExistingFloorPlan(int index) {
+    setState(() {
+      _existingFloorPlanUrls.removeAt(index);
     });
   }
 
@@ -249,6 +321,25 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
         imageUrls = await listingService.uploadImages(user.id, imageBytes);
       }
 
+      // Upload newly-picked floor-plan images (real_estate only, same path
+      // for create and edit). Merged with any kept existing URLs below into
+      // `attributes.floor_plan_urls`.
+      List<String> newFloorPlanUrls = [];
+      if (_selectedCategory!.id == 'real_estate' &&
+          _selectedFloorPlans.isNotEmpty) {
+        final floorPlanBytes = await Future.wait(
+          _selectedFloorPlans.map((img) => img.readAsBytes()),
+        );
+        newFloorPlanUrls = await listingService.uploadImages(
+          user.id,
+          floorPlanBytes,
+        );
+      }
+      var floorPlanUrls = [..._existingFloorPlanUrls, ...newFloorPlanUrls];
+      if (floorPlanUrls.length > 10) {
+        floorPlanUrls = floorPlanUrls.take(10).toList();
+      }
+
       if (widget.existing == null) {
         // Create listing
         final listing = Listing(
@@ -285,16 +376,24 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
         // Real-estate attributes (encoded JSONB map). Omit the key when
         // the form hasn't been filled in (e.g. a non-RE category) so the
-        // database column stays NULL for other verticals.
+        // database column stays NULL for other verticals. Floor-plan URLs
+        // (RE only) are merged in alongside the ReAttributeForm output;
+        // the key is omitted entirely when no floor plans were uploaded.
         final extraFields = <String, dynamic>{};
-        if (_reAttributes != null && _reAttributes!.isNotEmpty) {
-          extraFields['attributes'] = _reAttributes;
+        if (_selectedCategory!.id == 'real_estate') {
+          final reMap = mergeReAttributesWithFloorPlans(
+            _reAttributes,
+            floorPlanUrls,
+          );
+          if (reMap != null) {
+            extraFields['attributes'] = reMap;
+          }
         }
         if (_jobsAttributes != null && _jobsAttributes!.isNotEmpty) {
           extraFields['attributes'] = _jobsAttributes;
         }
 
-        await listingService.createListing(
+        final created = await listingService.createListing(
           listing,
           extraFields: extraFields.isEmpty ? null : extraFields,
         );
@@ -306,7 +405,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               backgroundColor: AppColors.success,
             ),
           );
-          context.go('/');
+          context.go('/listing/${created.id}');
         }
       } else {
         // Edit listing: merge kept existing image URLs with newly-uploaded
@@ -347,9 +446,16 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
         // Real-estate attributes — OVERWRITE the existing JSONB with the
         // current form value. The trigger validates the new value against
-        // its constraints; the form's encoding rules are the spec.
-        if (_reAttributes != null && _reAttributes!.isNotEmpty) {
-          updates['attributes'] = _reAttributes;
+        // its constraints; the form's encoding rules are the spec. Floor-plan
+        // URLs (RE only) are merged in the same way as the create path.
+        if (_selectedCategory!.id == 'real_estate') {
+          final reMap = mergeReAttributesWithFloorPlans(
+            _reAttributes,
+            floorPlanUrls,
+          );
+          if (reMap != null) {
+            updates['attributes'] = reMap;
+          }
         }
         if (_jobsAttributes != null && _jobsAttributes!.isNotEmpty) {
           updates['attributes'] = _jobsAttributes;
@@ -936,6 +1042,142 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 onValidityChanged: (valid) {
                   setState(() => _reAttributesValid = valid);
                 },
+              ),
+              const SizedBox(height: 24),
+
+              // Floor plans: real_estate only, mirrors the main image
+              // picker/upload flow above but writes into
+              // `attributes.floor_plan_urls` at submit time instead of the
+              // listing's `images` column. OPTIONAL — never gates submit.
+              Text(
+                l10n.listingCreateFloorPlansHeading,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 100,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    // Add Floor Plan Button
+                    GestureDetector(
+                      onTap: _pickFloorPlans,
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: surfaceFor(context),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.border,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate,
+                              color: AppColors.primary,
+                              size: 32,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.listingCreateAddFloorPlan,
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Existing floor plans (edit mode only)
+                    ..._existingFloorPlanUrls.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final url = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                url,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () => _removeExistingFloorPlan(index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.error,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                    // Selected floor plans (newly picked, not yet uploaded)
+                    ..._selectedFloorPlans.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final image = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.file(
+                                File(image.path),
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () => _removeFloorPlan(index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.error,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
             ],

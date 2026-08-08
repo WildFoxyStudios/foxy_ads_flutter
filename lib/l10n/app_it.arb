@@ -935,5 +935,11 @@
 
   "realEstateMapNoCoords": "Nessun annuncio ha una posizione sulla mappa",
   "realEstateViewList": "Elenco",
-  "realEstateViewMap": "Mappa"
+  "realEstateViewMap": "Mappa",
+
+  "realEstateViewNResults": "Vedi {count} risultati",
+  "@realEstateViewNResults": {
+    "description": "Pinned button label in the mobile real-estate filter bottom sheet. {count} is the live number of results matching the currently applied filters.",
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

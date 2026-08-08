@@ -890,5 +890,11 @@
 
   "realEstateMapNoCoords": "Aucune annonce n'a de localisation sur la carte",
   "realEstateViewList": "Liste",
-  "realEstateViewMap": "Carte"
+  "realEstateViewMap": "Carte",
+
+  "realEstateViewNResults": "Voir {count} résultats",
+  "@realEstateViewNResults": {
+    "description": "Pinned button label in the mobile real-estate filter bottom sheet. {count} is the live number of results matching the currently applied filters.",
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

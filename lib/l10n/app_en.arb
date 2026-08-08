@@ -935,5 +935,11 @@
 
   "realEstateMapNoCoords": "No listings have a location on the map",
   "realEstateViewList": "List",
-  "realEstateViewMap": "Map"
+  "realEstateViewMap": "Map",
+
+  "realEstateViewNResults": "View {count} results",
+  "@realEstateViewNResults": {
+    "description": "Pinned button label in the mobile real-estate filter bottom sheet. {count} is the live number of results matching the currently applied filters.",
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

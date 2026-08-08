@@ -31,12 +31,11 @@ import '../../../developments/data/developments_service.dart';
 import '../../../developments/presentation/widgets/development_card.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../../search/presentation/providers/saved_searches_provider.dart';
-import '../../data/re_attributes.dart';
 import '../../data/re_models.dart';
 import '../providers/re_search_provider.dart';
 import '../widgets/re_active_filters.dart';
-import '../widgets/re_energy_label.dart' show reEnergyLabel;
-import '../widgets/re_filter_labels.dart';
+import '../widgets/re_filter_controls.dart';
+import '../widgets/re_filter_sheet.dart';
 import '../widgets/re_map_view.dart';
 
 /// List vs. map display of the results region. The map needs bounded
@@ -178,6 +177,11 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            tooltip: l10n.realEstateFiltersHeading,
+            icon: const Icon(Icons.tune),
+            onPressed: () => showReFilterSheet(context),
+          ),
           IconButton(
             tooltip: _viewMode == ReViewMode.list
                 ? l10n.realEstateViewMap
@@ -539,7 +543,10 @@ class _OperationChip extends StatelessWidget {
   }
 }
 
-class _FiltersExpansionTile extends ConsumerWidget {
+/// Inline expansion panel hosting the shared [ReFilterControls] — the same
+/// widget the mobile bottom sheet (`re_filter_sheet.dart`) hosts, so the
+/// two surfaces never drift apart.
+class _FiltersExpansionTile extends StatelessWidget {
   final ReSearchFilters filters;
   final AsyncValue<ReFacetCounts> facetCounts;
   final String currencySymbol;
@@ -561,13 +568,8 @@ class _FiltersExpansionTile extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final notifier = ref.read(reSearchFiltersProvider.notifier);
-    final counts = facetCounts.maybeWhen(
-      data: (c) => c,
-      orElse: () => const ReFacetCounts(),
-    );
 
     return Container(
       decoration: BoxDecoration(
@@ -590,326 +592,19 @@ class _FiltersExpansionTile extends ConsumerWidget {
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
           children: [
-            _SectionLabel(l10n.realEstatePropertyTypeLabel),
-            _CountedChipWrap<String>(
-              values: RE_PROPERTY_TYPES,
-              labels: propertyTypeLabels(l10n),
-              selected: filters.propertyTypes,
-              counts: counts.propertyType,
-              onToggle: (v) => notifier.toggleString(
-                'propertyTypes',
-                value: v,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstatePriceLabel),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: priceMinController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: l10n.realEstateMinHint,
-                      prefixText: '$currencySymbol ',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      isDense: true,
-                    ),
-                    onSubmitted: (_) => onCommitPrice(),
-                    onEditingComplete: onCommitPrice,
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Text('-'),
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: priceMaxController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: l10n.realEstateMaxHint,
-                      prefixText: '$currencySymbol ',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      isDense: true,
-                    ),
-                    onSubmitted: (_) => onCommitPrice(),
-                    onEditingComplete: onCommitPrice,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstateSurfaceLabel),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: m2MinController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: l10n.realEstateMinHint,
-                      suffixText: 'm²',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      isDense: true,
-                    ),
-                    onSubmitted: (_) => onCommitPrice(),
-                    onEditingComplete: onCommitPrice,
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Text('-'),
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: m2MaxController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: l10n.realEstateMaxHint,
-                      suffixText: 'm²',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      isDense: true,
-                    ),
-                    onSubmitted: (_) => onCommitPrice(),
-                    onEditingComplete: onCommitPrice,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstateRoomsLabel),
-            _IntChipWrap(
-              values: const [1, 2, 3, 4],
-              selected: filters.rooms,
-              onToggle: (v) => notifier.toggleInt('rooms', v),
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstateBathroomsLabel),
-            _IntChipWrap(
-              values: const [1, 2, 3],
-              selected: filters.bathrooms,
-              onToggle: (v) => notifier.toggleInt('bathrooms', v),
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstateConditionLabel),
-            _CountedChipWrap<String>(
-              values: RE_CONDITIONS,
-              labels: conditionLabels(l10n),
-              selected: filters.conditions,
-              counts: counts.condition,
-              onToggle: (v) => notifier.toggleString('conditions', value: v),
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstateFeaturesLabel),
-            _CountedChipWrap<String>(
-              values: RE_FEATURE_KEYS,
-              labels: featureLabels(l10n),
-              selected: filters.features,
-              counts: null, // facets not exposed for features
-              onToggle: (v) => notifier.toggleString('features', value: v),
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstateOrientationLabel),
-            _SimpleChipWrap<String>(
-              values: RE_ORIENTATIONS,
-              labels: orientationLabels(l10n),
-              selected: filters.orientation,
-              onToggle: (v) => notifier.toggleString('orientation', value: v),
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstateFloorLabel),
-            _SimpleChipWrap<String>(
-              values: RE_FLOOR_BUCKETS,
-              labels: floorBucketLabels(l10n),
-              selected: filters.floorBuckets,
-              onToggle: (v) => notifier.toggleString('floorBuckets', value: v),
-            ),
-            const SizedBox(height: 12),
-            _SectionLabel(l10n.realEstateEnergyBandLabel),
-            _SimpleChipWrap<String>(
-              values: const ['alta', 'media', 'baja'],
-              labels: energyBandLabels(l10n),
-              selected: filters.energyBands,
-              onToggle: (v) => notifier.toggleString('energyBands', value: v),
-            ),
-            const SizedBox(height: 8),
-            _SectionLabel(l10n.realEstateEnergyLetterLabel),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.border),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String?>(
-                  isExpanded: true,
-                  value: filters.energyLetter,
-                  hint: Text(l10n.realEstateEnergyLetterNone),
-                  items: [
-                    DropdownMenuItem<String?>(
-                      value: null,
-                      child: Text(l10n.realEstateEnergyLetterNone),
-                    ),
-                    ...RE_ENERGY_CERTS.map(
-                      (l) => DropdownMenuItem<String?>(
-                        value: l,
-                        child: Text(reEnergyLabel(l, l10n) ?? l),
-                      ),
-                    ),
-                  ],
-                  onChanged: (v) => notifier.setEnergyLetter(v),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.realEstatePetsAllowed),
-              value: filters.petsAllowed == true,
-              onChanged: (v) => notifier.setPetsAllowed(v ? true : null),
-            ),
-            const SizedBox(height: 4),
-            _SectionLabel(l10n.realEstatePostedWithinLabel),
-            _SimpleChipWrap<int>(
-              values: const [7, 30, 90],
-              labels: {
-                7: l10n.realEstatePostedWithin7,
-                30: l10n.realEstatePostedWithin30,
-                90: l10n.realEstatePostedWithin90,
-              },
-              selected: filters.postedWithinDays == null
-                  ? const []
-                  : [filters.postedWithinDays!],
-              onToggle: (v) => notifier.setPostedWithinDays(
-                filters.postedWithinDays == v ? null : v,
-              ),
+            ReFilterControls(
+              filters: filters,
+              facetCounts: facetCounts,
+              currencySymbol: currencySymbol,
+              priceMinController: priceMinController,
+              priceMaxController: priceMaxController,
+              m2MinController: m2MinController,
+              m2MaxController: m2MaxController,
+              onCommitPrice: onCommitPrice,
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String text;
-  const _SectionLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6, top: 4),
-      child: Text(
-        text,
-        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-      ),
-    );
-  }
-}
-
-class _CountedChipWrap<T> extends StatelessWidget {
-  final List<T> values;
-  final Map<T, String> labels;
-  final List<T> selected;
-  final Map<String, int>? counts;
-  final ValueChanged<T> onToggle;
-
-  const _CountedChipWrap({
-    required this.values,
-    required this.labels,
-    required this.selected,
-    required this.counts,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: values.map((v) {
-        final isSelected = selected.contains(v);
-        final count = counts?[v.toString()];
-        final labelText = count == null
-            ? (labels[v] ?? v.toString())
-            : '${labels[v] ?? v.toString()} ($count)';
-        return FilterChip(
-          label: Text(labelText),
-          selected: isSelected,
-          onSelected: (_) => onToggle(v),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _SimpleChipWrap<T> extends StatelessWidget {
-  final List<T> values;
-  final Map<T, String> labels;
-  final List<T> selected;
-  final ValueChanged<T> onToggle;
-
-  const _SimpleChipWrap({
-    required this.values,
-    required this.labels,
-    required this.selected,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: values.map((v) {
-        final isSelected = selected.contains(v);
-        return FilterChip(
-          label: Text(labels[v] ?? v.toString()),
-          selected: isSelected,
-          onSelected: (_) => onToggle(v),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _IntChipWrap extends StatelessWidget {
-  final List<int> values;
-  final List<int> selected;
-  final ValueChanged<int> onToggle;
-
-  const _IntChipWrap({
-    required this.values,
-    required this.selected,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: values.map((v) {
-        final isSelected = selected.contains(v);
-        return FilterChip(
-          label: Text(v == values.last ? '$v+' : v.toString()),
-          selected: isSelected,
-          onSelected: (_) => onToggle(v),
-        );
-      }).toList(),
     );
   }
 }

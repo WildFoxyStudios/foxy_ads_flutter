@@ -881,5 +881,9 @@
   "realEstateSaveSearchDefaultLabel": "Immobiliensuche",
 
   "realEstatePromocionesCta": "Neubauten ansehen",
-  "realEstatePromocionesCtaSubtitle": "Neubau-Projekte"
+  "realEstatePromocionesCtaSubtitle": "Neubau-Projekte",
+
+  "realEstateMapNoCoords": "Kein Inserat hat einen Standort auf der Karte",
+  "realEstateViewList": "Liste",
+  "realEstateViewMap": "Karte"
 }

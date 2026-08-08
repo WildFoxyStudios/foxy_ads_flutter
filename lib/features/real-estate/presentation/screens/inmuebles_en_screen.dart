@@ -35,6 +35,12 @@ import '../providers/re_search_provider.dart';
 import '../widgets/re_active_filters.dart';
 import '../widgets/re_energy_label.dart' show reEnergyLabel;
 import '../widgets/re_filter_labels.dart';
+import '../widgets/re_map_view.dart';
+
+/// List vs. map display of the results region. The map needs bounded
+/// constraints (see `_InmueblesEnScreenState.build`), so it's swapped in
+/// place of the `_ResultsGrid` slot rather than laid out alongside it.
+enum ReViewMode { list, map }
 
 class InmueblesEnScreen extends ConsumerStatefulWidget {
   const InmueblesEnScreen({super.key});
@@ -48,6 +54,7 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
   final _priceMaxController = TextEditingController();
   final _m2MinController = TextEditingController();
   final _m2MaxController = TextEditingController();
+  ReViewMode _viewMode = ReViewMode.list;
 
   @override
   void dispose() {
@@ -169,6 +176,19 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            tooltip: _viewMode == ReViewMode.list
+                ? l10n.realEstateViewMap
+                : l10n.realEstateViewList,
+            icon: Icon(
+              _viewMode == ReViewMode.list ? Icons.map : Icons.list,
+            ),
+            onPressed: () => setState(() {
+              _viewMode = _viewMode == ReViewMode.list
+                  ? ReViewMode.map
+                  : ReViewMode.list;
+            }),
+          ),
           if (filters.isActive)
             IconButton(
               tooltip: l10n.realEstateSaveSearch,
@@ -323,11 +343,16 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
                 ),
                 const SizedBox(height: 4),
 
-                // Results grid OR prompt
+                // Results grid, map, OR prompt
                 if (!filters.isActive)
                   const _Prompt()
+                else if (_viewMode == ReViewMode.list)
+                  _ResultsGrid(results: results)
                 else
-                  _ResultsGrid(results: results),
+                  SizedBox(
+                    height: 500,
+                    child: _ResultsMap(results: results),
+                  ),
               ],
             ),
           ),
@@ -1015,6 +1040,37 @@ class _ResultsGrid extends StatelessWidget {
               onTap: () => context.push('/listing/${listing.id}'),
             );
           },
+        );
+      },
+    );
+  }
+}
+
+/// Map counterpart of `_ResultsGrid`. Wrapped in a fixed-height `SizedBox`
+/// by the caller (`FlutterMap` needs bounded constraints, which a `ListView`
+/// child doesn't provide on its own).
+class _ResultsMap extends StatelessWidget {
+  final AsyncValue<List<Listing>> results;
+  const _ResultsMap({required this.results});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return results.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(
+        child: Text(
+          l10n.commonErrorWithMessage(e.toString()),
+          style: TextStyle(color: AppColors.error),
+        ),
+      ),
+      data: (listings) {
+        if (listings.isEmpty) {
+          return Center(child: Text(l10n.realEstateNoResults));
+        }
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: ReMapView(listings: listings),
         );
       },
     );

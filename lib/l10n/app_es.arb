@@ -1186,5 +1186,9 @@
   "realEstateSaveSearchDefaultLabel": "Búsqueda inmobiliaria",
 
   "realEstatePromocionesCta": "Ver obra nueva",
-  "realEstatePromocionesCtaSubtitle": "Promociones de nueva construcción"
+  "realEstatePromocionesCtaSubtitle": "Promociones de nueva construcción",
+
+  "realEstateMapNoCoords": "Ningún anuncio tiene ubicación en el mapa",
+  "realEstateViewList": "Lista",
+  "realEstateViewMap": "Mapa"
 }

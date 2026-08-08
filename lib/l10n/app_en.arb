@@ -926,5 +926,9 @@
   "realEstateSaveSearchDefaultLabel": "Real estate search",
 
   "realEstatePromocionesCta": "View new developments",
-  "realEstatePromocionesCtaSubtitle": "New construction developments"
+  "realEstatePromocionesCtaSubtitle": "New construction developments",
+
+  "realEstateMapNoCoords": "No listings have a location on the map",
+  "realEstateViewList": "List",
+  "realEstateViewMap": "Map"
 }

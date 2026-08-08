@@ -949,5 +949,12 @@
   "jobsExperienceExpert": "Experte",
   "jobsSalaryPeriodMonth": "/Monat",
   "jobsSalaryPeriodHour": "/Std",
-  "jobsSalaryPeriodYear": "/Jahr"
+  "jobsSalaryPeriodYear": "/Jahr",
+
+  "jobsFormHeading": "Jobdetails",
+  "jobsFormSalaryMinLabel": "Mindestgehalt",
+  "jobsFormSalaryMaxLabel": "Höchstgehalt",
+  "jobsFormSalaryPeriodLabel": "Gehaltszeitraum",
+  "jobsFormCategoryProfessionalHint": "Z. B.: Softwareentwicklung",
+  "jobsFormRequiredError": "Fülle die Pflichtfelder der Stelle aus"
 }

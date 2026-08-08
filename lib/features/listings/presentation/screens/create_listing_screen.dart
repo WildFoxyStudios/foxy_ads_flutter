@@ -16,6 +16,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../real-estate/presentation/widgets/re_attribute_form.dart';
 import '../../../real-estate/presentation/widgets/location_picker_map.dart';
+import '../../../jobs/presentation/widgets/jobs_attribute_form.dart';
 import 'listing_detail_screen.dart' show listingDetailProvider;
 import '../../../profile/presentation/screens/my_listings_screen.dart'
     show myListingsProvider;
@@ -64,6 +65,20 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   // can never publish with an incomplete RE payload before the form's first
   // post-frame `onValidityChanged` callback fires.
   bool _reAttributesValid = false;
+
+  // Jobs-specific attributes. Populated by `JobsAttributeForm.onChanged`
+  // when the user picks the jobs category. Injected into the create / edit
+  // payload via `updates['attributes']` at submit time. Mutually exclusive
+  // with `_reAttributes` — the category dropdown clears whichever branch is
+  // no longer selected, so a listing never carries cross-category keys.
+  Map<String, dynamic>? _jobsAttributes;
+
+  // Whether the jobs form's required fields (contract_type, modality) are
+  // both set. Only consulted when the selected category is jobs (see
+  // `_submitListing`); defaults to false so a listing can never publish with
+  // an incomplete jobs payload before the form's first post-frame
+  // `onValidityChanged` callback fires.
+  bool _jobsAttributesValid = false;
 
   // Pick-on-map coordinates (real_estate only). Populated by
   // `LocationPickerMap.onChanged` when the user taps the map; stay null
@@ -181,6 +196,16 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       return;
     }
 
+    if (_selectedCategory!.id == 'jobs' && !_jobsAttributesValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.jobsFormRequiredError),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     final user = ref.read(authStateProvider).value;
     if (user == null) {
       context.push('/login');
@@ -258,6 +283,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
         if (_reAttributes != null && _reAttributes!.isNotEmpty) {
           extraFields['attributes'] = _reAttributes;
         }
+        if (_jobsAttributes != null && _jobsAttributes!.isNotEmpty) {
+          extraFields['attributes'] = _jobsAttributes;
+        }
 
         await listingService.createListing(
           listing,
@@ -312,6 +340,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
         // its constraints; the form's encoding rules are the spec.
         if (_reAttributes != null && _reAttributes!.isNotEmpty) {
           updates['attributes'] = _reAttributes;
+        }
+        if (_jobsAttributes != null && _jobsAttributes!.isNotEmpty) {
+          updates['attributes'] = _jobsAttributes;
         }
 
         await listingService.updateListing(widget.existing!.id, updates);
@@ -678,6 +709,10 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                       _latitude = null;
                       _longitude = null;
                     }
+                    if (value?.id != 'jobs') {
+                      _jobsAttributes = null;
+                      _jobsAttributesValid = false;
+                    }
                   });
                 },
                 validator: (value) {
@@ -821,6 +856,24 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 },
                 onValidityChanged: (valid) {
                   setState(() => _reAttributesValid = valid);
+                },
+              ),
+              const SizedBox(height: 24),
+            ],
+
+            // Jobs attributes: rendered only when the user picks the jobs
+            // category. Mutually exclusive with the RE block above (the
+            // category dropdown's onChanged clears whichever branch is no
+            // longer selected), so a submitted listing never carries both
+            // RE and jobs keys.
+            if (_selectedCategory?.id == 'jobs') ...[
+              JobsAttributeForm(
+                initialAttributes: widget.existing?.attributes,
+                onChanged: (m) {
+                  setState(() => _jobsAttributes = m);
+                },
+                onValidityChanged: (valid) {
+                  setState(() => _jobsAttributesValid = valid);
                 },
               ),
               const SizedBox(height: 24),

@@ -1263,5 +1263,12 @@
   "jobsExperienceExpert": "Experto",
   "jobsSalaryPeriodMonth": "/mes",
   "jobsSalaryPeriodHour": "/h",
-  "jobsSalaryPeriodYear": "/año"
+  "jobsSalaryPeriodYear": "/año",
+
+  "jobsFormHeading": "Datos del empleo",
+  "jobsFormSalaryMinLabel": "Salario mínimo",
+  "jobsFormSalaryMaxLabel": "Salario máximo",
+  "jobsFormSalaryPeriodLabel": "Periodo de salario",
+  "jobsFormCategoryProfessionalHint": "Ej: Desarrollo de software",
+  "jobsFormRequiredError": "Completa los campos obligatorios de empleo"
 }

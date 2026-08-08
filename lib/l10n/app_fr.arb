@@ -949,5 +949,12 @@
   "jobsExperienceExpert": "Expert",
   "jobsSalaryPeriodMonth": "/mois",
   "jobsSalaryPeriodHour": "/h",
-  "jobsSalaryPeriodYear": "/an"
+  "jobsSalaryPeriodYear": "/an",
+
+  "jobsFormHeading": "Détails de l'emploi",
+  "jobsFormSalaryMinLabel": "Salaire minimum",
+  "jobsFormSalaryMaxLabel": "Salaire maximum",
+  "jobsFormSalaryPeriodLabel": "Période de salaire",
+  "jobsFormCategoryProfessionalHint": "Ex : Développement logiciel",
+  "jobsFormRequiredError": "Complétez les champs obligatoires de l'emploi"
 }

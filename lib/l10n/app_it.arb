@@ -994,5 +994,12 @@
   "jobsExperienceExpert": "Esperto",
   "jobsSalaryPeriodMonth": "/mese",
   "jobsSalaryPeriodHour": "/h",
-  "jobsSalaryPeriodYear": "/anno"
+  "jobsSalaryPeriodYear": "/anno",
+
+  "jobsFormHeading": "Dati dell'impiego",
+  "jobsFormSalaryMinLabel": "Stipendio minimo",
+  "jobsFormSalaryMaxLabel": "Stipendio massimo",
+  "jobsFormSalaryPeriodLabel": "Periodo di retribuzione",
+  "jobsFormCategoryProfessionalHint": "Es: Sviluppo software",
+  "jobsFormRequiredError": "Completa i campi obbligatori dell'impiego"
 }

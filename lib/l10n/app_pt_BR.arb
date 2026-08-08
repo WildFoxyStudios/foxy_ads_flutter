@@ -949,5 +949,12 @@
   "jobsExperienceExpert": "Especialista",
   "jobsSalaryPeriodMonth": "/mês",
   "jobsSalaryPeriodHour": "/h",
-  "jobsSalaryPeriodYear": "/ano"
+  "jobsSalaryPeriodYear": "/ano",
+
+  "jobsFormHeading": "Dados da vaga",
+  "jobsFormSalaryMinLabel": "Salário mínimo",
+  "jobsFormSalaryMaxLabel": "Salário máximo",
+  "jobsFormSalaryPeriodLabel": "Período do salário",
+  "jobsFormCategoryProfessionalHint": "Ex: Desenvolvimento de software",
+  "jobsFormRequiredError": "Preencha os campos obrigatórios da vaga"
 }

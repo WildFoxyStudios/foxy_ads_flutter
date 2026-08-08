@@ -647,6 +647,12 @@
   "realEstateFormM2Hint": "e.g. 80",
   "realEstateFormRoomsHint": "e.g. 3",
   "realEstateFormBathsHint": "e.g. 2",
+  "realEstateEnergyConsumptionValueLabel": "Consumption value (kWh/m²·year)",
+  "realEstateEnergyEmissionsValueLabel": "Emissions value (kg CO₂/m²·year)",
+  "realEstateVideoUrlLabel": "Video URL",
+  "realEstateTourUrlLabel": "Virtual tour URL",
+  "realEstateFormExtrasHeading": "Extras",
+  "realEstateFormRequiredError": "Complete the required property fields",
 
   "settingsTitle": "Settings",
   "settingsSectionGeneral": "General",

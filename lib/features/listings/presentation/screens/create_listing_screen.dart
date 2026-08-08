@@ -56,6 +56,13 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   // / edit payload via `updates['attributes']` at submit time.
   Map<String, dynamic>? _reAttributes;
 
+  // Whether the RE form's required fields (operation, property_type, m2,
+  // rooms, bathrooms) are all set. Only consulted when the selected category
+  // is real_estate (see `_submitListing`); defaults to false so a listing
+  // can never publish with an incomplete RE payload before the form's first
+  // post-frame `onValidityChanged` callback fires.
+  bool _reAttributesValid = false;
+
   // Edit-mode only state. Left at their defaults (null / empty) on the
   // create path, so create behavior is unaffected.
   List<String> _existingImageUrls = [];
@@ -146,6 +153,16 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.listingCreateSelectCategoryHint),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    if (_selectedCategory!.id == 'real_estate' && !_reAttributesValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.realEstateFormRequiredError),
           backgroundColor: AppColors.error,
         ),
       );
@@ -639,7 +656,10 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 onChanged: (value) {
                   setState(() {
                     _selectedCategory = value;
-                    if (value?.id != 'real_estate') _reAttributes = null;
+                    if (value?.id != 'real_estate') {
+                      _reAttributes = null;
+                      _reAttributesValid = false;
+                    }
                   });
                 },
                 validator: (value) {
@@ -755,6 +775,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 initialAttributes: widget.existing?.attributes,
                 onChanged: (m) {
                   setState(() => _reAttributes = m);
+                },
+                onValidityChanged: (valid) {
+                  setState(() => _reAttributesValid = valid);
                 },
               ),
               const SizedBox(height: 24),

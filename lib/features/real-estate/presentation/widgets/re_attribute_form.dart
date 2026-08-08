@@ -1,28 +1,41 @@
-// Real-estate attribute form widget (Task 3 of the RE parity sprint).
+// Real-estate attribute form widget (P9 B1: canonical schema data fix).
 //
-// Renders the structured RE fields (operation, property_type, m², rooms,
-// bathrooms, condition, features, floor bucket, energy cert, orientation,
-// pets_allowed) and exposes the encoded JSONB map via `onChanged`. The
-// parent (`create_listing_screen.dart`) stores the latest map in its
-// `_reAttributes` field and writes it to `updates['attributes']` at
-// submit time.
+// Renders the structured RE fields that match the CANONICAL `attributes`
+// JSONB schema read by the web detail page, the DB search RPC, and the
+// `validate_listing_attributes()` trigger:
+//
+//   Required: operation, property_type, m2, rooms, bathrooms.
+//   Optional: m2_useful, condition, floor (raw string: bajo/1..8/atico),
+//     orientation (string[]), year_built, neighborhood, energy_consumption
+//     (+ _value), energy_emissions (+ _value), 14 feature booleans,
+//     pets_allowed, video_url, tour_url.
 //
 // Encoding rules (see `ReAttributeForm._encode()`):
-//   - operation, property_type, condition, orientation, energy_letter: text
-//   - m2, rooms, bathrooms: <number> as string (the trigger validates the
-//     numeric range; using strings keeps the JSON shape identical to the
-//     web's `FormData` payload)
-//   - features, floor_buckets, energy_bands: list
-//   - pets_allowed: '1' or '0'
-//   - Omit keys entirely when empty/null (no `null` leaks).
+//   - operation, property_type, condition, floor, energy_consumption,
+//     energy_emissions, neighborhood, video_url, tour_url: text.
+//   - m2, m2_useful, rooms, bathrooms, year_built,
+//     energy_consumption_value, energy_emissions_value: numbers (NOT
+//     strings — this is the data-correctness fix; the old encoding wrote
+//     numeric strings, which the web/DB never read).
+//   - orientation: a JSON array of strings (omit if empty).
+//   - Feature booleans + pets_allowed: `true` when set, OMITTED when unset
+//     (never `false` — the trigger + web reader both treat "absent" as
+//     falsy, and writing `false` would leak a key shape the web doesn't
+//     produce).
+//   - Omit every other key entirely when empty/null (no `null` leaks).
+//
+// The parent (`create_listing_screen.dart`) stores the latest map in its
+// `_reAttributes` field and writes it to `updates['attributes']` at submit
+// time. It also listens to `onValidityChanged` to gate submit on the
+// required fields (operation/property_type/m2/rooms/bathrooms) being set.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../data/re_attributes.dart';
-import '../../data/re_pricing.dart' show energyBandForLetter;
 import 're_energy_label.dart' show reEnergyLabel;
+import 're_filter_labels.dart' show orientationLabels;
 
 /// Visual labels for the operation segmented control, keyed by the canonical
 /// RE_OPERATIONS wire value. Built per-build from the active locale.
@@ -32,30 +45,29 @@ Map<String, String> _operationLabels(AppLocalizations l10n) => {
       'alquiler_temporal': l10n.realEstateOperationTemp,
     };
 
-/// Visual labels for the floor-bucket segmented control (short form — the
-/// search screen uses the longer `realEstateFloorBucket*` variants).
-Map<String, String> _floorBucketLabels(AppLocalizations l10n) => {
-      'bajos': l10n.realEstateFloorBucketShortLow,
-      'intermedias': l10n.realEstateFloorBucketShortMid,
-      'ultima': l10n.realEstateFloorBucketShortTop,
-    };
-
 class ReAttributeForm extends ConsumerStatefulWidget {
   const ReAttributeForm({
     super.key,
     this.initialAttributes,
     required this.onChanged,
+    this.onValidityChanged,
   });
 
-  /// Prefill values (edit mode). The map keys match the encoded form:
-  /// `operation`, `property_type`, `m2`, `rooms`, `bathrooms`, `condition`,
-  /// `features`, `floor_buckets`, `energy_letter`, `energy_bands`,
-  /// `orientation`, `pets_allowed`.
+  /// Prefill values (edit mode). The map keys match the canonical schema:
+  /// `operation`, `property_type`, `m2`, `rooms`, `bathrooms`, `m2_useful`,
+  /// `condition`, `floor`, `orientation` (array), `year_built`,
+  /// `neighborhood`, `energy_consumption(_value)`, `energy_emissions(_value)`,
+  /// the 14 feature booleans, `pets_allowed`, `video_url`, `tour_url`.
   final Map<String, dynamic>? initialAttributes;
 
   /// Fired on every change with the latest encoded map (empty when nothing
   /// is set).
   final void Function(Map<String, dynamic> attributes) onChanged;
+
+  /// Fired alongside `onChanged` with whether the required fields
+  /// (operation, property_type, m2>0, rooms>=1, bathrooms>=1) are all set.
+  /// The create/edit screen uses this to block submit.
+  final ValueChanged<bool>? onValidityChanged;
 
   @override
   ConsumerState<ReAttributeForm> createState() => _ReAttributeFormState();
@@ -64,24 +76,31 @@ class ReAttributeForm extends ConsumerStatefulWidget {
 class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
   // Text / number controllers.
   final _m2Controller = TextEditingController();
+  final _m2UsefulController = TextEditingController();
   final _roomsController = TextEditingController();
   final _bathroomsController = TextEditingController();
+  final _yearBuiltController = TextEditingController();
+  final _neighborhoodController = TextEditingController();
+  final _energyConsumptionValueController = TextEditingController();
+  final _energyEmissionsValueController = TextEditingController();
+  final _videoUrlController = TextEditingController();
+  final _tourUrlController = TextEditingController();
 
-  // Dropdowns.
+  // Dropdowns / single-select.
   String? _propertyType;
   String? _condition;
-  String? _energyCert;
-  String? _orientation;
+  String? _floor;
+  String? _energyConsumption;
+  String? _energyEmissions;
 
-  // Segmented / chip selections.
+  // Segmented / chip / set selections.
   String? _operation;
   final Set<String> _features = <String>{};
-  String? _floorBucket;
+  final Set<String> _orientation = <String>{};
 
-  // petsAllowed: tri-state — null = unselected (omit key), false = '0',
-  // true = '1'. The switch itself is binary; we treat "untouched" as null
-  // by starting with `null` and only flipping once the user interacts.
-  bool? _petsAllowed;
+  // pets_allowed: true-or-omit (never `false`), so a plain bool is enough —
+  // the switch starts OFF and only the ON state ever reaches `_encode()`.
+  bool _petsAllowed = false;
 
   @override
   void initState() {
@@ -90,79 +109,132 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
     if (init != null) {
       _operation = init['operation'] as String?;
       _propertyType = init['property_type'] as String?;
-      _m2Controller.text = (init['m2'] as String?) ?? '';
-      _roomsController.text = (init['rooms'] as String?) ?? '';
-      _bathroomsController.text = (init['bathrooms'] as String?) ?? '';
+      _m2Controller.text = _numToText(init['m2']);
+      _m2UsefulController.text = _numToText(init['m2_useful']);
+      _roomsController.text = _numToText(init['rooms']);
+      _bathroomsController.text = _numToText(init['bathrooms']);
       _condition = init['condition'] as String?;
-      final feats = init['features'];
-      if (feats is List) {
-        _features.addAll(feats.map((e) => e.toString()));
+      _floor = init['floor'] as String?;
+      final ori = init['orientation'];
+      if (ori is List) {
+        _orientation.addAll(ori.map((e) => e.toString()));
       }
-      final buckets = init['floor_buckets'];
-      if (buckets is List && buckets.isNotEmpty) {
-        _floorBucket = buckets.first.toString();
+      _yearBuiltController.text = _numToText(init['year_built']);
+      _neighborhoodController.text = (init['neighborhood'] as String?) ?? '';
+      _energyConsumption = init['energy_consumption'] as String?;
+      _energyConsumptionValueController.text =
+          _numToText(init['energy_consumption_value']);
+      _energyEmissions = init['energy_emissions'] as String?;
+      _energyEmissionsValueController.text =
+          _numToText(init['energy_emissions_value']);
+      for (final f in RE_FEATURE_KEYS) {
+        if (init[f] == true) _features.add(f);
       }
-      _energyCert = init['energy_letter'] as String?;
-      _orientation = init['orientation'] as String?;
-      final pets = init['pets_allowed'];
-      if (pets == '1') {
-        _petsAllowed = true;
-      } else if (pets == '0') {
-        _petsAllowed = false;
-      }
+      _petsAllowed = init['pets_allowed'] == true;
+      _videoUrlController.text = (init['video_url'] as String?) ?? '';
+      _tourUrlController.text = (init['tour_url'] as String?) ?? '';
     }
-    // Fire onChanged once after the first frame so the parent always has a
-    // map (possibly empty) to send to the server even on a no-op submit.
+    // Fire onChanged/onValidityChanged once after the first frame so the
+    // parent always has a map (possibly empty) + validity flag to work with
+    // even on a no-op submit.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) widget.onChanged(_encode());
+      if (mounted) _emit();
     });
   }
 
   @override
   void dispose() {
     _m2Controller.dispose();
+    _m2UsefulController.dispose();
     _roomsController.dispose();
     _bathroomsController.dispose();
+    _yearBuiltController.dispose();
+    _neighborhoodController.dispose();
+    _energyConsumptionValueController.dispose();
+    _energyEmissionsValueController.dispose();
+    _videoUrlController.dispose();
+    _tourUrlController.dispose();
     super.dispose();
   }
 
-  /// Encode the current form state into the JSONB map the listing server
-  /// expects. Omit any key whose value is empty/null.
+  static String _numToText(dynamic v) => v == null ? '' : v.toString();
+
+  static bool _isHttpUrl(String s) =>
+      s.startsWith('http://') || s.startsWith('https://');
+
+  /// Required fields per the canonical schema: operation, property_type,
+  /// m2 > 0, rooms >= 1, bathrooms >= 1.
+  bool get _isValid {
+    final m2 = num.tryParse(_m2Controller.text.trim());
+    final rooms = num.tryParse(_roomsController.text.trim());
+    final bathrooms = num.tryParse(_bathroomsController.text.trim());
+    return _operation != null &&
+        _propertyType != null &&
+        m2 != null &&
+        m2 > 0 &&
+        rooms != null &&
+        rooms >= 1 &&
+        bathrooms != null &&
+        bathrooms >= 1;
+  }
+
+  /// Encode the current form state into the canonical JSONB map. Omit any
+  /// key whose value is empty/null; booleans are true-or-omit.
   Map<String, dynamic> _encode() {
     final out = <String, dynamic>{};
 
     if (_operation != null) out['operation'] = _operation;
     if (_propertyType != null) out['property_type'] = _propertyType;
 
-    final m2 = _m2Controller.text.trim();
-    if (m2.isNotEmpty) out['m2'] = m2;
+    final m2 = num.tryParse(_m2Controller.text.trim());
+    if (m2 != null) out['m2'] = m2;
 
-    final rooms = _roomsController.text.trim();
-    if (rooms.isNotEmpty) out['rooms'] = rooms;
+    final rooms = num.tryParse(_roomsController.text.trim());
+    if (rooms != null) out['rooms'] = rooms;
 
-    final bathrooms = _bathroomsController.text.trim();
-    if (bathrooms.isNotEmpty) out['bathrooms'] = bathrooms;
+    final bathrooms = num.tryParse(_bathroomsController.text.trim());
+    if (bathrooms != null) out['bathrooms'] = bathrooms;
+
+    final m2Useful = num.tryParse(_m2UsefulController.text.trim());
+    if (m2Useful != null) out['m2_useful'] = m2Useful;
 
     if (_condition != null) out['condition'] = _condition;
+    if (_floor != null) out['floor'] = _floor;
 
-    if (_features.isNotEmpty) {
-      out['features'] = _features.toList(growable: false);
+    if (_orientation.isNotEmpty) {
+      out['orientation'] = _orientation.toList(growable: false);
     }
 
-    if (_floorBucket != null) {
-      out['floor_buckets'] = [_floorBucket!];
+    final yearBuilt = num.tryParse(_yearBuiltController.text.trim());
+    if (yearBuilt != null) out['year_built'] = yearBuilt;
+
+    final neighborhood = _neighborhoodController.text.trim();
+    if (neighborhood.isNotEmpty) out['neighborhood'] = neighborhood;
+
+    if (_energyConsumption != null) {
+      out['energy_consumption'] = _energyConsumption;
+    }
+    final ecv = num.tryParse(_energyConsumptionValueController.text.trim());
+    if (ecv != null) out['energy_consumption_value'] = ecv;
+
+    if (_energyEmissions != null) out['energy_emissions'] = _energyEmissions;
+    final eev = num.tryParse(_energyEmissionsValueController.text.trim());
+    if (eev != null) out['energy_emissions_value'] = eev;
+
+    for (final f in _features) {
+      out[f] = true;
     }
 
-    if (_energyCert != null) {
-      out['energy_letter'] = _energyCert;
-      final band = energyBandForLetter(_energyCert);
-      if (band != null) out['energy_bands'] = [band];
+    if (_petsAllowed) out['pets_allowed'] = true;
+
+    final videoUrl = _videoUrlController.text.trim();
+    if (videoUrl.isNotEmpty && _isHttpUrl(videoUrl)) {
+      out['video_url'] = videoUrl;
     }
 
-    if (_orientation != null) out['orientation'] = _orientation;
-
-    if (_petsAllowed != null) {
-      out['pets_allowed'] = _petsAllowed! ? '1' : '0';
+    final tourUrl = _tourUrlController.text.trim();
+    if (tourUrl.isNotEmpty && _isHttpUrl(tourUrl)) {
+      out['tour_url'] = tourUrl;
     }
 
     return out;
@@ -170,13 +242,14 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
 
   void _emit() {
     widget.onChanged(_encode());
+    widget.onValidityChanged?.call(_isValid);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final operationLabels = _operationLabels(l10n);
-    final floorBucketLabels = _floorBucketLabels(l10n);
+    final orientations = orientationLabels(l10n);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -188,7 +261,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         ),
         const SizedBox(height: 16),
 
-        // operation (segmented).
+        // operation (segmented, required).
         Text(
           l10n.realEstateFormOperation,
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
@@ -210,12 +283,12 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         ),
         const SizedBox(height: 16),
 
-        // propertyType (dropdown).
+        // propertyType (dropdown, required).
         DropdownButtonFormField<String>(
           initialValue: _propertyType,
           isExpanded: true,
           decoration: InputDecoration(
-            labelText: l10n.realEstatePropertyTypeLabel,
+            labelText: '${l10n.realEstatePropertyTypeLabel} *',
             border: const OutlineInputBorder(),
           ),
           items: RE_PROPERTY_TYPES
@@ -228,13 +301,13 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         ),
         const SizedBox(height: 16),
 
-        // m².
+        // m² (required).
         TextFormField(
           controller: _m2Controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: false),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
           textCapitalization: TextCapitalization.none,
           decoration: InputDecoration(
-            labelText: 'm²',
+            labelText: 'm² *',
             hintText: l10n.realEstateFormM2Hint,
             border: const OutlineInputBorder(),
           ),
@@ -242,7 +315,20 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         ),
         const SizedBox(height: 16),
 
-        // rooms + bathrooms in a row.
+        // m² útiles (optional).
+        TextFormField(
+          controller: _m2UsefulController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          textCapitalization: TextCapitalization.none,
+          decoration: InputDecoration(
+            labelText: l10n.realEstateM2UsefulLabel,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (_) => _emit(),
+        ),
+        const SizedBox(height: 16),
+
+        // rooms + bathrooms in a row (both required).
         Row(
           children: [
             Expanded(
@@ -251,7 +337,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
                 keyboardType: TextInputType.number,
                 textCapitalization: TextCapitalization.none,
                 decoration: InputDecoration(
-                  labelText: l10n.realEstateRoomsLabel,
+                  labelText: '${l10n.realEstateRoomsLabel} *',
                   hintText: l10n.realEstateFormRoomsHint,
                   border: const OutlineInputBorder(),
                 ),
@@ -265,7 +351,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
                 keyboardType: TextInputType.number,
                 textCapitalization: TextCapitalization.none,
                 decoration: InputDecoration(
-                  labelText: l10n.realEstateBathroomsLabel,
+                  labelText: '${l10n.realEstateBathroomsLabel} *',
                   hintText: l10n.realEstateFormBathsHint,
                   border: const OutlineInputBorder(),
                 ),
@@ -276,7 +362,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         ),
         const SizedBox(height: 16),
 
-        // condition (dropdown).
+        // condition (dropdown, optional).
         DropdownButtonFormField<String>(
           initialValue: _condition,
           isExpanded: true,
@@ -284,14 +370,18 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
             labelText: l10n.realEstateConditionLabel,
             border: const OutlineInputBorder(),
           ),
-          items: RE_CONDITIONS
-              .map(
-                (c) => DropdownMenuItem<String>(
-                  value: c,
-                  child: Text(_conditionLabel(l10n, c)),
-                ),
-              )
-              .toList(),
+          items: [
+            DropdownMenuItem<String>(
+              value: null,
+              child: Text(l10n.realEstateEnergyLetterNone),
+            ),
+            ...RE_CONDITIONS.map(
+              (c) => DropdownMenuItem<String>(
+                value: c,
+                child: Text(_conditionLabel(l10n, c)),
+              ),
+            ),
+          ],
           onChanged: (v) {
             setState(() => _condition = v);
             _emit();
@@ -299,10 +389,90 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         ),
         const SizedBox(height: 16),
 
-        // features (multi-select chips).
+        // floor (dropdown, optional; raw string bajo/1..8/atico).
+        DropdownButtonFormField<String>(
+          initialValue: _floor,
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: l10n.realEstateFloorLabel,
+            border: const OutlineInputBorder(),
+          ),
+          items: [
+            DropdownMenuItem<String>(
+              value: null,
+              child: Text(l10n.realEstateEnergyLetterNone),
+            ),
+            ...RE_FLOOR_RAW.map(
+              (f) => DropdownMenuItem<String>(
+                value: f,
+                child: Text(_floorLabel(l10n, f)),
+              ),
+            ),
+          ],
+          onChanged: (v) {
+            setState(() => _floor = v);
+            _emit();
+          },
+        ),
+        const SizedBox(height: 16),
+
+        // orientation (multi-select chips -> array, optional).
+        Text(
+          l10n.realEstateOrientationLabel,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: RE_ORIENTATIONS.map((o) {
+            final selected = _orientation.contains(o);
+            return FilterChip(
+              label: Text(orientations[o] ?? o),
+              selected: selected,
+              onSelected: (yes) {
+                setState(() {
+                  if (yes) {
+                    _orientation.add(o);
+                  } else {
+                    _orientation.remove(o);
+                  }
+                });
+                _emit();
+              },
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 16),
+
+        // year_built (optional).
+        TextFormField(
+          controller: _yearBuiltController,
+          keyboardType: TextInputType.number,
+          textCapitalization: TextCapitalization.none,
+          decoration: InputDecoration(
+            labelText: l10n.realEstateYearBuiltLabel,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (_) => _emit(),
+        ),
+        const SizedBox(height: 16),
+
+        // neighborhood (optional).
+        TextFormField(
+          controller: _neighborhoodController,
+          decoration: InputDecoration(
+            labelText: l10n.realEstateNeighborhoodLabel,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (_) => _emit(),
+        ),
+        const SizedBox(height: 24),
+
+        // features (14 booleans, true-or-omit).
         Text(
           l10n.realEstateFeaturesLabel,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -326,46 +496,19 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
             );
           }).toList(),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
 
-        // floorBucket (segmented).
+        // energy: two independent letter + numeric-value pairs.
         Text(
-          l10n.realEstateFloorLabel,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          l10n.realEstateEnergyBandLabel,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: [
-            ChoiceChip(
-              label: Text(l10n.realEstateEnergyLetterNone),
-              selected: _floorBucket == null,
-              onSelected: (_) {
-                setState(() => _floorBucket = null);
-                _emit();
-              },
-            ),
-            ...RE_FLOOR_BUCKETS.map((b) {
-              final selected = _floorBucket == b;
-              return ChoiceChip(
-                label: Text(floorBucketLabels[b] ?? b),
-                selected: selected,
-                onSelected: (_) {
-                  setState(() => _floorBucket = b);
-                  _emit();
-                },
-              );
-            }),
-          ],
-        ),
-        const SizedBox(height: 16),
-
-        // energyCert (dropdown).
         DropdownButtonFormField<String>(
-          initialValue: _energyCert,
+          initialValue: _energyConsumption,
           isExpanded: true,
           decoration: InputDecoration(
-            labelText: l10n.realEstateEnergyBandLabel,
+            labelText: l10n.realEstateEnergyConsumptionLabel,
             border: const OutlineInputBorder(),
           ),
           items: [
@@ -381,18 +524,26 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
             ),
           ],
           onChanged: (v) {
-            setState(() => _energyCert = v);
+            setState(() => _energyConsumption = v);
             _emit();
           },
         ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _energyConsumptionValueController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: l10n.realEstateEnergyConsumptionValueLabel,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (_) => _emit(),
+        ),
         const SizedBox(height: 16),
-
-        // orientation (dropdown).
         DropdownButtonFormField<String>(
-          initialValue: _orientation,
+          initialValue: _energyEmissions,
           isExpanded: true,
           decoration: InputDecoration(
-            labelText: l10n.realEstateOrientationLabel,
+            labelText: l10n.realEstateEnergyEmissionsLabel,
             border: const OutlineInputBorder(),
           ),
           items: [
@@ -400,26 +551,64 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
               value: null,
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
-            ...RE_ORIENTATIONS.map(
-              (o) => DropdownMenuItem<String>(value: o, child: Text(o)),
+            ...RE_ENERGY_CERTS.map(
+              (e) => DropdownMenuItem<String>(
+                value: e,
+                child: Text(reEnergyLabel(e, l10n) ?? e),
+              ),
             ),
           ],
           onChanged: (v) {
-            setState(() => _orientation = v);
+            setState(() => _energyEmissions = v);
             _emit();
           },
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _energyEmissionsValueController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: l10n.realEstateEnergyEmissionsValueLabel,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (_) => _emit(),
+        ),
+        const SizedBox(height: 24),
 
-        // petsAllowed (switch).
+        // extras: pets_allowed switch, video/tour URLs.
+        Text(
+          l10n.realEstateFormExtrasHeading,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(l10n.realEstatePetsAllowedSwitchLabel),
-          value: _petsAllowed == true,
+          value: _petsAllowed,
           onChanged: (v) {
             setState(() => _petsAllowed = v);
             _emit();
           },
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _videoUrlController,
+          keyboardType: TextInputType.url,
+          decoration: InputDecoration(
+            labelText: l10n.realEstateVideoUrlLabel,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (_) => _emit(),
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _tourUrlController,
+          keyboardType: TextInputType.url,
+          decoration: InputDecoration(
+            labelText: l10n.realEstateTourUrlLabel,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (_) => _emit(),
         ),
       ],
     );
@@ -437,6 +626,18 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
       case 'a_reformar':
         return l10n.realEstateConditionToRenovate;
       default:
+        return code;
+    }
+  }
+
+  String _floorLabel(AppLocalizations l10n, String code) {
+    switch (code) {
+      case 'bajo':
+        return l10n.realEstateFloorValueBajo;
+      case 'atico':
+        return l10n.realEstateFloorValueAtico;
+      default:
+        // Numeric floors ('1'..'8') are digits only — no l10n needed.
         return code;
     }
   }

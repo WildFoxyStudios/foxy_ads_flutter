@@ -82,3 +82,23 @@ const List<String> RE_FLOOR_BUCKETS = [
   'intermedias',
   'ultima',
 ];
+
+// --- Create-form RAW option lists (canonical `attributes` schema) ---------
+//
+// The lists above (`RE_FLOOR_BUCKETS`, `RE_ENERGY_CERTS`) double as SEARCH
+// filter values — do not change them. `RE_FLOOR_RAW` is the separate list of
+// raw per-listing floor values the create form writes to `attributes.floor`
+// (a single string), mirrored from the web's floor `<select>` options. Not
+// used by search (the search RPC buckets floors via `RE_FLOOR_BUCKETS`).
+const List<String> RE_FLOOR_RAW = [
+  'bajo',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  'atico',
+];

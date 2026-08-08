@@ -22,6 +22,7 @@ import '../../../../core/models/city_model.dart';
 import '../../../../core/models/country_model.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -213,6 +214,25 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
                       .setSort(value),
                 ),
                 const SizedBox(height: 12),
+
+                // Link card to /promociones (new-construction developments).
+                // Rendered unconditionally, regardless of active filters.
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Card(
+                    child: ListTile(
+                      leading: const Text(
+                        '🏗️',
+                        style: TextStyle(fontSize: 28),
+                      ),
+                      title: Text(l10n.realEstatePromocionesCta),
+                      subtitle: Text(l10n.realEstatePromocionesCtaSubtitle),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push(AppRoutes.promociones),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
 
                 // Results grid OR prompt
                 if (!filters.isActive)

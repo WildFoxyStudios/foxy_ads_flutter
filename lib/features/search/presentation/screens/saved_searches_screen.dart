@@ -91,7 +91,12 @@ class SavedSearchesScreen extends ConsumerWidget {
     final service = ref.read(savedSearchesServiceProvider);
     // Non-essential bookkeeping: must never block re-running the search.
     unawaited(service.touchSeen(search.id).catchError((_) {}));
-    if (context.mounted) context.go('/search');
+    // Propagate the saved query into the URL so the SearchScreen's
+    // `_hydrateFromUrlOnce` can pre-fill the TextField + immediately re-run
+    // a search on first frame, matching the deep-link `/search?q=foo` UX.
+    final query = Uri.encodeComponent(search.filters.query);
+    final extra = query.isNotEmpty ? '?q=$query' : '';
+    if (context.mounted) context.go('/search$extra');
   }
 
   @override

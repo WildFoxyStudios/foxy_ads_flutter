@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
@@ -135,7 +136,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           const Spacer(),
                           // Search Bar
                           GestureDetector(
-                            onTap: () => context.go('/search'),
+                            onTap: () => context.go(AppRoutes.allListings),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 16,
@@ -333,7 +334,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.go('/search'),
+                      onPressed: () => context.go(AppRoutes.allListings),
                       child: Text(l10n.homeViewMore),
                     ),
                   ],

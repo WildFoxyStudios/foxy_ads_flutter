@@ -117,15 +117,28 @@ final searchFiltersProvider =
     );
 
 /// Derived: re-runs whenever any field in [searchFiltersProvider] changes
-/// (or the selected country). Returns an empty list when no filters are active
-/// so the UI can show the empty-state placeholder.
+/// (or the selected country). When NO filter is active the screen falls
+/// back to the same `getListings` query the home + category + browse-all
+/// screens use, so opening `/search` empty-handed still shows the user
+/// something useful (the country's newest listings) instead of an empty
+/// state. When any filter IS active, the FTS RPC runs as before.
 final searchResultsProvider = FutureProvider<List<Listing>>((ref) async {
   final filters = ref.watch(searchFiltersProvider);
   final country = ref.watch(selectedCountryProvider);
   final listingService = ref.read(listingServiceProvider);
 
   if (!filters.isActive) {
-    return [];
+    // Empty /search → show the country's listings (mirrors the web's
+    // `/buscar` with no `?q`, which also returns the latest listings).
+    final sort = ListingSort.values.firstWhere(
+      (s) => s.name == filters.sort,
+      orElse: () => ListingSort.newest,
+    );
+    return await listingService.getListings(
+      countryCode: country.code,
+      sort: sort,
+      limit: 50,
+    );
   }
 
   // Use the FTS RPC: locale-aware tsvector ranking, supports ES/EN/IT

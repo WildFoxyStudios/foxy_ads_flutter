@@ -22,13 +22,48 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _searchController = TextEditingController();
   final _minPriceController = TextEditingController();
   final _maxPriceController = TextEditingController();
+  final _searchFocus = FocusNode();
   bool _showFilters = false;
+  bool _didHydrateFromUrl = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-focus the search input so the keyboard opens as soon as the user
+    // lands on the search screen — matches the web's `/buscar` UX where the
+    // query box is the obvious next interaction.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _searchFocus.requestFocus();
+    });
+  }
+
+  /// Read `?q=` (and any future filter params) out of the current deep-link
+  /// URL ONCE on first build, seed the controllers + the search-filters
+  /// notifier, and run a search. Subsequent navigations to this screen with
+  /// new query params will be re-hydrated because go_router rebuilds the
+  /// screen on location change.
+  void _hydrateFromUrlOnce() {
+    if (_didHydrateFromUrl) return;
+    _didHydrateFromUrl = true;
+    final state = GoRouterState.of(context);
+    final params = state.uri.queryParameters;
+    final q = params['q']?.trim();
+    if (q != null && q.isNotEmpty) {
+      _searchController.text = q;
+      // Kick off the search immediately so deep-linked /search?q=foo shows
+      // results on first frame instead of waiting for an Enter key press.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _search();
+      });
+    }
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
     _minPriceController.dispose();
     _maxPriceController.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
@@ -108,6 +143,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final filters = ref.watch(searchFiltersProvider);
     final selectedCategory = filters.categoryId;
     final categories = Category.defaultCategories;
+    _hydrateFromUrlOnce();
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.searchTitle)),
@@ -121,6 +157,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
+                    focusNode: _searchFocus,
                     decoration: InputDecoration(
                       hintText: l10n.searchHint,
                       prefixIcon: const Icon(Icons.search),
@@ -136,6 +173,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             )
                           : null,
                     ),
+                    textInputAction: TextInputAction.search,
                     onSubmitted: (_) => _search(),
                   ),
                 ),

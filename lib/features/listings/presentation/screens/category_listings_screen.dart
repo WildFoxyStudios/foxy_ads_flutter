@@ -7,6 +7,7 @@ import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
+import '../../../search/presentation/providers/search_filters_provider.dart';
 
 /// Family key: `categoryId` + an optional `subcategoryId`. When
 /// [subcategoryId] is present, listings are additionally filtered by
@@ -56,7 +57,15 @@ class CategoryListingsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: () => context.push('/search'),
+            // Open the search screen pre-filtered by THIS category so the
+            // user lands somewhere useful (results visible) instead of an
+            // empty /search. This mirrors the web's "More filters on this
+            // category" intent without dropping the user on a blank screen.
+            onPressed: () {
+              ref.read(searchFiltersProvider.notifier).setCategory(categoryId);
+              context.push('/search');
+            },
+            tooltip: l10n.searchFiltersHeading,
           ),
         ],
       ),

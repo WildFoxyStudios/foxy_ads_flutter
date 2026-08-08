@@ -100,16 +100,16 @@ void main() {
       );
     });
 
-    test('translation coverage floor — pt-BR >= 500 translated keys', () {
-      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_pt_BR.arb', floor: 500);
+    test('translation coverage floor — pt-BR >= 732 translated keys', () {
+      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_pt_BR.arb', floor: 732);
     });
 
-    test('translation coverage floor — fr >= 500 translated keys', () {
-      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_fr.arb', floor: 500);
+    test('translation coverage floor — fr >= 797 translated keys', () {
+      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_fr.arb', floor: 797);
     });
 
-    test('translation coverage floor — de >= 500 translated keys', () {
-      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_de.arb', floor: 500);
+    test('translation coverage floor — de >= 795 translated keys', () {
+      _expectCoverage(arbDir: '${_findRepoRoot()}lib/l10n', locale: 'app_de.arb', floor: 795);
     });
   });
 }

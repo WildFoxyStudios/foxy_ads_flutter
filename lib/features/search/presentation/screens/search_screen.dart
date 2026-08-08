@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/auth_service.dart';
@@ -148,7 +149,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     child: const Icon(Icons.tune),
                   ),
                   style: IconButton.styleFrom(
-                    backgroundColor: AppColors.surface,
+                    backgroundColor: surfaceFor(context),
                     padding: const EdgeInsets.all(12),
                   ),
                 ),
@@ -159,7 +160,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     icon: const Icon(Icons.bookmark_add_outlined),
                     tooltip: l10n.searchSaveTooltip,
                     style: IconButton.styleFrom(
-                      backgroundColor: AppColors.surface,
+                      backgroundColor: surfaceFor(context),
                       padding: const EdgeInsets.all(12),
                     ),
                   ),
@@ -174,7 +175,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: surfaceFor(context),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(

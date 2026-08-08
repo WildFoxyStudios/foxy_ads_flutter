@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Real contact details ported from the web (`src/app/[locale]/contacto/
@@ -192,7 +193,7 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: surfaceFor(context),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,

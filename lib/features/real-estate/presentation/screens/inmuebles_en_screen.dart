@@ -23,6 +23,7 @@ import '../../../../core/models/country_model.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../data/re_attributes.dart';
@@ -214,7 +215,7 @@ class _CountryChip extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceFor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.border),
         ),
@@ -258,7 +259,7 @@ class _CityDropdown extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12),
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceFor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.border),
         ),
@@ -317,7 +318,7 @@ class _CityDropdownBody extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
@@ -409,7 +410,7 @@ class _FiltersExpansionTile extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
@@ -776,7 +777,7 @@ class _SortDropdown extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: surfaceFor(context),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.border),
             ),

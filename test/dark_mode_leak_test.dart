@@ -27,13 +27,16 @@ import 'package:supabase_flutter/supabase_flutter.dart'
 
 import 'package:foxy_ads/core/models/category_model.dart';
 import 'package:foxy_ads/core/models/country_model.dart';
+import 'package:foxy_ads/core/models/listing_model.dart';
 import 'package:foxy_ads/core/models/saved_search_model.dart';
 import 'package:foxy_ads/core/providers/selected_country_provider.dart';
 import 'package:foxy_ads/core/services/auth_service.dart';
 import 'package:foxy_ads/core/services/saved_searches_service.dart';
 import 'package:foxy_ads/core/theme/app_colors.dart';
 import 'package:foxy_ads/features/developments/presentation/screens/development_form_screen.dart';
+import 'package:foxy_ads/features/home/presentation/widgets/listing_card.dart';
 import 'package:foxy_ads/features/listings/presentation/screens/create_listing_screen.dart';
+import 'package:foxy_ads/features/listings/presentation/screens/listing_detail_screen.dart';
 import 'package:foxy_ads/features/search/presentation/providers/search_filters_provider.dart';
 import 'package:foxy_ads/features/search/presentation/screens/saved_searches_screen.dart';
 import 'package:foxy_ads/l10n/app_localizations.dart';
@@ -112,6 +115,28 @@ User _signedInUser() {
 class _FakeCountryNotifier extends SelectedCountryNotifier {
   @override
   Country build() => Country.defaultCountries.first;
+}
+
+/// `Listing` fixture for the Sprint 12 Task 2 (dark-mode surface leak sweep)
+/// tests below. `userId` is deliberately NOT a UUID so `ListingDetailScreen`
+/// skips its "Ver agencia" branch (which needs `agencyProfileProvider`) and
+/// the widget builds with only `listingDetailProvider` + `authStateProvider`
+/// overridden. `categoryName`/`city` are set so the two `Chip`s that were
+/// swapped from `AppColors.surface` to `surfaceFor(context)` actually render.
+Listing _listingFixture() {
+  return Listing(
+    id: 'l-1',
+    userId: 'seller-1',
+    categoryId: 'vehicles',
+    countryCode: 'ES',
+    title: 'Coche en venta',
+    description: 'Un coche muy bueno.',
+    price: 12000,
+    images: const [],
+    city: 'Madrid',
+    categoryName: 'Vehículos',
+    createdAt: DateTime(2026, 1, 1),
+  );
 }
 
 Widget _wrap({
@@ -439,6 +464,111 @@ void main() {
         // just guard against the exact constant slipping back in.
         expect(color, isNot(equals(_hardcodedWhite)));
       }
+    },
+  );
+
+  // ----- listing_card.dart (Sprint 12 Task 2) -------------------------------
+  //
+  // `ListingCard` is the card widget used in `home_screen`'s recent-listings
+  // grid and `search_screen`'s results grid. Its outer `Container` decoration
+  // used to hardcode `color: Colors.white`; it now uses `surfaceFor(context)`.
+
+  testWidgets(
+    'listing_card outer Container does not use hardcoded white in dark',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          themeMode: ThemeMode.dark,
+          home: Scaffold(
+            body: ListingCard(listing: _listingFixture(), onTap: () {}),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = tester.widget<Container>(find.byType(Container).first);
+      final deco = container.decoration;
+      expect(deco, isA<BoxDecoration>());
+      final bg = (deco as BoxDecoration).color;
+      expect(
+        bg,
+        isNot(equals(_hardcodedWhite)),
+        reason:
+            'listing_card outer Container leaked AppColors.surface/Colors.white '
+            '($_hardcodedWhite) into dark mode. Switch to surfaceFor(context) '
+            'so it follows the active theme.',
+      );
+    },
+  );
+
+  // ----- listing_detail_screen.dart (Sprint 12 Task 2) ----------------------
+  //
+  // Two swapped surfaces: the category/city `Chip`s (`backgroundColor:
+  // AppColors.surface` → `surfaceFor(context)`) and the `bottomNavigationBar`
+  // Container (`color: Colors.white` → `surfaceFor(context)`). Both sit
+  // directly on the scaffold and should follow the active theme; the
+  // surrounding white icon-circle buttons and gradient badges are
+  // deliberately untouched (foreground chrome atop the photo header/gradient)
+  // and are NOT asserted here.
+
+  testWidgets(
+    'listing_detail_screen chips and bottom bar do not use hardcoded white in dark',
+    (tester) async {
+      final listing = _listingFixture();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            listingDetailProvider(
+              listing.id,
+            ).overrideWith((ref) async => listing),
+            authStateProvider.overrideWith(
+              (ref) => Stream<User?>.value(null),
+            ),
+          ],
+          child: _wrap(
+            themeMode: ThemeMode.dark,
+            home: ListingDetailScreen(listingId: listing.id),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final chips = tester.widgetList<Chip>(find.byType(Chip));
+      expect(
+        chips,
+        isNotEmpty,
+        reason:
+            'Expected the category + city Chips to render (fixture sets '
+            'both categoryName and city).',
+      );
+      for (final chip in chips) {
+        expect(
+          chip.backgroundColor,
+          isNot(equals(_hardcodedWhite)),
+          reason:
+              'listing_detail_screen Chip is still using the hardcoded '
+              'AppColors.surface ($_hardcodedWhite). Switch to '
+              'surfaceFor(context) so it follows the active theme.',
+        );
+      }
+
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+      final bottomBar = scaffold.bottomNavigationBar;
+      expect(
+        bottomBar,
+        isA<Container>(),
+        reason: 'Expected the listing_detail_screen bottomNavigationBar to '
+            'be a Container (it sets color/boxShadow in source).',
+      );
+      final bottomDeco = (bottomBar as Container).decoration as BoxDecoration;
+      expect(
+        bottomDeco.color,
+        isNot(equals(_hardcodedWhite)),
+        reason:
+            'listing_detail_screen bottomNavigationBar Container leaked '
+            'Colors.white ($_hardcodedWhite) into dark mode. Switch to '
+            'surfaceFor(context) so it follows the active theme.',
+      );
     },
   );
 }

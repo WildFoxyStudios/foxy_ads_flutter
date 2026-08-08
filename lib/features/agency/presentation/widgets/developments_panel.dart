@@ -34,6 +34,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../developments/data/development_model.dart';
 import '../../../developments/data/developments_service.dart';
@@ -49,7 +50,7 @@ class DevelopmentsPanel extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
@@ -304,7 +305,7 @@ class _DevRow extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.surface,
+      backgroundColor: surfaceFor(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),

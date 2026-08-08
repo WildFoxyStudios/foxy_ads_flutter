@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/development_model.dart';
@@ -27,7 +28,7 @@ class DevelopmentCard extends StatelessWidget {
           context.push(AppRoutes.promocionDetail(development.id)),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: surfaceFor(context),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

@@ -32,6 +32,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/leads_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/lead_model.dart';
 
@@ -221,7 +222,7 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),

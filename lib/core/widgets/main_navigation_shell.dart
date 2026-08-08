@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
+import '../theme/theme_colors.dart';
 
 class MainNavigationShell extends StatelessWidget {
   final Widget child;
@@ -44,7 +45,7 @@ class MainNavigationShell extends StatelessWidget {
       body: child,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: surfaceFor(context),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.08),

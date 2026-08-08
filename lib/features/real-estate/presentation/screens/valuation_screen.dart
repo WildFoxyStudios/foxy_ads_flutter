@@ -17,6 +17,7 @@ import '../../../../core/models/city_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class ValuationScreen extends ConsumerStatefulWidget {
@@ -116,7 +117,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: surfaceFor(context),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: AppColors.border),
                   ),
@@ -273,7 +274,7 @@ class _CityDropdownBody extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.border),
       ),
@@ -318,7 +319,7 @@ class _OpChoice extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.surface,
+          color: selected ? AppColors.primary : surfaceFor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.border,
@@ -394,7 +395,7 @@ class _ResultCard extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: surfaceFor(context),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.border),
             ),
@@ -427,7 +428,7 @@ class _ResultCard extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: surfaceFor(context),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.border),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class ListingCard extends StatelessWidget {
@@ -25,7 +26,7 @@ class ListingCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: surfaceFor(context),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

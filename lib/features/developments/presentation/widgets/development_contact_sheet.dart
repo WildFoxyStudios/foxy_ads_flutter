@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/leads_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/development_model.dart';
 
@@ -141,8 +142,8 @@ class _DevelopmentContactSheetState
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: surfaceFor(context),
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.all(20),

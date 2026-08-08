@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/agency_model.dart';
 import '../../data/agency_service.dart';
@@ -200,7 +201,7 @@ class _AgencyProfileEditScreenState
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.agencyEditTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         leading: IconButton(
@@ -411,7 +412,7 @@ class _NotSignedInScaffold extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.agencyEditTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
       ),
       body: Center(

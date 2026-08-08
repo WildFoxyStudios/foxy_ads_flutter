@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/favorite_service.dart';
@@ -279,13 +280,13 @@ class ListingDetailScreen extends ConsumerWidget {
                             Chip(
                               avatar: const Icon(Icons.category, size: 16),
                               label: Text(listing.categoryName!),
-                              backgroundColor: AppColors.surface,
+                              backgroundColor: surfaceFor(context),
                             ),
                           if (listing.city != null)
                             Chip(
                               avatar: const Icon(Icons.location_on, size: 16),
                               label: Text(listing.city!),
-                              backgroundColor: AppColors.surface,
+                              backgroundColor: surfaceFor(context),
                             ),
                         ],
                       ),
@@ -456,7 +457,7 @@ class ListingDetailScreen extends ConsumerWidget {
           bottomNavigationBar: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: surfaceFor(context),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),

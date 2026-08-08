@@ -4,6 +4,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/leads_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Opens the "Contactar al vendedor" bottom sheet — a server-tracked lead
@@ -138,8 +139,8 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: surfaceFor(context),
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.all(20),

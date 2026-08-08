@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/panel_stats.dart';
 
@@ -93,7 +94,7 @@ class _StatTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),

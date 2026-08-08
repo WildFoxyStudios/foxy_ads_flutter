@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/agency_model.dart';
 import '../../data/agency_service.dart';
@@ -87,7 +88,7 @@ class _ErrorScaffold extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.panelTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
@@ -138,7 +139,7 @@ class _GateScaffold extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.panelTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
@@ -212,7 +213,7 @@ class _NotSignedInScaffold extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.panelTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
@@ -272,7 +273,7 @@ class _DashboardScaffold extends ConsumerWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.panelTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
@@ -353,7 +354,7 @@ class _DashboardHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
@@ -425,7 +426,7 @@ class _ViewsChartSection extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),

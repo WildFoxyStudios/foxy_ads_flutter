@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../core/router/app_router.dart';
@@ -384,7 +385,7 @@ class _ProfileTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: surfaceFor(context),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
@@ -232,7 +233,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.primary.withValues(alpha: 0.1)
-                            : AppColors.surface,
+                            : surfaceFor(context),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected

@@ -17,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/agency_model.dart';
 import '../../data/agency_service.dart';
@@ -50,7 +51,7 @@ class _AgencyProfileScreenState extends ConsumerState<AgencyProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.agencyTitle),
-        backgroundColor: AppColors.surface,
+        backgroundColor: surfaceFor(context),
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
@@ -190,7 +191,7 @@ class _HeaderCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceFor(context),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
         boxShadow: [

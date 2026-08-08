@@ -16,6 +16,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../data/re_models.dart';
@@ -144,7 +145,7 @@ class _OpChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.surface,
+          color: selected ? AppColors.primary : surfaceFor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.border,

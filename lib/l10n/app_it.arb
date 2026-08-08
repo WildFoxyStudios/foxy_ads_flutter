@@ -927,6 +927,11 @@
 
   "realEstatePromocionesCta": "Vedi nuove costruzioni",
   "realEstatePromocionesCtaSubtitle": "Promozioni di nuova costruzione",
+  "realEstatePromocionesBandTitle": "Nuove costruzioni a {country}",
+  "@realEstatePromocionesBandTitle": {
+    "description": "Heading above the horizontal promotions band shown on the real-estate search screen when no listings match the filters. {country} is the selected country name.",
+    "placeholders": { "country": { "type": "String" } }
+  },
 
   "realEstateMapNoCoords": "Nessun annuncio ha una posizione sulla mappa",
   "realEstateViewList": "Elenco",

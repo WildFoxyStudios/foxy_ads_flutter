@@ -882,6 +882,11 @@
 
   "realEstatePromocionesCta": "Voir les programmes neufs",
   "realEstatePromocionesCtaSubtitle": "Programmes de construction neuve",
+  "realEstatePromocionesBandTitle": "Programmes neufs à {country}",
+  "@realEstatePromocionesBandTitle": {
+    "description": "Heading above the horizontal promotions band shown on the real-estate search screen when no listings match the filters. {country} is the selected country name.",
+    "placeholders": { "country": { "type": "String" } }
+  },
 
   "realEstateMapNoCoords": "Aucune annonce n'a de localisation sur la carte",
   "realEstateViewList": "Liste",

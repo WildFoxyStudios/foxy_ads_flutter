@@ -27,6 +27,8 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../developments/data/developments_service.dart';
+import '../../../developments/presentation/widgets/development_card.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../../search/presentation/providers/saved_searches_provider.dart';
 import '../../data/re_attributes.dart';
@@ -1001,26 +1003,36 @@ class _ResultsGrid extends StatelessWidget {
       ),
       data: (listings) {
         if (listings.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 48),
-            child: Column(
-              children: [
-                const Text('🏚️', style: TextStyle(fontSize: 48)),
-                const SizedBox(height: 12),
-                Text(
-                  l10n.realEstateNoResults,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+          return Column(
+            children: [
+              // Promotions band (new-construction developments for the
+              // selected country) — rendered ABOVE the empty message, mirrors
+              // the web's `RealEstateBody` promotions band. Renders nothing
+              // while loading/erroring/empty so it never blocks or clutters
+              // the empty state.
+              const _PromotionsBand(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 48),
+                child: Column(
+                  children: [
+                    const Text('🏚️', style: TextStyle(fontSize: 48)),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.realEstateNoResults,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.realEstateNoResultsHint,
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.realEstateNoResultsHint,
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-              ],
-            ),
+              ),
+            ],
           );
         }
         return GridView.builder(
@@ -1042,6 +1054,61 @@ class _ResultsGrid extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+/// Horizontal rail of new-construction developments, shown ABOVE the
+/// empty-results message in `_ResultsGrid` — mirrors the web's
+/// `RealEstateBody`/`PromotionsBand`. Watches
+/// [developmentsForCountryProvider] (keyed off the selected country) and
+/// renders nothing while loading, erroring, or when there are no
+/// developments: the band is a bonus, it must never block or clutter the
+/// empty state.
+class _PromotionsBand extends ConsumerWidget {
+  const _PromotionsBand();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final developmentsAsync = ref.watch(developmentsForCountryProvider);
+    final country = ref.watch(selectedCountryProvider);
+    final l10n = AppLocalizations.of(context)!;
+
+    return developmentsAsync.maybeWhen(
+      data: (developments) {
+        if (developments.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.realEstatePromocionesBandTitle(country.name),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 260,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: developments.length,
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: SizedBox(
+                      width: 280,
+                      child: DevelopmentCard(development: developments[index]),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }

@@ -721,6 +721,9 @@
   "settingsSelectCountryTitle": "Select Country",
   "settingsLoadCountriesError": "Error loading countries",
   "settingsCountryChanged": "Country changed to {country}",
+  "preferredCurrencyLabel": "Preferred currency",
+  "preferredCurrencySaved": "Currency updated",
+  "preferredCurrencyUnavailable": "Preferred currency isn't available yet",
 
   "paymentsPromoteTitle": "Promote Listing",
   "paymentsListingNotFound": "Listing not found",

@@ -29,6 +29,35 @@ final currentUserProvider = FutureProvider<AppUser?>((ref) async {
   );
 });
 
+// The user's preferred display currency (P10 C5). `users.preferred_currency`
+// is a Phase-5 column that may not exist yet in production — see
+// AuthService.getPreferredCurrency. Resolves to null (no signed-in user, no
+// value set, or the column doesn't exist yet) rather than throwing; callers
+// fall back to a sensible default (e.g. the selected country's currency).
+final preferredCurrencyProvider = FutureProvider<String?>((ref) async {
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
+  if (user == null) return null;
+  final authService = ref.read(authServiceProvider);
+  return authService.getPreferredCurrency(user.id);
+});
+
+// True if [error] looks like Postgres/PostgREST reporting that a referenced
+// column doesn't exist — e.g. the pending `preferred_currency` migration on
+// `users` (see [[restructuring-phases]], Phase 5). This is diagnostic only:
+// `AuthService.getPreferredCurrency`/`setPreferredCurrency` swallow ANY
+// error the same way (column-absent or not) since the Settings UI can't act
+// differently either way — it's exposed as a top-level function so it can
+// be unit-tested without standing up a fake Supabase client.
+bool isColumnAbsentError(Object error) {
+  if (error is! PostgrestException) return false;
+  if (error.code == 'PGRST204' || error.code == '42703') return true;
+  final message = error.message.toLowerCase();
+  return message.contains('column') &&
+      (message.contains('does not exist') ||
+          message.contains('preferred_currency'));
+}
+
 class AuthService {
   final SupabaseClient _supabase;
 
@@ -184,6 +213,45 @@ class AuthService {
     if (countryCode != null) updates['country_code'] = countryCode;
 
     await _supabase.from('users').update(updates).eq('id', user.id);
+  }
+
+  // Reads the user's preferred display currency (P10 C5). Mirrors the web's
+  // getPreferredCurrencyAction: an isolated, single-column SELECT — NOT part
+  // of getCurrentUserProfile's main query — because `preferred_currency` is
+  // a Phase-5 column that may not exist yet in production (pending
+  // migration; see [[restructuring-phases]]). PostgREST 400s an entire
+  // SELECT if it names a missing column, so this is wrapped in a broad
+  // try/catch: a "column does not exist" PostgrestException, or ANY other
+  // error, degrades to null instead of throwing. Never throws to the UI.
+  Future<String?> getPreferredCurrency(String userId) async {
+    try {
+      final response = await _supabase
+          .from('users')
+          .select('preferred_currency')
+          .eq('id', userId)
+          .single();
+      return response['preferred_currency'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // Persists the user's preferred display currency (P10 C5). Like the web's
+  // updatePreferredCurrencyAction, this MAY fail if the `preferred_currency`
+  // column doesn't exist yet — that's expected pre-migration, not a bug.
+  // Returns false on ANY failure (column-absent or otherwise) so the caller
+  // can show a neutral "not available yet" message instead of crashing or
+  // surfacing a scary error. Never throws.
+  Future<bool> setPreferredCurrency(String userId, String currency) async {
+    try {
+      await _supabase
+          .from('users')
+          .update({'preferred_currency': currency})
+          .eq('id', userId);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   // Create User Profile

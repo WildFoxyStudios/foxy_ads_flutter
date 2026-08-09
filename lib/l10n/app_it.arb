@@ -721,6 +721,9 @@
   "settingsSelectCountryTitle": "Seleziona Paese",
   "settingsLoadCountriesError": "Errore nel caricamento dei paesi",
   "settingsCountryChanged": "Paese cambiato in {country}",
+  "preferredCurrencyLabel": "Valuta preferita",
+  "preferredCurrencySaved": "Valuta aggiornata",
+  "preferredCurrencyUnavailable": "La valuta preferita non è ancora disponibile",
 
   "paymentsPromoteTitle": "Promuovi Annuncio",
   "paymentsListingNotFound": "Annuncio non trovato",

@@ -971,6 +971,9 @@
     "description": "Snackbar confirming the new selected country. {country} is the country display name.",
     "placeholders": { "country": { "type": "String" } }
   },
+  "preferredCurrencyLabel": "Moneda preferida",
+  "preferredCurrencySaved": "Moneda actualizada",
+  "preferredCurrencyUnavailable": "La moneda preferida aún no está disponible",
 
   "paymentsPromoteTitle": "Promocionar Anuncio",
   "paymentsListingNotFound": "Anuncio no encontrado",

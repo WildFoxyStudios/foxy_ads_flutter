@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/models/country_model.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_mode_provider.dart';
@@ -8,6 +9,21 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../core/utils/password_policy.dart';
 import '../../../../l10n/app_localizations.dart';
+
+/// Distinct currencies (code + symbol) derived from the supported-country
+/// list, sorted by code. First-seen symbol wins on duplicates (mirrors the
+/// web's `_dedupCurrencyMeta`). Used to populate the preferred-currency
+/// picker without a DB round-trip.
+List<({String code, String symbol})> _distinctCurrencies() {
+  final symbolByCode = <String, String>{};
+  for (final country in Country.defaultCountries) {
+    symbolByCode.putIfAbsent(country.currency, () => country.currencySymbol);
+  }
+  final codes = symbolByCode.keys.toList()..sort();
+  return [
+    for (final code in codes) (code: code, symbol: symbolByCode[code]!),
+  ];
+}
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -19,6 +35,12 @@ class SettingsScreen extends ConsumerWidget {
     final selectedCountry = ref.watch(selectedCountryProvider);
     final themeMode = ref.watch(themeModeProvider);
     final isLoggedIn = authState.value != null;
+    final preferredCurrencyAsync = ref.watch(preferredCurrencyProvider);
+    // Never blocks on the network / never surfaces an error state: falls
+    // back to the selected country's currency while loading or on any
+    // failure (incl. the `preferred_currency` column not existing yet).
+    final currentCurrencyCode =
+        preferredCurrencyAsync.value ?? selectedCountry.currency;
 
     return Scaffold(
       appBar: AppBar(
@@ -95,6 +117,13 @@ class SettingsScreen extends ConsumerWidget {
               icon: Icons.lock_outline,
               title: l10n.settingsChangePassword,
               onTap: () => _showChangePasswordDialog(context, ref),
+            ),
+            _SettingsTile(
+              icon: Icons.attach_money,
+              title: l10n.preferredCurrencyLabel,
+              subtitle: _currencyTileSubtitle(currentCurrencyCode),
+              onTap: () =>
+                  _showCurrencyPickerDialog(context, ref, currentCurrencyCode),
             ),
             _SettingsTile(
               icon: Icons.delete_outline,
@@ -194,6 +223,87 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// "EUR (€)"-style subtitle for a currency code. Falls back to the bare
+  /// code if it's not in the known list (shouldn't happen in practice, but
+  /// renders fine either way — never throws).
+  String _currencyTileSubtitle(String code) {
+    final match = _distinctCurrencies().where((c) => c.code == code);
+    if (match.isEmpty) return code.isEmpty ? '—' : code;
+    return '$code (${match.first.symbol})';
+  }
+
+  void _showCurrencyPickerDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String currentCode,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final currencies = _distinctCurrencies();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.preferredCurrencyLabel),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final currency in currencies)
+                RadioListTile<String>(
+                  value: currency.code,
+                  groupValue: currentCode,
+                  title: Text('${currency.code} (${currency.symbol})'),
+                  onChanged: (selected) async {
+                    if (selected == null) return;
+                    Navigator.pop(dialogContext);
+                    await _updatePreferredCurrency(context, ref, selected);
+                  },
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.commonCancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Persists the pick via `AuthService.setPreferredCurrency`, which is
+  // defensive by construction (never throws — see auth_service.dart). On
+  // success, refreshes `preferredCurrencyProvider` so the tile reflects the
+  // new value and shows a success snackbar. On failure — most likely because
+  // the `preferred_currency` column hasn't been migrated into production yet
+  // — shows a NEUTRAL "not available yet" message rather than an error-red
+  // one, since this isn't a bug the user caused.
+  Future<void> _updatePreferredCurrency(
+    BuildContext context,
+    WidgetRef ref,
+    String currency,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final userId = ref.read(authStateProvider).value?.id;
+    if (userId == null) return;
+
+    final authService = ref.read(authServiceProvider);
+    final success = await authService.setPreferredCurrency(userId, currency);
+
+    if (success) {
+      ref.invalidate(preferredCurrencyProvider);
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.preferredCurrencySaved)),
+      );
+    } else {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.preferredCurrencyUnavailable)),
+      );
+    }
   }
 
   void _comingSoon(BuildContext context) {

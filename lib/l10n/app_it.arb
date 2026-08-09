@@ -71,6 +71,9 @@
   "homeRecentListingsHeading": "Annunci recenti",
   "homeViewMore": "Vedi altro",
   "homeErrorLoading": "Errore di caricamento: {error}",
+  "homeCtaHeading": "Hai qualcosa da vendere?",
+  "homeCtaBody": "Pubblica il tuo annuncio gratis in pochi minuti",
+  "homeCtaButton": "Pubblica annuncio",
 
   "categoryDetailNoListings": "Nessun annuncio",
   "categoryDetailBeFirst": "Sii il primo a pubblicare in {categoryName}",

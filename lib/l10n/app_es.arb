@@ -88,6 +88,9 @@
     "description": "Listing-grid error state. {error} is the provider's error.",
     "placeholders": { "error": { "type": "String" } }
   },
+  "homeCtaHeading": "¿Tienes algo que vender?",
+  "homeCtaBody": "Publica tu anuncio gratis en minutos",
+  "homeCtaButton": "Publicar anuncio",
 
   "categoryDetailNoListings": "No hay anuncios",
   "categoryDetailBeFirst": "Sé el primero en publicar en {categoryName}",

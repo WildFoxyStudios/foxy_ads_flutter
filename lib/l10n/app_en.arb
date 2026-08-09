@@ -71,6 +71,9 @@
   "homeRecentListingsHeading": "Recent listings",
   "homeViewMore": "See more",
   "homeErrorLoading": "Error loading: {error}",
+  "homeCtaHeading": "Got something to sell?",
+  "homeCtaBody": "Post your ad for free in minutes",
+  "homeCtaButton": "Post an ad",
 
   "categoryDetailNoListings": "No listings yet",
   "categoryDetailBeFirst": "Be the first to publish in {categoryName}",

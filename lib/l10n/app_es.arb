@@ -1000,6 +1000,8 @@
     "placeholders": { "error": { "type": "String" } }
   },
   "settingsSelectCountryTitle": "Seleccionar País",
+  "countrySelectionSearchHint": "Buscar país",
+  "countrySelectionNoResults": "Sin resultados",
   "settingsLoadCountriesError": "Error al cargar países",
   "settingsCountryChanged": "País cambiado a {country}",
   "@settingsCountryChanged": {

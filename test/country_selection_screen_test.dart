@@ -48,6 +48,14 @@ final _france = Country(
   currencySymbol: '€',
 );
 
+final _germany = Country(
+  code: 'DE',
+  name: 'Alemania',
+  flag: '🇩🇪',
+  currency: 'EUR',
+  currencySymbol: '€',
+);
+
 /// Overrides `build()` (no SharedPreferences read) and `setCountry` (no
 /// SharedPreferences write) while still updating `state` and recording the
 /// call, so the tap-to-select flow is fully observable without a prefs
@@ -171,6 +179,77 @@ void main() {
 
       expect(find.text('Error al cargar países'), findsOneWidget);
       expect(find.text('Reintentar'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'renders a search field and filters the country list by name as the user types',
+    (tester) async {
+      final notifier = _FakeCountryNotifier(_spain);
+      final container = ProviderContainer(
+        overrides: [
+          selectedCountryProvider.overrideWith(() => notifier),
+          countriesProvider.overrideWith(
+            (ref) async => [_spain, _france, _germany],
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final router = _buildRouter();
+
+      await tester.pumpWidget(_buildTestApp(container, router));
+      router.push('/country');
+      await tester.pumpAndSettle();
+
+      // Search field renders, all three countries visible initially.
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.text('España'), findsOneWidget);
+      expect(find.text('Francia'), findsOneWidget);
+      expect(find.text('Alemania'), findsOneWidget);
+
+      // Typing "esp" (case-insensitive, name match) filters down to España.
+      await tester.enterText(find.byType(TextField), 'esp');
+      await tester.pumpAndSettle();
+
+      expect(find.text('España'), findsOneWidget);
+      expect(find.text('Francia'), findsNothing);
+      expect(find.text('Alemania'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'filters by country code and shows a no-results message when nothing matches',
+    (tester) async {
+      final notifier = _FakeCountryNotifier(_spain);
+      final container = ProviderContainer(
+        overrides: [
+          selectedCountryProvider.overrideWith(() => notifier),
+          countriesProvider.overrideWith(
+            (ref) async => [_spain, _france, _germany],
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final router = _buildRouter();
+
+      await tester.pumpWidget(_buildTestApp(container, router));
+      router.push('/country');
+      await tester.pumpAndSettle();
+
+      // Matching by country code (case-insensitive).
+      await tester.enterText(find.byType(TextField), 'de');
+      await tester.pumpAndSettle();
+      expect(find.text('Alemania'), findsOneWidget);
+      expect(find.text('España'), findsNothing);
+      expect(find.text('Francia'), findsNothing);
+
+      // No match -> "no results" message.
+      await tester.enterText(find.byType(TextField), 'zzzz');
+      await tester.pumpAndSettle();
+      expect(find.text('España'), findsNothing);
+      expect(find.text('Francia'), findsNothing);
+      expect(find.text('Alemania'), findsNothing);
+      expect(find.text('Sin resultados'), findsOneWidget);
     },
   );
 }

@@ -708,6 +708,8 @@
   "settingsAccountDeleted": "Sua conta foi excluída",
   "settingsDeleteAccountError": "Não foi possível excluir a conta: {error}",
   "settingsSelectCountryTitle": "Selecionar País",
+  "countrySelectionSearchHint": "Buscar país",
+  "countrySelectionNoResults": "Sem resultados",
   "settingsLoadCountriesError": "Erro ao carregar países",
   "settingsCountryChanged": "País alterado para {country}",
   "preferredCurrencyLabel": "Moeda preferida",

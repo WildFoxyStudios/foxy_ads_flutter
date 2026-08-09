@@ -22,6 +22,7 @@ import 'package:foxy_ads/core/models/country_model.dart';
 import 'package:foxy_ads/core/models/listing_model.dart';
 import 'package:foxy_ads/core/providers/selected_country_provider.dart';
 import 'package:foxy_ads/features/home/presentation/screens/home_screen.dart';
+import 'package:foxy_ads/features/home/presentation/widgets/category_card.dart';
 import 'package:foxy_ads/l10n/app_localizations.dart';
 
 final _testCountry = Country(
@@ -37,7 +38,10 @@ class _FakeCountryNotifier extends SelectedCountryNotifier {
   Country build() => _testCountry;
 }
 
-Widget _buildTestApp({required ValueChanged<String> onSearchLocation}) {
+Widget _buildTestApp({
+  required ValueChanged<String> onSearchLocation,
+  List<Category>? categories,
+}) {
   final router = GoRouter(
     initialLocation: '/',
     routes: [
@@ -63,7 +67,7 @@ Widget _buildTestApp({required ValueChanged<String> onSearchLocation}) {
   return ProviderScope(
     overrides: [
       selectedCountryProvider.overrideWith(() => _FakeCountryNotifier()),
-      categoriesProvider.overrideWith((ref) async => <Category>[]),
+      categoriesProvider.overrideWith((ref) async => categories ?? <Category>[]),
       featuredListingsProvider.overrideWith((ref) async => <Listing>[]),
       recentListingsProvider.overrideWith((ref) async => <Listing>[]),
     ],
@@ -150,6 +154,45 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('create-listing-stub'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'home category rail hides adult categories (Plan 13 F2)',
+    (tester) async {
+      final regular = Category(
+        id: 'vehicles',
+        name: 'Vehicles',
+        nameEs: 'Vehículos',
+        icon: '🚗',
+        color: '#FF6B35',
+        sortOrder: 2,
+      );
+      final adult = Category(
+        id: 'contacts',
+        name: 'Contacts',
+        nameEs: 'Contactos',
+        icon: '💋',
+        color: '#E91E63',
+        sortOrder: 18,
+        isAdult: true,
+      );
+
+      await tester.pumpWidget(
+        _buildTestApp(
+          onSearchLocation: (_) {},
+          categories: [regular, adult],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The non-adult category renders on the home rail...
+      expect(find.text('Vehicles'), findsOneWidget);
+      // ...but the adult category (isAdult: true) does not, matching the
+      // web home (CategoryGrid.tsx only slices the first 8 non-adult
+      // categories). Only one CategoryCard should be built.
+      expect(find.text('Contacts'), findsNothing);
+      expect(find.byType(CategoryCard), findsOneWidget);
     },
   );
 }

@@ -708,6 +708,8 @@
   "settingsAccountDeleted": "Dein Konto wurde gelöscht",
   "settingsDeleteAccountError": "Konto konnte nicht gelöscht werden: {error}",
   "settingsSelectCountryTitle": "Land auswählen",
+  "countrySelectionSearchHint": "Land suchen",
+  "countrySelectionNoResults": "Keine Ergebnisse",
   "settingsLoadCountriesError": "Fehler beim Laden der Länder",
   "settingsCountryChanged": "Land geändert zu {country}",
   "preferredCurrencyLabel": "Bevorzugte Währung",

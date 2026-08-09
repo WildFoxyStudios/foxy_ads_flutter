@@ -235,28 +235,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: 12),
                     categories.when(
-                      data: (cats) => SizedBox(
-                        height: 100,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: cats.length,
-                          itemBuilder: (context, index) {
-                            final category = cats[index];
-                            return Padding(
-                              padding: EdgeInsets.only(
-                                right: 12,
-                                left: index == 0 ? 0 : 0,
-                              ),
-                              child: CategoryCard(
-                                category: category,
-                                onTap: () => context.push(
-                                  '/category/${category.id}?name=${category.name}',
+                      data: (cats) {
+                        // Home rail hides adult categories (e.g. `contacts`),
+                        // matching the web home
+                        // (CategoryGrid.tsx: DEFAULT_CATEGORIES.slice(0, 8)
+                        // never includes the adult category since it sorts
+                        // last). The full category list — adult included —
+                        // still shows on AllCategoriesScreen.
+                        final homeCats = cats
+                            .where((c) => !c.isAdult)
+                            .toList();
+                        return SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: homeCats.length,
+                            itemBuilder: (context, index) {
+                              final category = homeCats[index];
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  right: 12,
+                                  left: index == 0 ? 0 : 0,
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                                child: CategoryCard(
+                                  category: category,
+                                  onTap: () => context.push(
+                                    '/category/${category.id}?name=${category.name}',
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
                       loading: () => const SizedBox(
                         height: 100,
                         child: Center(child: CircularProgressIndicator()),

@@ -708,6 +708,8 @@
   "settingsAccountDeleted": "Votre compte a été supprimé",
   "settingsDeleteAccountError": "Impossible de supprimer le compte : {error}",
   "settingsSelectCountryTitle": "Sélectionner un pays",
+  "countrySelectionSearchHint": "Rechercher un pays",
+  "countrySelectionNoResults": "Aucun résultat",
   "settingsLoadCountriesError": "Erreur de chargement des pays",
   "settingsCountryChanged": "Pays changé pour {country}",
   "preferredCurrencyLabel": "Devise préférée",

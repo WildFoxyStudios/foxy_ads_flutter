@@ -750,6 +750,8 @@
   "settingsAccountDeleted": "Your account has been deleted",
   "settingsDeleteAccountError": "Could not delete account: {error}",
   "settingsSelectCountryTitle": "Select Country",
+  "countrySelectionSearchHint": "Search country",
+  "countrySelectionNoResults": "No results",
   "settingsLoadCountriesError": "Error loading countries",
   "settingsCountryChanged": "Country changed to {country}",
   "preferredCurrencyLabel": "Preferred currency",

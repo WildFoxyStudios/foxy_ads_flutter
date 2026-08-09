@@ -16,6 +16,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../data/chat_models.dart';
 import '../../data/chat_providers.dart';
+import '../../data/chat_search_fallback.dart';
 import '../../data/chat_service.dart';
 
 /// A single message as rendered in the sheet's display list. Distinct from
@@ -122,18 +123,26 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
     if (!mounted) return;
     _history.add(ChatMessage('assistant', reply));
 
-    final tag = parseSearchTag(reply);
+    // `resolveSearchIntent` uses the reply's [BUSCAR:] tag when there is
+    // one; otherwise it derives a search from the user's own message
+    // (intent-verb regex + synonym expansion), so a refusal or a
+    // tag-less reply still surfaces listings instead of leaving the user
+    // with nothing (client-side fallback layer, chat_search_fallback.dart).
+    final intent = resolveSearchIntent(text, reply);
     var displayText = reply;
     List<Listing>? results;
 
-    if (tag != null && tag.term != null && tag.term!.trim().isNotEmpty) {
-      displayText = reply.replaceAll(_searchTagStripPattern, '').trim();
-      if (displayText.isEmpty) displayText = l10n.chatSearchingResults;
+    if (intent != null) {
+      final tag = parseSearchTag(reply);
+      if (tag != null && tag.term != null && tag.term!.trim().isNotEmpty) {
+        displayText = reply.replaceAll(_searchTagStripPattern, '').trim();
+        if (displayText.isEmpty) displayText = l10n.chatSearchingResults;
+      }
 
       try {
         final found = await listingService.searchListings(
-          query: tag.term!,
-          categoryId: tag.categoryId,
+          query: intent.term,
+          categoryId: intent.category,
         );
         if (!mounted) return;
         results = found.take(4).toList();

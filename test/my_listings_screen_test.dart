@@ -23,6 +23,7 @@ Listing _listing({
   required String id,
   required String title,
   bool featured = false,
+  String status = 'active',
 }) {
   return Listing(
     id: id,
@@ -34,7 +35,7 @@ Listing _listing({
     price: 100,
     currency: 'EUR',
     images: const <String>[],
-    status: 'active',
+    status: status,
     isFeatured: featured,
     featuredUntil: featured ? DateTime(2099, 1, 1) : null,
     createdAt: DateTime(2026, 1, 1),
@@ -118,6 +119,71 @@ void main() {
         find.textContaining('Error: Exception: network down'),
         findsOneWidget,
       );
+    },
+  );
+
+  testWidgets(
+    'shows status filter tabs and filters to sold-only listings',
+    (tester) async {
+      final listings = [
+        _listing(id: 'l1', title: 'Coche familiar', status: 'active'),
+        _listing(id: 'l2', title: 'Piso en Malasaña', status: 'inactive'),
+        _listing(id: 'l3', title: 'Moto vendida', status: 'sold'),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(AsyncValue.data(listings)));
+      await tester.pumpAndSettle();
+
+      // All four filter tabs render, and unfiltered ("Todos") shows every
+      // listing regardless of status.
+      expect(find.text('Todos'), findsOneWidget);
+      expect(find.text('Activos'), findsOneWidget);
+      expect(find.text('Inactivos'), findsOneWidget);
+      expect(find.text('Vendidos'), findsOneWidget);
+      expect(find.text('Coche familiar'), findsOneWidget);
+      expect(find.text('Piso en Malasaña'), findsOneWidget);
+      expect(find.text('Moto vendida'), findsOneWidget);
+
+      await tester.tap(find.text('Vendidos'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Moto vendida'), findsOneWidget);
+      expect(find.text('Coche familiar'), findsNothing);
+      expect(find.text('Piso en Malasaña'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'per-listing menu offers Pausar for active listings and Activar for '
+    'inactive listings',
+    (tester) async {
+      final listings = [
+        _listing(id: 'l1', title: 'Coche familiar', status: 'active'),
+        _listing(id: 'l2', title: 'Piso en Malasaña', status: 'inactive'),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(AsyncValue.data(listings)));
+      await tester.pumpAndSettle();
+
+      // First listing (active): "Pausar" offered, "Activar" is not, and
+      // "Marcar como vendido" is offered since it isn't sold yet.
+      await tester.tap(find.byIcon(Icons.more_vert).first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Pausar'), findsOneWidget);
+      expect(find.text('Activar'), findsNothing);
+      expect(find.text('Marcar como vendido'), findsOneWidget);
+
+      // Dismiss the popup menu by tapping the modal barrier.
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+
+      // Second listing (inactive): "Activar" offered, "Pausar" is not.
+      await tester.tap(find.byIcon(Icons.more_vert).last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Activar'), findsOneWidget);
+      expect(find.text('Pausar'), findsNothing);
     },
   );
 }

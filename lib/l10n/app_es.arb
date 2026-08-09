@@ -363,6 +363,18 @@
     "description": "Confirmation dialog body before deleting a user's listing. {title} is the listing title.",
     "placeholders": { "title": { "type": "String" } }
   },
+  "myListingsPause": "Pausar",
+  "myListingsActivate": "Activar",
+  "myListingsMarkSold": "Marcar como vendido",
+  "myListingsMarkSoldConfirm": "¿Marcar este anuncio como vendido?",
+  "myListingsFilterAll": "Todos",
+  "myListingsFilterActive": "Activos",
+  "myListingsFilterInactive": "Inactivos",
+  "myListingsFilterSold": "Vendidos",
+  "myListingsStatusSold": "Vendido",
+  "myListingsStatusChanged": "Estado actualizado",
+  "myListingsStatusFailed": "No se pudo actualizar el estado",
+  "myListingsNoneInStatus": "No tienes anuncios en este estado",
 
   "favoritesTitle": "Favoritos",
   "favoritesSaveTitle": "Guarda tus favoritos",

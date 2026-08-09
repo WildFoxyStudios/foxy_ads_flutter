@@ -13,6 +13,7 @@ import '../../../../core/widgets/locale_switcher.dart';
 import '../../../../core/util/text_util.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
+import '../../../../core/services/leads_service.dart';
 import 'my_listings_screen.dart' show myListingsProvider;
 
 /// Aggregate counts derived from the signed-in user's listings, for the
@@ -269,6 +270,19 @@ class ProfileScreen extends ConsumerWidget {
                   icon: const Icon(Icons.list_alt, color: AppColors.primary),
                   title: l10n.profileMyListings,
                   onTap: () => context.push('/my-listings'),
+                ),
+                const SizedBox(height: 12),
+                _ProfileTile(
+                  icon: const Icon(
+                    Icons.chat_bubble_outline,
+                    color: AppColors.primary,
+                  ),
+                  title: l10n.profileLeadsTile,
+                  badgeCount: ref.watch(newLeadsCountProvider).maybeWhen(
+                        data: (n) => n,
+                        orElse: () => 0,
+                      ),
+                  onTap: () => context.push('/my-leads'),
                 ),
                 const SizedBox(height: 12),
                 _ProfileTile(
@@ -534,12 +548,16 @@ class _ProfileTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final VoidCallback onTap;
+  /// Small numeric badge shown before the trailing chevron, e.g. the count
+  /// of unread leads. Hidden entirely when null or <= 0.
+  final int? badgeCount;
 
   const _ProfileTile({
     required this.icon,
     required this.title,
     this.subtitle,
     required this.onTap,
+    this.badgeCount,
   });
 
   @override
@@ -578,6 +596,25 @@ class _ProfileTile extends StatelessWidget {
                   ],
                 ),
               ),
+              if (badgeCount != null && badgeCount! > 0) ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$badgeCount',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
               const Icon(
                 Icons.arrow_forward_ios,
                 size: 16,

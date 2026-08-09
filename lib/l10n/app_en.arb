@@ -348,6 +348,14 @@
   "leadsPanelUpdateFailed": "Could not update status",
   "leadsPanelSaveNotesFailed": "Could not save notes",
 
+  "leadsScreenTitle": "Messages",
+  "leadsEmpty": "You don't have any messages yet",
+  "leadsEmptyHint": "When someone contacts you about one of your listings, it will appear here.",
+  "leadsNewBadge": "{count} new",
+  "leadsMarkContacted": "Mark as contacted",
+  "leadsMarkContactedFailed": "Could not mark as contacted",
+  "profileLeadsTile": "Messages",
+
   "agencyTitle": "Agency",
   "agencyLoadError": "Could not load agency: {error}",
   "agencyListingsHeading": "Listings",

@@ -76,6 +76,17 @@ final newLeadsCountProvider = FutureProvider<int>((ref) async {
       .listAgencyLeads(status: 'new')).length;
 });
 
+/// Personal "Mensajes" inbox (Plan 10 N1) — the signed-in user's own leads,
+/// unfiltered. Equivalent to `agencyLeadsProvider(null)` (both call
+/// `listAgencyLeads()` with no status), but exposed as a plain
+/// `FutureProvider<List<Lead>>` so `MyLeadsScreen` doesn't need to reason
+/// about the family's `String?` key. Kept as its own provider (rather than
+/// reusing `agencyLeadsProvider(null)` directly) so the two screens can be
+/// invalidated independently.
+final myLeadsProvider = FutureProvider<List<Lead>>((ref) {
+  return ref.watch(leadsServiceProvider).listAgencyLeads();
+});
+
 /// Submit a lead (contact request) on a listing. The matching RPC
 /// `submit_lead(listing_id, name, email, phone, message)` is anon-callable
 /// by design — a prospective buyer is rarely signed in. The RPC resolves

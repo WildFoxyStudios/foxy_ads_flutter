@@ -442,6 +442,18 @@
   "leadsPanelUpdateFailed": "No se pudo actualizar el estado",
   "leadsPanelSaveNotesFailed": "No se pudieron guardar las notas",
 
+  "leadsScreenTitle": "Mensajes",
+  "leadsEmpty": "Aún no tienes mensajes",
+  "leadsEmptyHint": "Cuando alguien contacte contigo sobre uno de tus anuncios, aparecerá aquí.",
+  "leadsNewBadge": "{count} nuevos",
+  "@leadsNewBadge": {
+    "description": "Badge on the personal leads inbox showing the count of unread (status = new) leads.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "leadsMarkContacted": "Marcar como contactado",
+  "leadsMarkContactedFailed": "No se pudo marcar como contactado",
+  "profileLeadsTile": "Mensajes",
+
   "agencyTitle": "Agencia",
   "agencyLoadError": "No se pudo cargar la agencia: {error}",
   "@agencyLoadError": {

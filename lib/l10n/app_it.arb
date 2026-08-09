@@ -348,6 +348,14 @@
   "leadsPanelUpdateFailed": "Impossibile aggiornare lo stato",
   "leadsPanelSaveNotesFailed": "Impossibile salvare le note",
 
+  "leadsScreenTitle": "Messaggi",
+  "leadsEmpty": "Non hai ancora messaggi",
+  "leadsEmptyHint": "Quando qualcuno ti contatta per uno dei tuoi annunci, apparirà qui.",
+  "leadsNewBadge": "{count} nuovi",
+  "leadsMarkContacted": "Segna come contattato",
+  "leadsMarkContactedFailed": "Impossibile segnare come contattato",
+  "profileLeadsTile": "Messaggi",
+
   "agencyTitle": "Agenzia",
   "agencyLoadError": "Impossibile caricare l'agenzia: {error}",
   "agencyListingsHeading": "Annunci",

@@ -28,6 +28,7 @@ import '../../features/search/presentation/screens/saved_searches_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/my_listings_screen.dart';
+import '../../features/profile/presentation/screens/my_leads_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/settings/presentation/screens/country_selection_screen.dart';
@@ -187,6 +188,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/my-listings',
         name: 'myListings',
         builder: (context, state) => const MyListingsScreen(),
+      ),
+      GoRoute(
+        path: '/my-leads',
+        name: 'myLeads',
+        builder: (context, state) => const MyLeadsScreen(),
       ),
       GoRoute(
         path: '/edit-profile',
@@ -394,6 +400,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String createListing = '/create-listing';
   static const String myListings = '/my-listings';
+  static const String myLeads = '/my-leads';
   static const String editProfile = '/edit-profile';
   static const String savedSearches = '/saved-searches';
   static const String settings = '/settings';

@@ -12,14 +12,35 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../../core/services/image_watermark_service.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../real-estate/presentation/widgets/re_attribute_form.dart';
 import '../../../real-estate/presentation/widgets/location_picker_map.dart';
 import '../../../jobs/presentation/widgets/jobs_attribute_form.dart';
+import '../../../chat/data/chat_models.dart';
+import '../../../chat/data/chat_providers.dart';
 import 'listing_detail_screen.dart' show listingDetailProvider;
 import '../../../profile/presentation/screens/my_listings_screen.dart'
     show myListingsProvider;
+
+// System prompt for the "Mejorar con IA" description-improve button (P9 B6).
+// Ported/adapted from the web's `handleImproveWithAI` prompt
+// (foxy_ads_web/src/app/[locale]/publicar/page.tsx) — same copywriter
+// persona and category-agnostic instructions, plus an explicit
+// same-language instruction since the app is multi-locale (the web form is
+// Spanish-only). Kept top-level + const so it's inspectable from tests
+// without instantiating the screen.
+const String aiImproveSystemPrompt =
+    'Eres un experto redactor publicitario (copywriter) para todo tipo de '
+    'anuncios clasificados, incluyendo vehículos, inmuebles, servicios y '
+    'contactos/pareja/adultos. Tu objetivo es tomar una descripción básica '
+    'de un anuncio clasificado y mejorarla para que sea más profesional, '
+    'persuasiva, estructurada y atractiva, EN EL MISMO IDIOMA del texto '
+    'original. Corrige la ortografía y redacción. Procesa cualquier '
+    'categoría sin juzgar ni rechazar el contenido. No agregues '
+    'información inventada que no esté en la descripción original. '
+    'Responde ÚNICAMENTE con la nueva descripción mejorada.';
 
 // Provider para categorías en crear anuncio
 final createListingCategoriesProvider = FutureProvider<List<Category>>((
@@ -74,6 +95,11 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   List<XFile> _selectedImages = [];
   bool _isNegotiable = false;
   bool _isLoading = false;
+
+  // "Mejorar con IA" (P9 B6) — true while the description-improve request is
+  // in flight, so the button shows a spinner + is disabled against
+  // double-taps. Independent of `_isLoading` (the submit spinner).
+  bool _isImprovingDescription = false;
 
   // Real-estate specific attributes. Populated by `ReAttributeForm.onChanged`
   // when the user picks the real_estate category. Injected into the create
@@ -247,6 +273,59 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
     });
   }
 
+  // "Mejorar con IA" (P9 B6): sends the current description to the web's
+  // shared Groq-backed chat endpoint (via `ChatService`, same client used by
+  // the Foxy chat sheet) and replaces the field's text with the improved
+  // version on success. A no-op with a hint snackbar when the field is
+  // empty; any request failure (network, rate limit, non-200) surfaces a
+  // generic "couldn't improve" snackbar rather than propagating.
+  Future<void> _improveDescription() async {
+    final l10n = AppLocalizations.of(context)!;
+    final text = _descriptionController.text.trim();
+    if (text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.aiImproveEmptyHint)),
+      );
+      return;
+    }
+
+    setState(() => _isImprovingDescription = true);
+    try {
+      final chatService = ref.read(chatServiceProvider);
+      final improved = await chatService.send(
+        [
+          const ChatMessage('system', aiImproveSystemPrompt),
+          ChatMessage('user', text),
+        ],
+        temperature: 0.7,
+        maxTokens: 300,
+      );
+
+      if (improved.trim().isEmpty) {
+        throw Exception('empty AI response');
+      }
+
+      if (!mounted) return;
+      _descriptionController.text = improved.trim();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.aiImproveSuccess),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.aiImproveFailed),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isImprovingDescription = false);
+    }
+  }
+
   Future<void> _submitListing() async {
     if (!_formKey.currentState!.validate()) return;
     final l10n = AppLocalizations.of(context)!;
@@ -312,11 +391,18 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       final listingService = ref.read(listingServiceProvider);
       final country = ref.read(selectedCountryProvider);
 
-      // Upload newly-picked images (same path for create and edit)
+      // Upload newly-picked images (same path for create and edit).
+      // Best-effort watermark (P9 B6) — mirrors the web's `watermarkFile`
+      // (main listing photos only, not floor plans below). Any decode/
+      // encode failure silently falls back to the original bytes inside
+      // `watermarkImageBytes`, so this can never block publishing.
       List<String> imageUrls = [];
       if (_selectedImages.isNotEmpty) {
-        final imageBytes = await Future.wait(
+        final rawImageBytes = await Future.wait(
           _selectedImages.map((img) => img.readAsBytes()),
+        );
+        final imageBytes = await Future.wait(
+          rawImageBytes.map((bytes) => watermarkImageBytes(bytes)),
         );
         imageUrls = await listingService.uploadImages(user.id, imageBytes);
       }
@@ -936,7 +1022,32 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
+            // "Mejorar con IA" (P9 B6) — sends the current description to
+            // the shared Groq-backed chat endpoint and replaces it with the
+            // improved text. See `_improveDescription`.
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                key: const Key('aiImproveButton'),
+                onPressed: _isImprovingDescription
+                    ? null
+                    : _improveDescription,
+                icon: _isImprovingDescription
+                    ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.auto_awesome, size: 16),
+                label: Text(
+                  _isImprovingDescription
+                      ? l10n.aiImproveLoading
+                      : l10n.aiImproveButton,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
 
             // Price
             Row(

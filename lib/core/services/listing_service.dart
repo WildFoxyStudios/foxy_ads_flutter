@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/listing_model.dart';
@@ -328,8 +330,17 @@ class ListingService {
       // storage RLS policy accepts it. A flat "${userId}_..." name only passed
       // via the loose "any authenticated" policy and blocked the owner from
       // ever deleting/replacing their own image.
+      //
+      // Extension is sniffed from the bytes' magic number (not assumed to be
+      // .jpg) since the watermark step (P9 B6, `watermarkImageBytes`)
+      // re-encodes watermarked photos as PNG — the storage client infers the
+      // upload's Content-Type from this filename extension
+      // (`lookupMimeType` in `storage_client`'s `Fetch._parseMediaType`), so
+      // a PNG uploaded under a `.jpg` name would be served with the wrong
+      // Content-Type.
+      final ext = _fileExtensionFor(image);
       final fileName =
-          '$userId/${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+          '$userId/${DateTime.now().millisecondsSinceEpoch}_$i.$ext';
 
       await _supabase.storage.from('listings').uploadBinary(fileName, image);
 
@@ -338,6 +349,21 @@ class ListingService {
     }
 
     return urls;
+  }
+
+  /// Sniffs the image file extension from the leading magic bytes.
+  /// Recognizes PNG; everything else (including JPEG, and any non-Uint8List
+  /// input) defaults to `jpg`, matching the previous hardcoded behavior.
+  String _fileExtensionFor(dynamic image) {
+    if (image is Uint8List &&
+        image.length >= 8 &&
+        image[0] == 0x89 &&
+        image[1] == 0x50 &&
+        image[2] == 0x4E &&
+        image[3] == 0x47) {
+      return 'png';
+    }
+    return 'jpg';
   }
 
   // Get categories

@@ -398,6 +398,11 @@
   "agencyEditSaveFailed": "Errore durante il salvataggio: {error}",
   "agencyEditLogoUploading": "Caricamento in corso…",
   "agencyEditLogoChange": "Cambia logo",
+  "agencyEditDelete": "Elimina agenzia",
+  "agencyEditDeleteConfirmTitle": "Eliminare la tua agenzia?",
+  "agencyEditDeleteConfirmBody": "Il tuo profilo agenzia verrà eliminato. I tuoi annunci non vengono eliminati.",
+  "agencyEditDeleted": "Agenzia eliminata",
+  "agencyEditDeleteFailed": "Impossibile eliminare l'agenzia",
 
   "promocionesTitle": "Promozioni",
   "promocionesEmpty": "Ancora nessuna promozione in {country}.",

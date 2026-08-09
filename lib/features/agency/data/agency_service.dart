@@ -91,6 +91,20 @@ class AgencyService {
     return row == null ? null : AgencyProfile.fromRow(row);
   }
 
+  /// Delete the caller's own agency profile row. Mirrors the web's
+  /// `deleteAgencyProfileAction` (`src/app/actions/agency.ts`): a plain
+  /// `.delete().eq('user_id', userId)` against `agency_profiles` — RLS
+  /// additionally restricts writes to the owner, so this can never remove
+  /// another user's row even if called with the wrong id. Only the
+  /// `agency_profiles` row is removed; the agency's `listings` are untouched
+  /// (same as the web action, which does not touch `listings` either).
+  Future<void> deleteAgencyProfile(String userId) async {
+    await _supabase
+        .from('agency_profiles')
+        .delete()
+        .eq('user_id', userId);
+  }
+
   /// Upload a logo to storage and return its public URL. Uses the SAME
   /// bucket as `ListingService.uploadImages` (`'listings'`) and the SAME
   /// `uploadBinary` + `getPublicUrl` pattern — only the path prefix differs

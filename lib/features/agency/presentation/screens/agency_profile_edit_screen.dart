@@ -39,6 +39,7 @@ class _AgencyProfileEditScreenState
   bool _prefilled = false;
   bool _saving = false;
   bool _uploadingLogo = false;
+  bool _deleting = false;
 
   @override
   void dispose() {
@@ -172,6 +173,64 @@ class _AgencyProfileEditScreenState
     }
   }
 
+  /// Confirm dialog -> `AgencyService.deleteAgencyProfile` -> invalidate ->
+  /// snackbar -> pop. Mirrors `DevelopmentsPanel._confirmDelete`'s dialog
+  /// shape and `_save`'s error handling. Only reachable from the button
+  /// below, which is itself only shown when a profile already exists (see
+  /// `_form`), so this never fires on the "create" path.
+  Future<void> _deleteAgencyProfile() async {
+    if (_deleting || _saving) return;
+    final l10n = AppLocalizations.of(context)!;
+    final auth = ref.read(authStateProvider);
+    final userId = auth.value?.id;
+    if (userId == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.agencyEditDeleteConfirmTitle),
+        content: Text(l10n.agencyEditDeleteConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.agencyEditDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    setState(() => _deleting = true);
+    try {
+      await ref.read(agencyServiceProvider).deleteAgencyProfile(userId);
+      if (!mounted) return;
+      ref.invalidate(myAgencyProfileProvider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.agencyEditDeleted),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      context.pop();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.agencyEditDeleteFailed),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _deleting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -241,12 +300,12 @@ class _AgencyProfileEditScreenState
             ),
           ),
         ),
-        data: (_) => _form(context),
+        data: (p) => _form(context, hasExistingProfile: p != null),
       ),
     );
   }
 
-  Widget _form(BuildContext context) {
+  Widget _form(BuildContext context, {required bool hasExistingProfile}) {
     final l10n = AppLocalizations.of(context)!;
     return Form(
       key: _formKey,
@@ -329,6 +388,30 @@ class _AgencyProfileEditScreenState
                   )
                 : Text(l10n.commonSave),
           ),
+          if (hasExistingProfile) ...[
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: (_saving || _deleting)
+                  ? null
+                  : _deleteAgencyProfile,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.error,
+                side: const BorderSide(color: AppColors.error),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: _deleting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.error),
+                      ),
+                    )
+                  : Text(l10n.agencyEditDelete),
+            ),
+          ],
         ],
       ),
     );

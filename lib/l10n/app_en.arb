@@ -398,6 +398,11 @@
   "agencyEditSaveFailed": "Error saving: {error}",
   "agencyEditLogoUploading": "Uploading…",
   "agencyEditLogoChange": "Change logo",
+  "agencyEditDelete": "Delete agency",
+  "agencyEditDeleteConfirmTitle": "Delete your agency?",
+  "agencyEditDeleteConfirmBody": "Your agency profile will be removed. Your listings are not deleted.",
+  "agencyEditDeleted": "Agency deleted",
+  "agencyEditDeleteFailed": "Could not delete the agency",
 
   "promocionesTitle": "New developments",
   "promocionesEmpty": "No developments yet in {country}.",

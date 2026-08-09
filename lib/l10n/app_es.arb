@@ -516,6 +516,11 @@
   },
   "agencyEditLogoUploading": "Subiendo…",
   "agencyEditLogoChange": "Cambiar logo",
+  "agencyEditDelete": "Eliminar agencia",
+  "agencyEditDeleteConfirmTitle": "¿Eliminar tu agencia?",
+  "agencyEditDeleteConfirmBody": "Se eliminará tu perfil de agencia. Tus anuncios no se borran.",
+  "agencyEditDeleted": "Agencia eliminada",
+  "agencyEditDeleteFailed": "No se pudo eliminar la agencia",
 
   "promocionesTitle": "Promociones",
   "promocionesEmpty": "Aún no hay promociones en {country}.",

@@ -546,6 +546,18 @@
   "bulkListingsPriceDialogModePct": "Rettifica %",
   "bulkListingsPriceDialogSetLabel": "Prezzo (€)",
   "bulkListingsPriceDialogPctLabel": "Rettifica (%)",
+  "bulkFeatureButton": "Evidenzia",
+  "bulkFeatureDialogTitle": "Evidenzia {count} annunci",
+  "@bulkFeatureDialogTitle": {
+    "description": "Title of the bulk-feature duration-tier dialog. {count} is the number of selected listings.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkFeatureTotal": "Totale: {total}",
+  "@bulkFeatureTotal": {
+    "description": "Total price row in the bulk-feature dialog. {total} is an already-formatted currency string (price per listing x number of selected listings).",
+    "placeholders": { "total": { "type": "String" } }
+  },
+  "bulkFeatureFailed": "Impossibile avviare il pagamento",
 
   "valuationTitle": "Valuta il mio immobile",
   "valuationIntro": "Ottieni una stima indicativa del prezzo del tuo immobile basata sugli annunci attivi nella zona.",

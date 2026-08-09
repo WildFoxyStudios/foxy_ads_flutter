@@ -19,17 +19,6 @@ final promoteListingProvider = FutureProvider.family<Listing?, String>((
   return await listingService.getListingById(id);
 });
 
-/// Pricing options exposed to the user. Must stay in lockstep with the web
-/// side's `FEATURE_PRICES` map in `foxy_ads_web/src/lib/stripe/config.ts` —
-/// both sides convert to/from cents at the Stripe boundary.
-const Map<int, double> _featurePricesEuros = {
-  1: 2.0,
-  3: 5.0,
-  7: 10.0,
-  14: 18.0,
-  30: 35.0,
-};
-
 /// Convert the user-visible euro total to cents for Stripe / payments table.
 int _eurosToCents(double euros) => (euros * 100).round();
 
@@ -47,7 +36,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
   int _selectedDays = 3;
   bool _isProcessing = false;
 
-  double get _totalPrice => _featurePricesEuros[_selectedDays] ?? 2.0;
+  double get _totalPrice => featurePricesEuros[_selectedDays] ?? 2.0;
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +205,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                ..._featurePricesEuros.entries.map((entry) {
+                ...featurePricesEuros.entries.map((entry) {
                   final days = entry.key;
                   final price = entry.value;
                   final isSelected = _selectedDays == days;

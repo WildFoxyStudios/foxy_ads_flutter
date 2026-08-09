@@ -546,6 +546,18 @@
   "bulkListingsPriceDialogModePct": "Adjust %",
   "bulkListingsPriceDialogSetLabel": "Price (€)",
   "bulkListingsPriceDialogPctLabel": "Adjustment (%)",
+  "bulkFeatureButton": "Feature",
+  "bulkFeatureDialogTitle": "Feature {count} listings",
+  "@bulkFeatureDialogTitle": {
+    "description": "Title of the bulk-feature duration-tier dialog. {count} is the number of selected listings.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkFeatureTotal": "Total: {total}",
+  "@bulkFeatureTotal": {
+    "description": "Total price row in the bulk-feature dialog. {total} is an already-formatted currency string (price per listing x number of selected listings).",
+    "placeholders": { "total": { "type": "String" } }
+  },
+  "bulkFeatureFailed": "Could not start the payment",
 
   "valuationTitle": "Value my property",
   "valuationIntro": "Get an indicative estimate of your home's price based on active listings in the area.",

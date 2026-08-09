@@ -21,6 +21,15 @@
 //   - Precio → opens `_PriceDialog` with mode (set|pct) + numeric value,
 //     calls `bulkSetPrice(selectedIds, mode, value)` on Save. Skipped when
 //     the value is invalid (negative on 'set' or non-finite).
+//   - Destacar → opens `_FeatureDialog` with the duration tiers (1/3/7/14/30
+//     days, `featurePricesEuros`) and the total (price x selected count).
+//     On confirm, `PaymentsService.createBulkCheckout(selectedIds, days)`
+//     creates one Stripe Checkout session for the whole batch and the
+//     redirect URL is launched externally (mirrors
+//     `PromoteListingScreen._processPayment`). Unlike the other bulk
+//     actions this does NOT mutate listings synchronously (the webhook
+//     features them once Stripe confirms payment), so on success it only
+//     clears the selection — no provider invalidation, no success SnackBar.
 //   - Renovar → `bulkRenew(selectedIds)`.
 //   - Eliminar → confirm `AlertDialog` → `bulkDelete(selectedIds)`.
 //
@@ -46,13 +55,17 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
+import '../../../../core/utils/format_utils.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../payments/data/payments_providers.dart';
+import '../../../payments/data/payments_service.dart';
 import '../../data/agency_service.dart';
 
 /// Localized listing-status label map — wire codes stay English.
@@ -269,6 +282,54 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
     );
   }
 
+  /// Opens the duration-tier dialog and, on confirm, creates one Stripe
+  /// Checkout session that features every selected listing (bulk "Destacar
+  /// en bloque", mirroring the web panel). Unlike `_runBulkAction` this
+  /// does not call a `listingService.bulk*` mutation — the listings are
+  /// only featured once Stripe's webhook confirms the payment — so it
+  /// manages its own pending flag and only clears the selection on a
+  /// successful redirect (no provider invalidation is needed here).
+  Future<void> _onBulkFeature() async {
+    if (_selected.isEmpty || _pendingAction != null) return;
+    final l10n = AppLocalizations.of(context)!;
+    final ids = _selected.toList(growable: false);
+
+    final days = await showDialog<int>(
+      context: context,
+      builder: (_) => _FeatureDialog(count: ids.length),
+    );
+    if (days == null) return;
+    if (!mounted) return;
+
+    setState(() => _pendingAction = 'feature');
+    try {
+      final paymentsService = ref.read(paymentsServiceProvider);
+      final url = await paymentsService.createBulkCheckout(
+        listingIds: ids,
+        days: days,
+      );
+      if (!mounted) return;
+      if (url == null) {
+        _showError(l10n.bulkFeatureFailed);
+        return;
+      }
+      final launched = await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+      if (!mounted) return;
+      if (!launched) {
+        _showError(l10n.bulkFeatureFailed);
+        return;
+      }
+      setState(() => _selected.clear());
+    } catch (_) {
+      if (mounted) _showError(l10n.bulkFeatureFailed);
+    } finally {
+      if (mounted) setState(() => _pendingAction = null);
+    }
+  }
+
   Future<void> _onExportCsv(List<Listing> rows) async {
     if (_exporting) return;
     final l10n = AppLocalizations.of(context)!;
@@ -336,6 +397,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
               onSetInactive: () => _onBulkSetStatus('inactive'),
               onSetSold: () => _onBulkSetStatus('sold'),
               onPrice: _onBulkPrice,
+              onFeature: _onBulkFeature,
               onRenew: _onBulkRenew,
               onDelete: _onBulkDelete,
             ),
@@ -460,6 +522,7 @@ class _BulkToolbar extends StatelessWidget {
   final VoidCallback onSetInactive;
   final VoidCallback onSetSold;
   final VoidCallback onPrice;
+  final VoidCallback onFeature;
   final VoidCallback onRenew;
   final VoidCallback onDelete;
 
@@ -469,6 +532,7 @@ class _BulkToolbar extends StatelessWidget {
     required this.onSetInactive,
     required this.onSetSold,
     required this.onPrice,
+    required this.onFeature,
     required this.onRenew,
     required this.onDelete,
   });
@@ -528,6 +592,8 @@ class _BulkToolbar extends StatelessWidget {
                 l10n.bulkListingsToolbarSold, onSetSold),
             btn('price', Icons.euro_outlined,
                 l10n.bulkListingsToolbarPrice, onPrice),
+            btn('feature', Icons.star_outline,
+                l10n.bulkFeatureButton, onFeature),
             btn('renew', Icons.refresh, l10n.bulkListingsToolbarRenew, onRenew),
             btn('delete', Icons.delete_outline,
                 l10n.bulkListingsToolbarDelete, onDelete,
@@ -826,6 +892,80 @@ class _PriceDialogState extends State<_PriceDialog> {
                 }
               : null,
           child: Text(l10n.commonSave),
+        ),
+      ],
+    );
+  }
+}
+
+/// Duration-tier picker for the bulk "Destacar" action. Mirrors the tier
+/// list in `PromoteListingScreen` (same `featurePricesEuros` map, same
+/// `paymentsDaysCount` plural), but shows the TOTAL for the whole batch
+/// (`unitPrice * count`) instead of a single listing's price. Confirming
+/// returns the chosen number of days via `Navigator.pop`; Cancel returns
+/// `null`.
+class _FeatureDialog extends StatefulWidget {
+  final int count;
+  const _FeatureDialog({required this.count});
+
+  @override
+  State<_FeatureDialog> createState() => _FeatureDialogState();
+}
+
+class _FeatureDialogState extends State<_FeatureDialog> {
+  int _selectedDays = 3;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final unitPrice = featurePricesEuros[_selectedDays] ?? 0.0;
+    final total = unitPrice * widget.count;
+
+    return AlertDialog(
+      title: Text(l10n.bulkFeatureDialogTitle(widget.count)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ...featurePricesEuros.entries.map((entry) {
+            final days = entry.key;
+            final price = entry.value;
+            return RadioListTile<int>(
+              value: days,
+              groupValue: _selectedDays,
+              onChanged: (v) => setState(() => _selectedDays = v ?? days),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.paymentsDaysCount(days)),
+              subtitle: Text(formatPrice(price, 'EUR', l10n.localeName)),
+            );
+          }),
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.bulkFeatureTotal(
+                  formatPrice(total, 'EUR', l10n.localeName),
+                ),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.commonCancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(_selectedDays),
+          child: Text(l10n.bulkFeatureButton),
         ),
       ],
     );

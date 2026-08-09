@@ -760,6 +760,18 @@
   "bulkListingsPriceDialogModePct": "Ajustar %",
   "bulkListingsPriceDialogSetLabel": "Precio (€)",
   "bulkListingsPriceDialogPctLabel": "Ajuste (%)",
+  "bulkFeatureButton": "Destacar",
+  "bulkFeatureDialogTitle": "Destacar {count} anuncios",
+  "@bulkFeatureDialogTitle": {
+    "description": "Title of the bulk-feature duration-tier dialog. {count} is the number of selected listings.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkFeatureTotal": "Total: {total}",
+  "@bulkFeatureTotal": {
+    "description": "Total price row in the bulk-feature dialog. {total} is an already-formatted currency string (price per listing x number of selected listings).",
+    "placeholders": { "total": { "type": "String" } }
+  },
+  "bulkFeatureFailed": "No se pudo iniciar el pago",
 
   "valuationTitle": "Valorar mi inmueble",
   "valuationIntro": "Obtén una estimación orientativa del precio de tu vivienda según los anuncios activos en la zona.",

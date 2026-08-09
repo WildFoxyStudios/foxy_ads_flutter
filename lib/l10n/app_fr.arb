@@ -516,6 +516,18 @@
   "bulkListingsPriceDialogModePct": "Ajuster en %",
   "bulkListingsPriceDialogSetLabel": "Prix (€)",
   "bulkListingsPriceDialogPctLabel": "Ajustement (%)",
+  "bulkFeatureButton": "Promouvoir",
+  "bulkFeatureDialogTitle": "Promouvoir {count} annonces",
+  "@bulkFeatureDialogTitle": {
+    "description": "Title of the bulk-feature duration-tier dialog. {count} is the number of selected listings.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bulkFeatureTotal": "Total : {total}",
+  "@bulkFeatureTotal": {
+    "description": "Total price row in the bulk-feature dialog. {total} is an already-formatted currency string (price per listing x number of selected listings).",
+    "placeholders": { "total": { "type": "String" } }
+  },
+  "bulkFeatureFailed": "Impossible de démarrer le paiement",
   "valuationTitle": "Estimer mon bien",
   "valuationIntro": "Obtenez une estimation indicative du prix de votre bien selon les annonces actives dans la zone.",
   "valuationSelectOperation": "Sélectionnez Vente ou Location",

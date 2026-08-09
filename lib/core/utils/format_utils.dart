@@ -32,6 +32,29 @@ String formatPrice(num amount, String currencyCode, String locale) {
   ).format(amount);
 }
 
+/// Formats a date as "<localized month> <year>" (e.g. "Ene 2026") for
+/// member-since displays. Mirrors the private `_formatDate` helper in
+/// `listing_detail_screen.dart` — the app avoids `DateFormat` for this
+/// because it needs the app's own translated month abbreviations rather
+/// than `intl`'s locale data.
+String formatMonthYear(DateTime date, AppLocalizations l10n) {
+  final months = [
+    l10n.listingDetailMonthJan,
+    l10n.listingDetailMonthFeb,
+    l10n.listingDetailMonthMar,
+    l10n.listingDetailMonthApr,
+    l10n.listingDetailMonthMay,
+    l10n.listingDetailMonthJun,
+    l10n.listingDetailMonthJul,
+    l10n.listingDetailMonthAug,
+    l10n.listingDetailMonthSep,
+    l10n.listingDetailMonthOct,
+    l10n.listingDetailMonthNov,
+    l10n.listingDetailMonthDec,
+  ];
+  return '${months[date.month - 1]} ${date.year}';
+}
+
 /// Formats a listing date as a localized relative-day card label.
 String formatCardDate(
   DateTime date,

@@ -262,6 +262,11 @@
   "profileMyAgency": "My agency",
   "profileMyAgencySubtitle": "Create or edit your agency profile",
   "profileLogout": "Sign out",
+  "profileStatTotal": "Total",
+  "profileStatActive": "Active",
+  "profileStatSold": "Sold",
+  "profileStatViews": "Views",
+  "profileMemberSince": "Member since {date}",
 
   "editProfileTitle": "Edit Profile",
   "editProfileNameLabel": "Name",

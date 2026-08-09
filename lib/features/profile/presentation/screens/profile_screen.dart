@@ -4,13 +4,52 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
+import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/format_utils.dart';
 import '../../../../core/widgets/locale_switcher.dart';
 import '../../../../core/util/text_util.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../agency/data/agency_service.dart';
+import 'my_listings_screen.dart' show myListingsProvider;
+
+/// Aggregate counts derived from the signed-in user's listings, for the
+/// profile-header stats row. Pure function so it can be unit-tested without
+/// standing up the widget tree.
+class ProfileStats {
+  final int total;
+  final int active;
+  final int sold;
+  final int views;
+
+  const ProfileStats({
+    required this.total,
+    required this.active,
+    required this.sold,
+    required this.views,
+  });
+}
+
+/// Derives [ProfileStats] from a user's listings. 'deleted' listings are
+/// excluded from every count (mirrors `getUserListings`, which already
+/// filters them server-side — this guards against a future caller that
+/// doesn't).
+ProfileStats deriveProfileStats(List<Listing> listings) {
+  final visible = listings.where((l) => l.status != 'deleted');
+  var total = 0;
+  var active = 0;
+  var sold = 0;
+  var views = 0;
+  for (final listing in visible) {
+    total++;
+    if (listing.status == 'active') active++;
+    if (listing.status == 'sold') sold++;
+    views += listing.views;
+  }
+  return ProfileStats(total: total, active: active, sold: sold, views: views);
+}
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -166,6 +205,16 @@ class ProfileScreen extends ConsumerWidget {
                                 fontSize: 14,
                               ),
                             ),
+                            const SizedBox(height: 2),
+                            Text(
+                              l10n.profileMemberSince(
+                                formatMonthYear(user.createdAt, l10n),
+                              ),
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.8),
+                                fontSize: 12,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             GestureDetector(
                               onTap: () => context.push('/edit-profile'),
@@ -194,6 +243,13 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Stats row (total / active / sold / views), derived from
+                // the user's listings. Bonus content: hidden entirely on
+                // error, shown with dash placeholders while loading, so a
+                // slow/failed fetch never blocks the rest of the profile.
+                _ProfileStatsRow(listingsAsync: ref.watch(myListingsProvider)),
                 const SizedBox(height: 24),
 
                 // Country selector
@@ -365,6 +421,110 @@ class ProfileScreen extends ConsumerWidget {
           child: Text(l10n.commonErrorWithMessage(e.toString())),
         ),
       ),
+    );
+  }
+}
+
+/// Total/active/sold/views tiles below the profile header. Data comes from
+/// [myListingsProvider] (the same fetch `/my-listings` uses) reduced via
+/// [deriveProfileStats]. Loading renders dash placeholders so the tiles
+/// don't jump around; errors hide the whole row — the stats are a bonus,
+/// never something worth surfacing an error banner for.
+class _ProfileStatsRow extends StatelessWidget {
+  final AsyncValue<List<Listing>> listingsAsync;
+
+  const _ProfileStatsRow({required this.listingsAsync});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return listingsAsync.when(
+      data: (listings) {
+        final stats = deriveProfileStats(listings);
+        return _buildRow(
+          context,
+          l10n,
+          total: '${stats.total}',
+          active: '${stats.active}',
+          sold: '${stats.sold}',
+          views: '${stats.views}',
+        );
+      },
+      loading: () => _buildRow(
+        context,
+        l10n,
+        total: '-',
+        active: '-',
+        sold: '-',
+        views: '-',
+      ),
+      error: (_, _) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildRow(
+    BuildContext context,
+    AppLocalizations l10n, {
+    required String total,
+    required String active,
+    required String sold,
+    required String views,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: surfaceFor(context),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _StatTile(value: total, label: l10n.profileStatTotal),
+          ),
+          Expanded(
+            child: _StatTile(value: active, label: l10n.profileStatActive),
+          ),
+          Expanded(
+            child: _StatTile(value: sold, label: l10n.profileStatSold),
+          ),
+          Expanded(
+            child: _StatTile(value: views, label: l10n.profileStatViews),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatTile extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _StatTile({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 11,
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }

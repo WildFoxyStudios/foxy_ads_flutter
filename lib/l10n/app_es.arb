@@ -336,6 +336,15 @@
   "profileMyAgency": "Mi agencia",
   "profileMyAgencySubtitle": "Crea o edita tu perfil de agencia",
   "profileLogout": "Cerrar Sesión",
+  "profileStatTotal": "Total",
+  "profileStatActive": "Activos",
+  "profileStatSold": "Vendidos",
+  "profileStatViews": "Vistas",
+  "profileMemberSince": "Miembro desde {date}",
+  "@profileMemberSince": {
+    "description": "Line on the profile header showing the account creation date. {date} is the formatted month/year (e.g. 'Ene 2026').",
+    "placeholders": { "date": { "type": "String" } }
+  },
 
   "editProfileTitle": "Editar Perfil",
   "editProfileNameLabel": "Nombre",

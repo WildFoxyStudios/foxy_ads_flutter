@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/country_model.dart';
 import '../models/city_model.dart';
 import '../services/country_service.dart';
+import '../services/geo_country_service.dart';
 
 /// The country currently chosen by the user. Persists to SharedPreferences so
 /// the choice survives restarts.
@@ -59,6 +60,41 @@ class SelectedCountryNotifier extends Notifier<Country> {
         );
         state = defaultCountry;
       }
+      return;
+    }
+
+    // First launch — no country has ever been saved. Mirrors the web's
+    // `detectCountryByIP()` (`CountryContext.tsx` ~L87-114): best-effort IP
+    // geo-detection that only ever runs once, and only ever switches away
+    // from the ES default when the detected country is one Foxy Ads
+    // actually supports. A user who has explicitly picked a country never
+    // reaches this branch again (`savedCode` is set the moment they choose,
+    // or the moment detection below succeeds), so their choice can never be
+    // silently overridden on a later launch.
+    await _detectAndApplyFirstLaunchCountry(prefs);
+  }
+
+  Future<void> _detectAndApplyFirstLaunchCountry(SharedPreferences prefs) async {
+    try {
+      final geoService = ref.read(geoCountryServiceProvider);
+      final detectedCode = await geoService.detectCountryCode();
+      if (detectedCode == null) return;
+
+      Country? detectedCountry;
+      for (final c in Country.defaultCountries) {
+        if (c.code == detectedCode) {
+          detectedCountry = c;
+          break;
+        }
+      }
+      // Unsupported country (not one Foxy Ads offers) — keep the ES default.
+      if (detectedCountry == null) return;
+
+      await prefs.setString(_countryKey, detectedCountry.code);
+      state = detectedCountry;
+    } catch (_) {
+      // Geo-detection must never block or destabilize startup; the ES
+      // default set in `build()` stands.
     }
   }
 

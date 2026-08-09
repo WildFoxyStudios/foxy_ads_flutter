@@ -60,7 +60,8 @@ Uri? resolveDeepLink(Uri uri) {
       if (segments.length == 2) return Uri(path: '/inmuebles-en/${segments[1]}');
       return null;
     case 'categoria':
-      // /categoria/real_estate -> /inmuebles-en
+      // /categoria/real_estate -> /inmuebles-en (special case, checked
+      // first — real_estate has its own dedicated GoRoutes/screen).
       // /categoria/real_estate/:subId -> /inmuebles-en/:subId (the
       // /categoria/real_estate/:subId GoRoute wraps in `_ReAliasWrapper`,
       // which seeds the property-type filter post-frame). Unknown subIds
@@ -70,6 +71,58 @@ Uri? resolveDeepLink(Uri uri) {
       }
       if (segments.length == 3 && segments[1] == 'real_estate') {
         return Uri(path: '/categoria/real_estate/${segments[2]}');
+      }
+      // Generic /categoria/:slug[/:subcategory] -> /category/:slug[/:sub],
+      // for every non-real_estate category (real_estate is handled above).
+      if (segments.length == 2) {
+        return Uri(path: '/category/${segments[1]}');
+      }
+      if (segments.length == 3) {
+        return Uri(path: '/category/${segments[1]}/${segments[2]}');
+      }
+      return null;
+    case 'categorias':
+      return segments.length == 1 ? Uri(path: '/categories') : null;
+    case 'anuncios':
+      return segments.length == 1 ? Uri(path: '/anuncios') : null;
+    case 'buscar':
+      // /buscar?q=... -> /search?q=... (SearchScreen hydrates `?q` once on
+      // first build — see search_screen.dart `_hydrateFromUrlOnce`).
+      if (segments.length == 1) {
+        return Uri(
+          path: '/search',
+          queryParameters:
+              uri.queryParameters.isEmpty ? null : uri.queryParameters,
+        );
+      }
+      return null;
+    case 'valorar':
+      return segments.length == 1 ? Uri(path: '/valorar') : null;
+    case 'panel':
+      // Pro Dashboard. Auth + verified-agency gate is handled inside
+      // PanelScreen itself, not here.
+      return segments.length == 1 ? Uri(path: '/panel') : null;
+    case 'pago-exitoso':
+      // Stripe success return. Both the new edge functions' `success_url`
+      // (https://foxyads.app/pago-exitoso?session_id=...) and the existing
+      // English `payment/success` alias below resolve to the same in-app
+      // route; `session_id` MUST be preserved — PaymentSuccessScreen uses
+      // it to resolve the Stripe session.
+      if (segments.length == 1) {
+        return Uri(
+          path: '/payment/success',
+          queryParameters:
+              uri.queryParameters.isEmpty ? null : uri.queryParameters,
+        );
+      }
+      return null;
+    case 'pago-cancelado':
+      if (segments.length == 1) {
+        return Uri(
+          path: '/payment/cancelled',
+          queryParameters:
+              uri.queryParameters.isEmpty ? null : uri.queryParameters,
+        );
       }
       return null;
     case 'ayuda':

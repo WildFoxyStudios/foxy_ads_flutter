@@ -203,10 +203,116 @@ void main() {
               'https://foxyads.app/categoria/real_estate/nonsense')),
           Uri(path: '/categoria/real_estate/nonsense'));
     });
-    // /categoria/<other> stays rejected (no shadowing).
-    test('https: /categoria/<other> rejected', () {
-      expect(resolveDeepLink(Uri.parse('https://foxyads.app/categoria/motos')),
-          isNull);
+    // /categoria/<other> now falls through to the generic /category/:slug
+    // mapping (P12-F1) instead of being rejected — covered in the
+    // "P12-F1: web paths" group below, which also re-confirms real_estate
+    // keeps priority over the generic case.
+  });
+
+  group('resolveDeepLink P12-F1: web paths dropped to home before this fix',
+      () {
+    // /pago-exitoso?session_id=... -> /payment/success?session_id=...
+    // (Stripe edge functions' new success_url; session_id MUST survive —
+    // PaymentSuccessScreen resolves the session with it.)
+    test('https: /pago-exitoso?session_id=... -> /payment/success', () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'https://foxyads.app/pago-exitoso?session_id=cs_123')),
+          Uri(
+              path: '/payment/success',
+              queryParameters: {'session_id': 'cs_123'}));
+    });
+    test('foxyads://: /pago-exitoso?session_id=... -> /payment/success', () {
+      expect(
+          resolveDeepLink(
+              Uri.parse('foxyads://pago-exitoso?session_id=cs_123')),
+          Uri(
+              path: '/payment/success',
+              queryParameters: {'session_id': 'cs_123'}));
+    });
+
+    // /pago-cancelado -> /payment/cancelled
+    test('https: /pago-cancelado -> /payment/cancelled', () {
+      expect(
+          resolveDeepLink(Uri.parse('https://foxyads.app/pago-cancelado')),
+          Uri(path: '/payment/cancelled'));
+    });
+
+    // /buscar?q=... -> /search?q=... (SearchScreen hydrates `?q`)
+    test('https: /buscar?q=iphone -> /search?q=iphone', () {
+      expect(
+          resolveDeepLink(Uri.parse('https://foxyads.app/buscar?q=iphone')),
+          Uri(path: '/search', queryParameters: {'q': 'iphone'}));
+    });
+    test('foxyads://: /buscar without query still resolves to /search', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://buscar')),
+          Uri(path: '/search'));
+    });
+
+    // Generic /categoria/:slug -> /category/:slug (non-real_estate).
+    test('https: /categoria/vehiculos -> /category/vehiculos', () {
+      expect(
+          resolveDeepLink(Uri.parse('https://foxyads.app/categoria/vehiculos')),
+          Uri(path: '/category/vehiculos'));
+    });
+    test('https: /categoria/vehiculos/motos -> /category/vehiculos/motos',
+        () {
+      expect(
+          resolveDeepLink(Uri.parse(
+              'https://foxyads.app/categoria/vehiculos/motos')),
+          Uri(path: '/category/vehiculos/motos'));
+    });
+    // /categoria/real_estate special case still takes priority.
+    test('https: /categoria/real_estate still -> /categoria/real_estate',
+        () {
+      expect(
+          resolveDeepLink(
+              Uri.parse('https://foxyads.app/categoria/real_estate')),
+          Uri(path: '/categoria/real_estate'));
+    });
+
+    // /anuncios -> /anuncios (AppRoutes.allListings)
+    test('https: /anuncios -> /anuncios', () {
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/anuncios')),
+          Uri(path: '/anuncios'));
+    });
+    test('foxyads://: /anuncios -> /anuncios', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://anuncios')),
+          Uri(path: '/anuncios'));
+    });
+
+    // /categorias -> /categories
+    test('https: /categorias -> /categories', () {
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/categorias')),
+          Uri(path: '/categories'));
+    });
+
+    // /valorar -> /valorar (ValuationScreen)
+    test('https: /valorar -> /valorar', () {
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/valorar')),
+          Uri(path: '/valorar'));
+    });
+    test('foxyads://: /valorar -> /valorar', () {
+      expect(resolveDeepLink(Uri.parse('foxyads://valorar')),
+          Uri(path: '/valorar'));
+    });
+
+    // /panel -> /panel (Pro Dashboard; gate lives inside PanelScreen)
+    test('https: /panel -> /panel', () {
+      expect(resolveDeepLink(Uri.parse('https://foxyads.app/panel')),
+          Uri(path: '/panel'));
+    });
+    test('foxyads://: /panel -> /panel', () {
+      expect(
+          resolveDeepLink(Uri.parse('foxyads://panel')), Uri(path: '/panel'));
+    });
+
+    // Vercel fallback host still honored for one of the new paths.
+    test('vercel host: /buscar?q=... -> /search?q=...', () {
+      expect(
+          resolveDeepLink(
+              Uri.parse('https://foxyads.vercel.app/buscar?q=iphone')),
+          Uri(path: '/search', queryParameters: {'q': 'iphone'}));
     });
   });
 

@@ -28,6 +28,7 @@
   "authPasswordRequired": "Saisissez votre mot de passe",
   "authPasswordRequiredNew": "Saisissez un mot de passe",
   "authPasswordTooShort": "Le mot de passe doit comporter au moins 6 caractères",
+  "authPasswordPolicy": "Le mot de passe doit comporter au moins 8 caractères, une majuscule et un chiffre",
   "authForgotPassword": "Mot de passe oublié ?",
   "authSignIn": "Se connecter",
   "authOrContinueWith": "Ou continuer avec",

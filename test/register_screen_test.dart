@@ -86,8 +86,8 @@ Future<void> _fillValidFields(WidgetTester tester) async {
   final fields = find.byType(TextFormField);
   await tester.enterText(fields.at(0), 'Javier Test');
   await tester.enterText(fields.at(1), 'javier@example.com');
-  await tester.enterText(fields.at(2), 'secret123');
-  await tester.enterText(fields.at(3), 'secret123');
+  await tester.enterText(fields.at(2), 'Secret123');
+  await tester.enterText(fields.at(3), 'Secret123');
 }
 
 /// The "Crear Cuenta" CTA sits below the fold of the screen's
@@ -168,7 +168,7 @@ void main() {
 
       expect(fake.calls, hasLength(1));
       expect(fake.calls.single.email, 'javier@example.com');
-      expect(fake.calls.single.password, 'secret123');
+      expect(fake.calls.single.password, 'Secret123');
       expect(fake.calls.single.name, 'Javier Test');
       // Navigated to '/' — the register screen is gone, the home
       // placeholder route is showing.

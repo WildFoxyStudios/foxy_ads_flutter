@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/utils/password_policy.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -224,8 +225,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     if (value == null || value.isEmpty) {
                       return l10n.authPasswordRequiredNew;
                     }
-                    if (value.length < 6) {
-                      return l10n.authPasswordTooShort;
+                    if (!isPasswordPolicyValid(value)) {
+                      return l10n.authPasswordPolicy;
                     }
                     return null;
                   },

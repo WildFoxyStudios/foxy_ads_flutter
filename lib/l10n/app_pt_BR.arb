@@ -28,6 +28,7 @@
   "authPasswordRequired": "Digite sua senha",
   "authPasswordRequiredNew": "Digite uma senha",
   "authPasswordTooShort": "A senha deve ter pelo menos 6 caracteres",
+  "authPasswordPolicy": "A senha deve ter pelo menos 8 caracteres, uma maiúscula e um número",
   "authForgotPassword": "Esqueceu sua senha?",
   "authSignIn": "Entrar",
   "authOrContinueWith": "Ou continue com",

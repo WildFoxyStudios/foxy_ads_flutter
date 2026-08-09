@@ -34,6 +34,7 @@
   "authPasswordRequired": "Ingresa tu contraseña",
   "authPasswordRequiredNew": "Ingresa una contraseña",
   "authPasswordTooShort": "La contraseña debe tener al menos 6 caracteres",
+  "authPasswordPolicy": "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número",
   "authForgotPassword": "¿Olvidaste tu contraseña?",
   "authSignIn": "Iniciar Sesión",
   "authOrContinueWith": "O continúa con",

@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_mode_provider.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/country_service.dart';
+import '../../../../core/utils/password_policy.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -225,9 +226,9 @@ class SettingsScreen extends ConsumerWidget {
           ElevatedButton(
             onPressed: () async {
               final password = controller.text;
-              if (password.length < 6) {
+              if (!isPasswordPolicyValid(password)) {
                 ScaffoldMessenger.of(dialogContext).showSnackBar(
-                  SnackBar(content: Text(l10n.authPasswordTooShort)),
+                  SnackBar(content: Text(l10n.authPasswordPolicy)),
                 );
                 return;
               }

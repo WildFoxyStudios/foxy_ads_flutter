@@ -486,6 +486,37 @@ const Duration _debounce = Duration(milliseconds: 300);
 /// and emits the latest value only after [_debounce] of inactivity. Returns
 /// `null` until the first non-default value arrives so the screen can show
 /// its "pick a country/operation" prompt without flicker.
+/// Public wrapper over [_reFiltersFrom] that builds the immutable RPC-payload
+/// [ReFilters] from a persisted [ReSearchFilters] (e.g. a saved search's
+/// decoded `rawQuery`) plus a country code. Used by the saved-search
+/// new-match counter so its count reflects the EXACT same filter shape the
+/// live RE search applies via the `search_real_estate` RPC.
+ReFilters reFiltersFromSaved(ReSearchFilters f, String countryCode) {
+  return _reFiltersFrom(
+    countryCode,
+    state: f.state,
+    city: f.city,
+    operation: f.operation,
+    propertyTypes: f.propertyTypes,
+    priceMin: f.priceMin,
+    priceMax: f.priceMax,
+    m2Min: f.m2Min,
+    m2Max: f.m2Max,
+    rooms: f.rooms,
+    bathrooms: f.bathrooms,
+    conditions: f.conditions,
+    features: f.features,
+    floorBuckets: f.floorBuckets,
+    energyBands: f.energyBands,
+    orientation: f.orientation,
+    energyLetter: f.energyLetter,
+    petsAllowed: f.petsAllowed,
+    postedWithinDays: f.postedWithinDays,
+    sort: f.sort,
+    cityExact: f.cityExact,
+  );
+}
+
 ({ReFilters filters, bool active})? _watchDebounced(Ref ref) {
   // We don't actually need a stream here — Riverpod's `ref.listen` lets us
   // debounce imperatively. This helper is the indirection point so both the

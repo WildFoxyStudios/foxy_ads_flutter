@@ -228,6 +228,8 @@
   "searchSaveFailed": "Could not save the search",
 
   "savedSearchesTitle": "Saved searches",
+  "savedSearchesNewMatches": "{count, plural, one{1 new} other{{count} new}}",
+  "@savedSearchesNewMatches": { "placeholders": { "count": { "type": "int" } } },
   "savedSearchesEmptyTitle": "No saved searches",
   "savedSearchesEmptyHint": "Save a search from the search bar to find it here later",
   "savedSearchesDefaultLabel": "Saved search",

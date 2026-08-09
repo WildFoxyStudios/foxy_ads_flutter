@@ -291,6 +291,8 @@
   "searchSaveFailed": "No se pudo guardar la búsqueda",
 
   "savedSearchesTitle": "Búsquedas guardadas",
+  "savedSearchesNewMatches": "{count, plural, one{1 nueva} other{{count} nuevas}}",
+  "@savedSearchesNewMatches": { "placeholders": { "count": { "type": "int" } } },
   "savedSearchesEmptyTitle": "Sin búsquedas guardadas",
   "savedSearchesEmptyHint": "Guarda una búsqueda desde el buscador para encontrarla aquí después",
   "savedSearchesDefaultLabel": "Búsqueda guardada",

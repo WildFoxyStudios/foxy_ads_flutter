@@ -216,6 +216,8 @@
   "searchSavedToast": "Suche gespeichert",
   "searchSaveFailed": "Suche konnte nicht gespeichert werden",
   "savedSearchesTitle": "Gespeicherte Suchen",
+  "savedSearchesNewMatches": "{count, plural, one{1 neu} other{{count} neue}}",
+  "@savedSearchesNewMatches": { "placeholders": { "count": { "type": "int" } } },
   "savedSearchesEmptyTitle": "Keine gespeicherten Suchen",
   "savedSearchesEmptyHint": "Speichere eine Suche, um sie hier wiederzufinden",
   "savedSearchesDefaultLabel": "Gespeicherte Suche",

@@ -216,6 +216,8 @@
   "searchSavedToast": "Recherche enregistrée",
   "searchSaveFailed": "Impossible d'enregistrer la recherche",
   "savedSearchesTitle": "Recherches enregistrées",
+  "savedSearchesNewMatches": "{count, plural, one{1 nouvelle} other{{count} nouvelles}}",
+  "@savedSearchesNewMatches": { "placeholders": { "count": { "type": "int" } } },
   "savedSearchesEmptyTitle": "Aucune recherche enregistrée",
   "savedSearchesEmptyHint": "Enregistrez une recherche pour la retrouver ici",
   "savedSearchesDefaultLabel": "Recherche enregistrée",

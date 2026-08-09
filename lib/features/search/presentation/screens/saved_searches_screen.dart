@@ -209,6 +209,46 @@ class SavedSearchesScreen extends ConsumerWidget {
                                     fontSize: 16,
                                   ),
                                 ),
+                                // New-match badge (Plan 10 N2): listings
+                                // matching this saved filter created since the
+                                // search was last opened.
+                                Builder(
+                                  builder: (context) {
+                                    final count = ref
+                                        .watch(savedSearchNewCountProvider(
+                                          search.id,
+                                        ))
+                                        .maybeWhen(
+                                          data: (c) => c,
+                                          orElse: () => 0,
+                                        );
+                                    if (count <= 0) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Text(
+                                          l10n.savedSearchesNewMatches(count),
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                                 const SizedBox(height: 4),
                                 Text(
                                   search.isRealEstate

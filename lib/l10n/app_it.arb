@@ -228,6 +228,8 @@
   "searchSaveFailed": "Impossibile salvare la ricerca",
 
   "savedSearchesTitle": "Ricerche salvate",
+  "savedSearchesNewMatches": "{count, plural, one{1 nuova} other{{count} nuove}}",
+  "@savedSearchesNewMatches": { "placeholders": { "count": { "type": "int" } } },
   "savedSearchesEmptyTitle": "Nessuna ricerca salvata",
   "savedSearchesEmptyHint": "Salva una ricerca dalla barra di ricerca per trovarla qui dopo",
   "savedSearchesDefaultLabel": "Ricerca salvata",

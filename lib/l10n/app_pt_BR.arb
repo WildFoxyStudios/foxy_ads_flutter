@@ -216,6 +216,8 @@
   "searchSavedToast": "Busca salva",
   "searchSaveFailed": "Não foi possível salvar a busca",
   "savedSearchesTitle": "Buscas salvas",
+  "savedSearchesNewMatches": "{count, plural, one{1 nova} other{{count} novas}}",
+  "@savedSearchesNewMatches": { "placeholders": { "count": { "type": "int" } } },
   "savedSearchesEmptyTitle": "Sem buscas salvas",
   "savedSearchesEmptyHint": "Salve uma busca para encontrá-la aqui depois",
   "savedSearchesDefaultLabel": "Busca salva",

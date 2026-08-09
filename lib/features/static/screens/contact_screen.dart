@@ -37,6 +37,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
 
   String? _subject;
   bool _sent = false;
+  bool _sending = false;
 
   @override
   void dispose() {
@@ -47,16 +48,21 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     // Honeypot filled in → silently pretend success, same as the backend
-    // services do, so a bot can't tell it was caught.
-    if (_honeypotController.text.trim().isNotEmpty) {
-      setState(() => _sent = true);
-      return;
-    }
-    // No backend this sprint — mirrors the web's simulated submit.
-    setState(() => _sent = true);
+    // services do, so a bot can't tell it was caught. Still shows the brief
+    // loading state below so the bot (and any observer) sees identical
+    // timing to a real submit.
+    setState(() => _sending = true);
+    // No backend this sprint — mirrors the web's simulated ~1s submit delay,
+    // during which the submit button shows a spinner and is disabled.
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    if (!mounted) return;
+    setState(() {
+      _sending = false;
+      _sent = true;
+    });
   }
 
   void _sendAnother() {
@@ -169,6 +175,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
               honeypotController: _honeypotController,
               subject: _subject,
               onSubjectChanged: (v) => setState(() => _subject = v),
+              sending: _sending,
               onSubmit: _submit,
             ),
         ],
@@ -292,6 +299,7 @@ class _ContactForm extends StatelessWidget {
     required this.honeypotController,
     required this.subject,
     required this.onSubjectChanged,
+    required this.sending,
     required this.onSubmit,
   });
 
@@ -303,6 +311,7 @@ class _ContactForm extends StatelessWidget {
   final TextEditingController honeypotController;
   final String? subject;
   final ValueChanged<String?> onSubjectChanged;
+  final bool sending;
   final VoidCallback onSubmit;
 
   @override
@@ -419,8 +428,19 @@ class _ContactForm extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: onSubmit,
-              icon: const Icon(Icons.send),
+              // Disabled while sending — mirrors the web's disabled submit
+              // button during its simulated send delay.
+              onPressed: sending ? null : onSubmit,
+              icon: sending
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.send),
               label: Text(l.contactSubmitButton),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),

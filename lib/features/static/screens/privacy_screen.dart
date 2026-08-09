@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
+
+/// Real contact address ported from the web (`src/app/[locale]/privacidad/
+/// page.tsx`) — not a translatable string, so it lives here rather than in
+/// the ARBs (mirrors `contact_screen.dart`'s `_kSupportEmail`).
+const _kPrivacyEmail = 'privacidad@foxyads.com';
+
+Future<void> _launchMailto(String email) async {
+  await launchUrl(
+    Uri.parse('mailto:$email'),
+    mode: LaunchMode.externalApplication,
+  ).catchError((_) {
+    debugPrint('mailto failed');
+    return false;
+  });
+}
 
 /// `/privacidad` — Privacy Policy. 7 sections ported verbatim from the web's
 /// `Privacy` namespace. Sections have heterogeneous shapes (intro + bulleted
@@ -63,7 +79,11 @@ class PrivacyScreen extends ConsumerWidget {
             ],
           ),
           _Section(title: l.privacyS6Title, body: l.privacyS6Body),
-          _Section(title: l.privacyS7Title, body: l.privacyS7Body),
+          _Section(
+            title: l.privacyS7Title,
+            body: l.privacyS7Body,
+            email: _kPrivacyEmail,
+          ),
           const SizedBox(height: 16),
           Text(
             l.privacyLastUpdated(lastUpdated),
@@ -83,12 +103,21 @@ class PrivacyScreen extends ConsumerWidget {
 /// [items], or a plain [body] paragraph. Exactly one of [body] / [items]
 /// should be provided (matching the web's per-section shape).
 class _Section extends StatelessWidget {
-  const _Section({required this.title, this.intro, this.items, this.body});
+  const _Section({
+    required this.title,
+    this.intro,
+    this.items,
+    this.body,
+    this.email,
+  });
 
   final String title;
   final String? intro;
   final List<String>? items;
   final String? body;
+  /// Optional tappable `mailto:` link rendered below [body] (mirrors the
+  /// web's `<a href="mailto:...">` inside the "Contacto" section).
+  final String? email;
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +149,19 @@ class _Section extends StatelessWidget {
               ),
             ),
           if (body != null) Text(body!),
+          if (email != null) ...[
+            const SizedBox(height: 6),
+            InkWell(
+              onTap: () => _launchMailto(email!),
+              child: Text(
+                email!,
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

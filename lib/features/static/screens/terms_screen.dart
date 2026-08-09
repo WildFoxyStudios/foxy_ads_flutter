@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
+
+/// Real contact address ported from the web (`src/app/[locale]/terminos/
+/// page.tsx`) — not a translatable string, so it lives here rather than in
+/// the ARBs (mirrors `contact_screen.dart`'s `_kSupportEmail`).
+const _kLegalEmail = 'legal@foxyads.com';
+
+Future<void> _launchMailto(String email) async {
+  await launchUrl(
+    Uri.parse('mailto:$email'),
+    mode: LaunchMode.externalApplication,
+  ).catchError((_) {
+    debugPrint('mailto failed');
+    return false;
+  });
+}
 
 /// `/terminos` — Terms and Conditions. Ported verbatim from the web's
 /// `Terms` namespace. NOTE: the web's namespace skips `s5Title/Body` (a gap
@@ -75,7 +91,11 @@ class TermsScreen extends ConsumerWidget {
           _TermsSection(title: l.termsS9Title, body: l.termsS9Body),
           _TermsSection(title: l.termsS10Title, body: l.termsS10Body),
           _TermsSection(title: l.termsS11Title, body: l.termsS11Body),
-          _TermsSection(title: l.termsS12Title, body: l.termsS12Body),
+          _TermsSection(
+            title: l.termsS12Title,
+            body: l.termsS12Body,
+            email: _kLegalEmail,
+          ),
           const SizedBox(height: 16),
           Text(
             l.termsLastUpdated(lastUpdated),
@@ -101,12 +121,16 @@ class _TermsSection extends StatelessWidget {
     this.intro,
     this.items,
     this.body,
+    this.email,
   });
 
   final String title;
   final String? intro;
   final List<String>? items;
   final String? body;
+  /// Optional tappable `mailto:` link rendered below [body] (mirrors the
+  /// web's `<a href="mailto:...">` inside the "Contacto" section).
+  final String? email;
 
   @override
   Widget build(BuildContext context) {
@@ -138,6 +162,19 @@ class _TermsSection extends StatelessWidget {
               ),
             ),
           if (body != null) Text(body!),
+          if (email != null) ...[
+            const SizedBox(height: 6),
+            InkWell(
+              onTap: () => _launchMailto(email!),
+              child: Text(
+                email!,
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

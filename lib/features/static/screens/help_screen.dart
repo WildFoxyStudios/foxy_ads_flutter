@@ -49,8 +49,14 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
       ),
       body: Column(
         children: [
+          // Web parity: `src/app/[locale]/ayuda/page.tsx` shows a 🦊 emoji
+          // above the header text.
+          const Padding(
+            padding: EdgeInsets.only(top: 12),
+            child: Text('🦊', style: TextStyle(fontSize: 40)),
+          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Text(
               l.helpSubtitle,
               style: const TextStyle(color: AppColors.textSecondary),

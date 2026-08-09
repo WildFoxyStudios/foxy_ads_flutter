@@ -125,6 +125,8 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
         return l10n.reportSheetErrorSelfReport;
       case ReportSubmitError.alreadyReported:
         return l10n.reportSheetErrorAlreadyReported;
+      case ReportSubmitError.moderationDisabled:
+        return l10n.reportSheetErrorModerationDisabled;
       case ReportSubmitError.databaseError:
         return l10n.reportSheetErrorDatabase;
     }

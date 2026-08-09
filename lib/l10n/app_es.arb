@@ -266,6 +266,7 @@
   "reportSheetErrorListingUnavailable": "Este anuncio ya no está disponible.",
   "reportSheetErrorSelfReport": "No puedes reportar tu propio anuncio.",
   "reportSheetErrorAlreadyReported": "Ya reportaste este anuncio.",
+  "reportSheetErrorModerationDisabled": "Los reportes están desactivados temporalmente.",
   "reportSheetErrorDatabase": "No se pudo enviar el reporte. Inténtalo de nuevo.",
   "reportReasonSpam": "Spam o publicidad engañosa",
   "reportReasonFraud": "Fraude o estafa",

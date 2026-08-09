@@ -22,6 +22,7 @@ enum ReportSubmitError {
   listingUnavailable,
   selfReport,
   alreadyReported,
+  moderationDisabled,
   databaseError,
 }
 
@@ -33,6 +34,46 @@ class ReportSubmitOutcome {
 
   final bool ok;
   final ReportSubmitError? error;
+}
+
+/// Maps a `submit_listing_report` RPC failure (Postgrest error code +
+/// message) to a stable UI error code.
+///
+///   23505 -> unique violation (already pending report) -> alreadyReported
+///   42501 -> auth required / self-report / banned -> unauthenticated
+///   P0002 -> listing gone/inactive -> listingUnavailable
+///   P0001 -> self-report (caller owns the listing, legacy code path) ->
+///            selfReport
+///   22023 -> data exception, raised by the RPC for TWO distinct cases that
+///            share the same SQLSTATE: `Listing not eligible for reports`
+///            (moderation-hidden listing) and `Reporting is disabled`
+///            (app_settings.moderation_enabled = false). These must be
+///            disambiguated by message substring, NOT by code alone -- see
+///            supabase/migrations/20260722_listing_reports_validate_rpc.sql
+///            lines 62-64 and 73-75 in foxy_ads_web. Only the
+///            moderation-disabled case is mapped to a distinct outcome
+///            here; the moderation-hidden case falls through to
+///            databaseError (out of scope for this fix).
+///   else   -> databaseError
+ReportSubmitError mapReportSubmitError(String? code, String? message) {
+  final normalizedMessage = (message ?? '').toLowerCase();
+  switch (code) {
+    case '23505':
+      return ReportSubmitError.alreadyReported;
+    case '42501':
+      return ReportSubmitError.unauthenticated;
+    case 'P0002':
+      return ReportSubmitError.listingUnavailable;
+    case 'P0001':
+      return ReportSubmitError.selfReport;
+    case '22023':
+      if (normalizedMessage.contains('reporting is disabled')) {
+        return ReportSubmitError.moderationDisabled;
+      }
+      return ReportSubmitError.databaseError;
+    default:
+      return ReportSubmitError.databaseError;
+  }
 }
 
 final reportsServiceProvider = Provider<ReportsService>((ref) {
@@ -94,23 +135,9 @@ class ReportsService {
       );
       return const ReportSubmitOutcome.ok();
     } on PostgrestException catch (e) {
-      // RPC error -> stable UI code mapping:
-      //   23505 -> unique violation (already pending report) -> ALREADY_REPORTED
-      //   42501 -> auth required (rare: client-side check already covered) -> UNAUTHENTICATED
-      //   P0002 -> listing gone/inactive -> LISTING_UNAVAILABLE
-      //   P0001 -> self-report (caller owns the listing) -> SELF_REPORT
-      switch (e.code) {
-        case '23505':
-          return ReportSubmitOutcome.err(ReportSubmitError.alreadyReported);
-        case '42501':
-          return ReportSubmitOutcome.err(ReportSubmitError.unauthenticated);
-        case 'P0002':
-          return ReportSubmitOutcome.err(ReportSubmitError.listingUnavailable);
-        case 'P0001':
-          return ReportSubmitOutcome.err(ReportSubmitError.selfReport);
-        default:
-          return ReportSubmitOutcome.err(ReportSubmitError.databaseError);
-      }
+      // RPC error -> stable UI code mapping. See mapReportSubmitError for
+      // the full breakdown (including the 22023 disambiguation).
+      return ReportSubmitOutcome.err(mapReportSubmitError(e.code, e.message));
     } catch (_) {
       return ReportSubmitOutcome.err(ReportSubmitError.databaseError);
     }

@@ -193,6 +193,7 @@
   "reportSheetErrorListingUnavailable": "Cette annonce n'est plus disponible.",
   "reportSheetErrorSelfReport": "Vous ne pouvez pas signaler votre propre annonce.",
   "reportSheetErrorAlreadyReported": "Vous avez déjà signalé cette annonce.",
+  "reportSheetErrorModerationDisabled": "Les signalements sont temporairement désactivés.",
   "reportSheetErrorDatabase": "Impossible d'envoyer le signalement. Réessayez.",
   "reportReasonSpam": "Spam ou publicité trompeuse",
   "reportReasonFraud": "Fraude ou escroquerie",

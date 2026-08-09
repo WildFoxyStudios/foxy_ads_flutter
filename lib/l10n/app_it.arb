@@ -203,6 +203,7 @@
   "reportSheetErrorListingUnavailable": "Questo annuncio non è più disponibile.",
   "reportSheetErrorSelfReport": "Non puoi segnalare il tuo annuncio.",
   "reportSheetErrorAlreadyReported": "Hai già segnalato questo annuncio.",
+  "reportSheetErrorModerationDisabled": "Le segnalazioni sono temporaneamente disattivate.",
   "reportSheetErrorDatabase": "Impossibile inviare la segnalazione. Riprova.",
   "reportReasonSpam": "Spam o pubblicità ingannevole",
   "reportReasonFraud": "Frode o truffa",

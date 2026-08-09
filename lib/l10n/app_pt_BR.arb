@@ -193,6 +193,7 @@
   "reportSheetErrorListingUnavailable": "Este anúncio não está mais disponível.",
   "reportSheetErrorSelfReport": "Você não pode reportar seu próprio anúncio.",
   "reportSheetErrorAlreadyReported": "Você já reportou este anúncio.",
+  "reportSheetErrorModerationDisabled": "Os reportes estão temporariamente desativados.",
   "reportSheetErrorDatabase": "Não foi possível enviar o reporte. Tente novamente.",
   "reportReasonSpam": "Spam ou publicidade enganosa",
   "reportReasonFraud": "Fraude ou golpe",

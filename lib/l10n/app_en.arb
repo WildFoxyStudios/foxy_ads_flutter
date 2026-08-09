@@ -203,6 +203,7 @@
   "reportSheetErrorListingUnavailable": "This listing is no longer available.",
   "reportSheetErrorSelfReport": "You can't report your own listing.",
   "reportSheetErrorAlreadyReported": "You already reported this listing.",
+  "reportSheetErrorModerationDisabled": "Reporting is temporarily disabled.",
   "reportSheetErrorDatabase": "Could not send the report. Please try again.",
   "reportReasonSpam": "Spam or misleading advertising",
   "reportReasonFraud": "Fraud or scam",

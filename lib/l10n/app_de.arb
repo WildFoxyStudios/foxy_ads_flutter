@@ -193,6 +193,7 @@
   "reportSheetErrorListingUnavailable": "Diese Anzeige ist nicht mehr verfügbar.",
   "reportSheetErrorSelfReport": "Du kannst deine eigene Anzeige nicht melden.",
   "reportSheetErrorAlreadyReported": "Du hast diese Anzeige bereits gemeldet.",
+  "reportSheetErrorModerationDisabled": "Meldungen sind vorübergehend deaktiviert.",
   "reportSheetErrorDatabase": "Meldung konnte nicht gesendet werden. Bitte erneut versuchen.",
   "reportReasonSpam": "Spam oder irreführende Werbung",
   "reportReasonFraud": "Betrug",

@@ -189,29 +189,7 @@ class ListingDetailScreen extends ConsumerWidget {
                 ],
                 flexibleSpace: FlexibleSpaceBar(
                   background: listing.images.isNotEmpty
-                      ? PageView.builder(
-                          itemCount: listing.images.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () => showImageLightbox(
-                                context,
-                                images: listing.images,
-                                initialIndex: index,
-                              ),
-                              child: CachedNetworkImage(
-                                imageUrl: listing.images[index],
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) =>
-                                    Container(color: AppColors.shimmer),
-                                errorWidget: (context, url, error) =>
-                                    Container(
-                                      color: AppColors.shimmer,
-                                      child: const Icon(Icons.broken_image),
-                                    ),
-                              ),
-                            );
-                          },
-                        )
+                      ? _ListingGallery(images: listing.images)
                       : Container(
                           decoration: const BoxDecoration(
                             gradient: AppColors.foxGradient,
@@ -684,4 +662,180 @@ class ListingDetailScreen extends ConsumerWidget {
     r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
   );
   static bool _isUuid(String s) => _uuidRe.hasMatch(s);
+}
+
+/// Hero image carousel for the listing-detail SliverAppBar. Mirrors the web
+/// `ListingGallery.tsx`: a swipeable hero (tap opens the fullscreen
+/// lightbox), an "N / total" counter pill, page-indicator dots, and a
+/// horizontal thumbnail strip — all shown only when there's more than one
+/// image. Single/no-image listings are handled by the caller, which never
+/// mounts this widget in that case.
+class _ListingGallery extends StatefulWidget {
+  final List<String> images;
+
+  const _ListingGallery({required this.images});
+
+  @override
+  State<_ListingGallery> createState() => _ListingGalleryState();
+}
+
+class _ListingGalleryState extends State<_ListingGallery> {
+  late final PageController _pageController;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _goToPage(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final images = widget.images;
+    final hasMultiple = images.length > 1;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              PageView.builder(
+                controller: _pageController,
+                itemCount: images.length,
+                onPageChanged: (index) {
+                  setState(() => _currentIndex = index);
+                },
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () => showImageLightbox(
+                      context,
+                      images: images,
+                      initialIndex: index,
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: images[index],
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          Container(color: AppColors.shimmer),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColors.shimmer,
+                        child: const Icon(Icons.broken_image),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              if (hasMultiple)
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    key: const Key('gallery-counter'),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${_currentIndex + 1} / ${images.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              if (hasMultiple)
+                Positioned(
+                  bottom: 12,
+                  left: 0,
+                  right: 0,
+                  child: Row(
+                    key: const Key('gallery-dots'),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(images.length, (index) {
+                      final isActive = index == _currentIndex;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: isActive ? 20 : 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: isActive
+                              ? AppColors.primary
+                              : Colors.white.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        if (hasMultiple)
+          Container(
+            key: const Key('gallery-thumbnails'),
+            height: 76,
+            color: Colors.black.withValues(alpha: 0.06),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: images.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 6),
+              itemBuilder: (context, index) {
+                final isActive = index == _currentIndex;
+                return GestureDetector(
+                  onTap: () => _goToPage(index),
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isActive
+                            ? AppColors.primary
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: CachedNetworkImage(
+                        imageUrl: images[index],
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            Container(color: AppColors.shimmer),
+                        errorWidget: (context, url, error) =>
+                            Container(color: AppColors.shimmer),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
 }

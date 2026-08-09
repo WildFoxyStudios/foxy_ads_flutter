@@ -136,4 +136,60 @@ void main() {
       expect(find.text('Coche familiar en muy buen estado'), findsNothing);
     },
   );
+
+  testWidgets(
+    'multi-image listing shows counter, page dots and thumbnail strip',
+    (tester) async {
+      final listing = _fixtureListing().copyWith(
+        images: const <String>[
+          'https://example.com/1.jpg',
+          'https://example.com/2.jpg',
+          'https://example.com/3.jpg',
+        ],
+      );
+      await tester.pumpWidget(_buildTestApp(listing));
+      // CachedNetworkImage can't fetch over the network in tests — use a
+      // bounded pump instead of pumpAndSettle (which would hang waiting on
+      // the never-completing image requests).
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // Counter pill starts at "1 / 3".
+      expect(find.text('1 / 3'), findsOneWidget);
+      // 3 page-indicator dots.
+      final dotsRow = tester.widget<Row>(find.byKey(const Key('gallery-dots')));
+      expect(dotsRow.children, hasLength(3));
+      // Thumbnail strip with 3 thumbnails.
+      expect(find.byKey(const Key('gallery-thumbnails')), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'single-image listing shows no counter, dots or thumbnail strip',
+    (tester) async {
+      final listing = _fixtureListing().copyWith(
+        images: const <String>['https://example.com/1.jpg'],
+      );
+      await tester.pumpWidget(_buildTestApp(listing));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.byKey(const Key('gallery-counter')), findsNothing);
+      expect(find.byKey(const Key('gallery-dots')), findsNothing);
+      expect(find.byKey(const Key('gallery-thumbnails')), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'no-image listing keeps the fox-gradient placeholder',
+    (tester) async {
+      await tester.pumpWidget(_buildTestApp(_fixtureListing()));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.image), findsOneWidget);
+      expect(find.byKey(const Key('gallery-counter')), findsNothing);
+      expect(find.byKey(const Key('gallery-dots')), findsNothing);
+      expect(find.byKey(const Key('gallery-thumbnails')), findsNothing);
+    },
+  );
 }

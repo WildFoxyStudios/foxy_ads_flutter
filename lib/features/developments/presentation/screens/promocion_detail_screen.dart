@@ -13,6 +13,7 @@ import '../../data/development_model.dart';
 import '../../data/developments_service.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../widgets/development_contact_sheet.dart';
+import '../widgets/development_location_map.dart';
 
 /// Public `/promocion/:id` detail screen for a single development (obra
 /// nueva). Renders sections 1-7 (hero, gallery, description, amenities,
@@ -437,6 +438,11 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
               fontSize: 12,
               color: AppColors.textHint,
             ),
+          ),
+          const SizedBox(height: 12),
+          DevelopmentLocationMap(
+            latitude: development.latitude,
+            longitude: development.longitude,
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(

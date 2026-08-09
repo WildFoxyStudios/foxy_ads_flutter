@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/format_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/development_model.dart';
 
@@ -125,7 +126,7 @@ class DevelopmentCard extends StatelessWidget {
                     Text(
                       priceFrom != null
                           ? l10n.developmentCardPriceFrom(
-                              _money(priceFrom, currency))
+                              _money(priceFrom, currency, l10n.localeName))
                           : l10n.developmentCardPriceInquiry,
                       style: const TextStyle(
                         fontSize: 14,
@@ -181,10 +182,12 @@ class DevelopmentCard extends StatelessWidget {
     );
   }
 
-  String _money(double amount, String? currency) {
-    final formatted = amount.toStringAsFixed(
-      amount.truncateToDouble() == amount ? 0 : 2,
-    );
-    return currency != null ? '$formatted $currency' : formatted;
+  String _money(double amount, String? currency, String locale) {
+    if (currency == null) {
+      return amount.toStringAsFixed(
+        amount.truncateToDouble() == amount ? 0 : 2,
+      );
+    }
+    return formatPrice(amount, currency, locale);
   }
 }

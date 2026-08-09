@@ -155,7 +155,7 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(800, 1800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      const avgPerM2 = 3000.0; // €/m² — clean number → '3000 €' after _money().
+      const avgPerM2 = 3000.0; // €/m² — clean number → '3.000 €' after formatPrice() (es grouping).
       await tester.pumpWidget(
         _buildTestApp(
           FakeListingService(
@@ -173,10 +173,11 @@ void main() {
       expect(find.textContaining('venta'), findsWidgets);
 
       // The estimate value: avgPerM2 * m2 = 3000 * 80 = 240000.
-      // _money() formats with no decimals when the number is whole and
-      // appends the currency code. Assert the numeric range + currency
-      // rather than the exact string.
-      expect(find.textContaining('240000'), findsWidgets);
+      // formatPrice() renders with no decimals when the number is whole and
+      // uses the locale's grouping separator ('.' for es) instead of the
+      // raw currency code. Assert the locale-formatted digits + currency
+      // symbol rather than the unformatted number.
+      expect(find.textContaining('240.000'), findsWidgets);
       expect(find.textContaining('€'), findsWidgets);
 
       // The €/m² stat cell and the sample-size stat are both rendered.

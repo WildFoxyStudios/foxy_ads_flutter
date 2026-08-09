@@ -5,8 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/models/listing_model.dart';
-import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
+import '../../../../core/utils/format_utils.dart';
 import '../../data/payments_providers.dart';
 import '../../data/payments_service.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -53,7 +53,6 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final listingAsync = ref.watch(promoteListingProvider(widget.listingId));
-    final country = ref.watch(selectedCountryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -297,7 +296,11 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                                 ),
                                 Text(
                                   l10n.paymentsPerDayRate(
-                                    '${country.currencySymbol}${(price / days).toStringAsFixed(2)}',
+                                    formatPrice(
+                                      price / days,
+                                      'EUR',
+                                      l10n.localeName,
+                                    ),
                                   ),
                                   style: TextStyle(
                                     color: AppColors.textSecondary,
@@ -308,7 +311,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                             ),
                           ),
                           Text(
-                            '${country.currencySymbol}${price.toStringAsFixed(2)}',
+                            formatPrice(price, 'EUR', l10n.localeName),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -347,7 +350,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                             ),
                           ),
                           Text(
-                            '${country.currencySymbol}${_totalPrice.toStringAsFixed(2)}',
+                            formatPrice(_totalPrice, 'EUR', l10n.localeName),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 28,

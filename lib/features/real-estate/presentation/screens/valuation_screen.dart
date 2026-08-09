@@ -18,6 +18,7 @@ import '../../../../core/providers/selected_country_provider.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_colors.dart';
+import '../../../../core/utils/format_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class ValuationScreen extends ConsumerStatefulWidget {
@@ -235,7 +236,6 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                   _m2Controller.text.trim().replaceAll(',', '.'),
                 ) ?? 0,
                 currency: country.currency,
-                currencySymbol: country.currencySymbol,
               ),
             ],
           ),
@@ -359,7 +359,6 @@ class _ResultCard extends StatelessWidget {
   final String operation;
   final int m2;
   final String currency;
-  final String currencySymbol;
 
   const _ResultCard({
     required this.estimate,
@@ -367,11 +366,7 @@ class _ResultCard extends StatelessWidget {
     required this.operation,
     required this.m2,
     required this.currency,
-    required this.currencySymbol,
   });
-
-  String _money(num value) =>
-      '${value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 2)} $currency';
 
   @override
   Widget build(BuildContext context) {
@@ -445,7 +440,7 @@ class _ResultCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                _money(est),
+                formatPrice(est, currency, l10n.localeName),
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
@@ -465,7 +460,7 @@ class _ResultCard extends StatelessWidget {
                   Expanded(
                     child: _StatCell(
                       label: l10n.valuationMin,
-                      value: _money(low),
+                      value: formatPrice(low, currency, l10n.localeName),
                       tone: AppColors.info,
                     ),
                   ),
@@ -473,7 +468,7 @@ class _ResultCard extends StatelessWidget {
                   Expanded(
                     child: _StatCell(
                       label: l10n.valuationMax,
-                      value: _money(high),
+                      value: formatPrice(high, currency, l10n.localeName),
                       tone: AppColors.success,
                     ),
                   ),
@@ -501,7 +496,7 @@ class _ResultCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            '${stats.avgPricePerM2.toStringAsFixed(0)} $currencySymbol/m²',
+                            '${formatPrice(stats.avgPricePerM2, currency, l10n.localeName)}/m²',
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,

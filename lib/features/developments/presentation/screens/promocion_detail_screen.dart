@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/models/listing_model.dart';
+import '../../../../core/utils/format_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/development_model.dart';
 import '../../data/developments_service.dart';
@@ -518,10 +519,13 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   String _money(double amount, String? currency) {
-    final formatted = amount.toStringAsFixed(
-      amount.truncateToDouble() == amount ? 0 : 2,
-    );
-    return currency != null ? '$formatted $currency' : formatted;
+    if (currency == null) {
+      return amount.toStringAsFixed(
+        amount.truncateToDouble() == amount ? 0 : 2,
+      );
+    }
+    final l10n = AppLocalizations.of(context)!;
+    return formatPrice(amount, currency, l10n.localeName);
   }
 
   String _m2Range(int? min, int? max) {

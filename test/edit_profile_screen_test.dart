@@ -1,15 +1,18 @@
-// Widget tests for the `/edit-profile` screen (Sprint 12 Task 4).
+// Widget tests for the `/edit-profile` screen (Sprint 12 Task 4, extended in
+// P10 C3 with a country selector, real avatar upload, and a read-only email
+// field).
 //
 // `EditProfileScreen` reads `currentUserProvider` once in `initState` (via
-// `ref.read(...).whenData(...)`) to pre-fill the name/phone controllers — it
-// never `ref.watch`es it, so the pre-fill only happens if the provider is
-// already resolved (`AsyncData`) on the very first build. In production this
-// holds because the parent Profile screen already watched
-// `currentUserProvider` before the user navigated here, so it's warm.
-// To reproduce that here, the test awaits `container.read(currentUserProvider
-// .future)` *before* `pumpWidget` so the override is already `AsyncData`
-// by the time `initState` runs (mirrors `payment_success_screen_test.dart`'s
-// approach of driving the container to the state the screen expects).
+// `ref.read(...).whenData(...)`) to pre-fill the name/phone/email controllers
+// and the avatar/country state — it never `ref.watch`es it, so the pre-fill
+// only happens if the provider is already resolved (`AsyncData`) on the very
+// first build. In production this holds because the parent Profile screen
+// already watched `currentUserProvider` before the user navigated here, so
+// it's warm. To reproduce that here, the test awaits
+// `container.read(currentUserProvider.future)` *before* `pumpWidget` so the
+// override is already `AsyncData` by the time `initState` runs (mirrors
+// `payment_success_screen_test.dart`'s approach of driving the container to
+// the state the screen expects).
 //
 // Saving calls `AuthService.updateUserProfile` via `authServiceProvider` —
 // overridden with a fake subclass (same pattern as
@@ -19,6 +22,14 @@
 // real `GoRouter` (two routes, so there's something to pop back to) — the
 // validation-failure test returns before reaching `pop()` so it's safe with
 // a plain `MaterialApp`.
+//
+// The avatar picker calls `ImagePicker().pickImage(...)`, which hits a
+// platform channel that isn't wired up in the widget-test harness (it would
+// throw `MissingPluginException` if actually invoked). These tests never tap
+// the avatar — they only assert structurally that the camera icon now sits
+// under a `GestureDetector` with a non-null `onTap` (i.e. it's wired, not
+// decorative), per the task's guidance that driving the real pick+upload
+// flow is out of scope for a widget test.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +49,7 @@ AppUser _userFixture() {
     email: 'javier@example.com',
     name: 'Javier',
     phone: '+34 600 000 000',
+    countryCode: 'ES',
     createdAt: DateTime(2026, 1, 1),
   );
 }
@@ -55,7 +67,9 @@ class FakeAuthService extends AuthService {
   FakeAuthService(super.supabase, {this.error});
 
   final Object? error;
-  final List<({String name, String? phone})> calls = [];
+  final List<
+      ({String name, String? phone, String? avatarUrl, String? countryCode})>
+      calls = [];
 
   @override
   Future<void> updateUserProfile({
@@ -65,13 +79,18 @@ class FakeAuthService extends AuthService {
     String? countryCode,
   }) async {
     if (error != null) throw error!;
-    calls.add((name: name ?? '', phone: phone));
+    calls.add((
+      name: name ?? '',
+      phone: phone,
+      avatarUrl: avatarUrl,
+      countryCode: countryCode,
+    ));
   }
 }
 
 void main() {
   testWidgets(
-    'pre-fills the name and phone fields from currentUserProvider',
+    'pre-fills the name, phone, email and country fields from currentUserProvider',
     (tester) async {
       final container = ProviderContainer(
         overrides: [
@@ -100,7 +119,67 @@ void main() {
 
       expect(find.text('Javier'), findsOneWidget);
       expect(find.text('+34 600 000 000'), findsOneWidget);
+      expect(find.text('javier@example.com'), findsOneWidget);
+      // countryCode 'ES' resolves to España in Country.defaultCountries.
+      expect(find.text('España'), findsOneWidget);
       expect(find.text('Editar Perfil'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'renders the email as a disabled field and the country field, and the '
+    'avatar area is wired to a tap handler instead of being decorative',
+    (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          currentUserProvider.overrideWith((ref) async => _userFixture()),
+          authServiceProvider.overrideWithValue(
+            FakeAuthService(_dummySupabase()),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      await container.read(currentUserProvider.future);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(
+            locale: Locale('es'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: EditProfileScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Email field renders and is disabled (read-only).
+      final emailFieldFinder = find.ancestor(
+        of: find.text('javier@example.com'),
+        matching: find.byType(TextFormField),
+      );
+      expect(emailFieldFinder, findsOneWidget);
+      final emailField = tester.widget<TextFormField>(emailFieldFinder);
+      expect(emailField.enabled, isFalse);
+      expect(find.text('Correo electrónico'), findsOneWidget);
+
+      // Country field renders with its label and the pre-selected value.
+      expect(find.text('País'), findsOneWidget);
+      expect(find.text('España'), findsOneWidget);
+
+      // Avatar's camera badge is no longer a dead decoration — it now sits
+      // under a GestureDetector with a real onTap handler.
+      final cameraIcon = find.byIcon(Icons.camera_alt);
+      expect(cameraIcon, findsOneWidget);
+      final avatarDetectorFinder = find.ancestor(
+        of: cameraIcon,
+        matching: find.byType(GestureDetector),
+      );
+      expect(avatarDetectorFinder, findsOneWidget);
+      final avatarDetector =
+          tester.widget<GestureDetector>(avatarDetectorFinder);
+      expect(avatarDetector.onTap, isNotNull);
     },
   );
 
@@ -130,7 +209,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextFormField).first, '');
+      await tester.enterText(find.widgetWithText(TextFormField, 'Javier'), '');
       await tester.tap(find.widgetWithText(ElevatedButton, 'Guardar Cambios'));
       await tester.pumpAndSettle();
 
@@ -140,7 +219,8 @@ void main() {
   );
 
   testWidgets(
-    'submitting a valid form calls updateUserProfile with trimmed values and pops',
+    'submitting a valid form calls updateUserProfile with trimmed values, '
+    'the pre-filled countryCode, and pops',
     (tester) async {
       final fake = FakeAuthService(_dummySupabase());
       final container = ProviderContainer(
@@ -181,7 +261,7 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.enterText(
-        find.byType(TextFormField).first,
+        find.widgetWithText(TextFormField, 'Javier'),
         '  Javier Nuevo  ',
       );
       await tester.tap(find.widgetWithText(ElevatedButton, 'Guardar Cambios'));
@@ -190,6 +270,11 @@ void main() {
       expect(fake.calls, hasLength(1));
       expect(fake.calls.single.name, 'Javier Nuevo');
       expect(fake.calls.single.phone, '+34 600 000 000');
+      // The country wasn't touched in this test, so the pre-filled value
+      // (resolved from the fixture's countryCode) flows straight through.
+      expect(fake.calls.single.countryCode, 'ES');
+      // No avatar was picked in this test, so no URL is sent.
+      expect(fake.calls.single.avatarUrl, isNull);
       // Popped back to the root route.
       expect(find.byType(EditProfileScreen), findsNothing);
     },

@@ -275,6 +275,10 @@
   "editProfilePhoneHint": "+1 555 123 4567",
   "editProfileSaveChanges": "Save changes",
   "editProfileSaved": "Profile updated",
+  "editProfileCountryLabel": "Country",
+  "editProfileEmailLabel": "Email",
+  "editProfileAvatarHint": "Tap to change photo",
+  "editProfileAvatarUploadFailed": "Could not upload the photo",
 
   "myListingsTitle": "My Listings",
   "myListingsFabNew": "New",

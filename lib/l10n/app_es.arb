@@ -353,6 +353,10 @@
   "editProfilePhoneHint": "+34 612 345 678",
   "editProfileSaveChanges": "Guardar Cambios",
   "editProfileSaved": "Perfil actualizado",
+  "editProfileCountryLabel": "País",
+  "editProfileEmailLabel": "Correo electrónico",
+  "editProfileAvatarHint": "Toca para cambiar la foto",
+  "editProfileAvatarUploadFailed": "No se pudo subir la imagen",
 
   "myListingsTitle": "Mis Anuncios",
   "myListingsFabNew": "Nuevo",

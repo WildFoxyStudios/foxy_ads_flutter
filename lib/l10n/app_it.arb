@@ -275,6 +275,10 @@
   "editProfilePhoneHint": "+39 333 123 4567",
   "editProfileSaveChanges": "Salva modifiche",
   "editProfileSaved": "Profilo aggiornato",
+  "editProfileCountryLabel": "Paese",
+  "editProfileEmailLabel": "Email",
+  "editProfileAvatarHint": "Tocca per cambiare la foto",
+  "editProfileAvatarUploadFailed": "Impossibile caricare la foto",
 
   "myListingsTitle": "I miei annunci",
   "myListingsFabNew": "Nuovo",

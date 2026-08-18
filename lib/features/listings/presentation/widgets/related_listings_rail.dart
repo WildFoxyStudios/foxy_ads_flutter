@@ -51,7 +51,7 @@ class RelatedListingsRail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final relatedAsync = ref.watch(
       relatedListingsProvider((
         categoryId: listing.categoryId,
@@ -62,7 +62,7 @@ class RelatedListingsRail extends ConsumerWidget {
 
     return relatedAsync.when(
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
       data: (related) {
         if (related.isEmpty) return const SizedBox.shrink();
 

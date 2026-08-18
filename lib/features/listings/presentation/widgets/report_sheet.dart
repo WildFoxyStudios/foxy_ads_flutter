@@ -75,7 +75,7 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
   }
 
   Future<void> _submit() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (_reason == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.reportSheetSelectReason)),
@@ -134,7 +134,7 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
@@ -173,14 +173,18 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              ...kListingReportReasons.map(
-                (reason) => RadioListTile<String>(
-                  value: reason,
-                  groupValue: _reason,
-                  onChanged: (v) => setState(() => _reason = v),
-                  title: Text(_reasonLabel(reason, l10n)),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
+              RadioGroup<String>(
+                groupValue: _reason,
+                onChanged: (v) => setState(() => _reason = v),
+                child: Column(
+                  children: kListingReportReasons.map(
+                    (reason) => RadioListTile<String>(
+                      value: reason,
+                      title: Text(_reasonLabel(reason, l10n)),
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                    ),
+                  ).toList(),
                 ),
               ),
               const SizedBox(height: 8),

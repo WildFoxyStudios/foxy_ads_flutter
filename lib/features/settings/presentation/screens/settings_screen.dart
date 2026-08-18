@@ -30,7 +30,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authStateProvider);
     final selectedCountry = ref.watch(selectedCountryProvider);
     final themeMode = ref.watch(themeModeProvider);
@@ -77,23 +77,32 @@ class SettingsScreen extends ConsumerWidget {
                 ThemeMode.light => l10n.settingsThemeLight,
                 ThemeMode.dark => l10n.settingsThemeDark,
               }),
-              children: ThemeMode.values.map((mode) {
-                final label = switch (mode) {
-                  ThemeMode.system => l10n.settingsThemeSystem,
-                  ThemeMode.light => l10n.settingsThemeLight,
-                  ThemeMode.dark => l10n.settingsThemeDark,
-                };
-                return RadioListTile<ThemeMode>(
-                  value: mode,
-                  groupValue: themeMode,
-                  title: Text(label),
-                  onChanged: (selected) {
-                    if (selected != null) {
-                      ref.read(themeModeProvider.notifier).set(selected);
-                    }
-                  },
-                );
-              }).toList(),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: RadioGroup<ThemeMode>(
+                    groupValue: themeMode,
+                    onChanged: (selected) {
+                      if (selected != null) {
+                        ref.read(themeModeProvider.notifier).set(selected);
+                      }
+                    },
+                    child: Column(
+                      children: ThemeMode.values.map((mode) {
+                        final label = switch (mode) {
+                          ThemeMode.system => l10n.settingsThemeSystem,
+                          ThemeMode.light => l10n.settingsThemeLight,
+                          ThemeMode.dark => l10n.settingsThemeDark,
+                        };
+                        return RadioListTile<ThemeMode>(
+                          value: mode,
+                          title: Text(label),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           _SettingsTile(
@@ -239,7 +248,7 @@ class SettingsScreen extends ConsumerWidget {
     WidgetRef ref,
     String currentCode,
   ) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final currencies = _distinctCurrencies();
     showDialog(
       context: context,
@@ -247,21 +256,23 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(l10n.preferredCurrencyLabel),
         content: SizedBox(
           width: double.maxFinite,
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              for (final currency in currencies)
-                RadioListTile<String>(
-                  value: currency.code,
-                  groupValue: currentCode,
-                  title: Text('${currency.code} (${currency.symbol})'),
-                  onChanged: (selected) async {
-                    if (selected == null) return;
-                    Navigator.pop(dialogContext);
-                    await _updatePreferredCurrency(context, ref, selected);
-                  },
-                ),
-            ],
+          child: RadioGroup<String>(
+            groupValue: currentCode,
+            onChanged: (selected) async {
+              if (selected == null) return;
+              Navigator.pop(dialogContext);
+              await _updatePreferredCurrency(context, ref, selected);
+            },
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                for (final currency in currencies)
+                  RadioListTile<String>(
+                    value: currency.code,
+                    title: Text('${currency.code} (${currency.symbol})'),
+                  ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -286,7 +297,7 @@ class SettingsScreen extends ConsumerWidget {
     WidgetRef ref,
     String currency,
   ) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final userId = ref.read(authStateProvider).value?.id;
     if (userId == null) return;
@@ -307,14 +318,14 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _comingSoon(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(l10n.settingsComingSoon)));
   }
 
   void _showChangePasswordDialog(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final controller = TextEditingController();
     showDialog(
       context: context,
@@ -367,7 +378,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(

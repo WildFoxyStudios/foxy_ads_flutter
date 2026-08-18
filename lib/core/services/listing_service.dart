@@ -278,7 +278,7 @@ class ListingService {
   }) async {
     final payload = <String, dynamic>{
       ...listing.toInsertJson(),
-      if (extraFields != null) ...extraFields,
+      ...?extraFields,
     };
     final response = await _supabase
         .from('listings')
@@ -734,11 +734,10 @@ class ListingService {
           .eq('user_id', uid)
           .inFilter('id', ids)
           .neq('status', 'deleted');
-      if ((rows as List).length != ids.length) {
+      if (rows.length != ids.length) {
         return const PanelActionOutcome.err(PanelActionError.forbidden);
       }
-      for (final raw in rows) {
-        final row = raw as Map<String, dynamic>;
+      for (final row in rows) {
         final current = (row['price'] as num).toDouble();
         await _supabase
             .from('listings')
@@ -834,7 +833,7 @@ Map<String, dynamic> buildReRpcArgs(
   final safeOffset = offset < 0 ? 0 : offset;
   final energyBands = <String>[
     ...f.energyBands,
-    if (energyBandForLetter(f.energyLetter) case final band?) band,
+    ?energyBandForLetter(f.energyLetter),
   ];
   return {
     'p_country_code': f.countryCode,

@@ -62,7 +62,7 @@ class _CategoryListingsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final categoryId = widget.categoryId;
     final categoryName = widget.categoryName;
     final subcategoryId = widget.subcategoryId;
@@ -207,7 +207,7 @@ class _SubcategoryChipRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final categoriesAsync = ref.watch(categoriesWithSubcategoriesProvider);
 
     // While loading/erroring we collapse to SizedBox.shrink so the chip strip
@@ -248,7 +248,7 @@ class _SubcategoryChipRow extends ConsumerWidget {
               labelStyle: TextStyle(
                 color: selectedSubcategoryId == null
                     ? Colors.white
-                    : AppColors.textPrimary,
+                    : textPrimaryFor(context),
                 fontWeight: FontWeight.w500,
               ),
               padding: const EdgeInsets.symmetric(
@@ -275,7 +275,7 @@ class _SubcategoryChipRow extends ConsumerWidget {
                 selectedColor: AppColors.primary,
                 backgroundColor: surfaceFor(context),
                 labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  color: isSelected ? Colors.white : textPrimaryFor(context),
                   fontWeight: FontWeight.w500,
                 ),
                 padding: const EdgeInsets.symmetric(

@@ -57,7 +57,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authStateProvider);
     final currentUser = ref.watch(currentUserProvider);
     final selectedCountry = ref.watch(selectedCountryProvider);
@@ -451,7 +451,7 @@ class _ProfileStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return listingsAsync.when(
       data: (listings) {
@@ -535,7 +535,7 @@ class _StatTile extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 11,
-            color: AppColors.textSecondary,
+            color: textSecondaryFor(context),
           ),
         ),
       ],
@@ -589,7 +589,7 @@ class _ProfileTile extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: TextStyle(
-                          color: AppColors.textSecondary,
+                          color: textSecondaryFor(context),
                           fontSize: 13,
                         ),
                       ),
@@ -615,10 +615,10 @@ class _ProfileTile extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
               ],
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
             ],
           ),

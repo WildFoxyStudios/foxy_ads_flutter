@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/utils/format_utils.dart';
@@ -26,7 +27,7 @@ class PromocionDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final developmentAsync =
         ref.watch(developmentDetailProvider(developmentId));
 
@@ -105,7 +106,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   String _statusLabel(BuildContext context, String status) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (status) {
       case 'planning':
         return l10n.promocionStatusPlanning;
@@ -120,7 +121,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final unitsAsync = ref.watch(developmentUnitsProvider(development.id));
 
     return ListView(
@@ -129,7 +130,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
         _buildHero(context),
         if (development.images.isNotEmpty) ...[
           const SizedBox(height: 20),
-          _buildGallery(),
+          _buildGallery(context),
         ],
         if (development.description != null &&
             development.description!.trim().isNotEmpty) ...[
@@ -180,7 +181,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildContactButton(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
@@ -210,7 +211,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildHero(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -220,10 +221,10 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
             Expanded(
               child: Text(
                 development.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: textPrimaryFor(context),
                 ),
               ),
             ),
@@ -250,9 +251,9 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
           const SizedBox(height: 6),
           Text(
             l10n.promocionDetailPromoterLabel(development.promoterName!),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: textSecondaryFor(context),
             ),
           ),
         ],
@@ -260,18 +261,18 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
           const SizedBox(height: 6),
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.location_on_outlined,
                 size: 16,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   _locationLine(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                   ),
                 ),
               ),
@@ -283,9 +284,9 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
           const SizedBox(height: 6),
           Text(
             l10n.promocionDetailDeliveryLabel(development.deliveryLabel!),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: textSecondaryFor(context),
             ),
           ),
         ],
@@ -304,7 +305,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
     return parts.join(' · ');
   }
 
-  Widget _buildGallery() {
+  Widget _buildGallery(BuildContext context) {
     return SizedBox(
       height: 220,
       child: PageView.builder(
@@ -321,21 +322,21 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
                 fit: BoxFit.cover,
                 width: double.infinity,
                 placeholder: (context, url) => Container(
-                  color: AppColors.shimmer,
-                  child: const Center(
+                  color: shimmerFor(context),
+                  child: Center(
                     child: Icon(
                       Icons.image,
-                      color: AppColors.textSecondary,
+                      color: textSecondaryFor(context),
                       size: 32,
                     ),
                   ),
                 ),
                 errorWidget: (context, url, error) => Container(
-                  color: AppColors.shimmer,
-                  child: const Center(
+                  color: shimmerFor(context),
+                  child: Center(
                     child: Icon(
                       Icons.broken_image,
-                      color: AppColors.textSecondary,
+                      color: textSecondaryFor(context),
                       size: 32,
                     ),
                   ),
@@ -349,24 +350,24 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildDescription(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.promocionDetailDescriptionHeading,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textPrimaryFor(context),
           ),
         ),
         const SizedBox(height: 8),
         Text(
           development.description!,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: AppColors.textSecondary,
+            color: textSecondaryFor(context),
             height: 1.4,
           ),
         ),
@@ -375,16 +376,16 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildAmenities(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.promocionDetailAmenitiesHeading,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textPrimaryFor(context),
           ),
         ),
         const SizedBox(height: 8),
@@ -395,12 +396,12 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
               .map(
                 (amenity) => Chip(
                   label: Text(amenity),
-                  backgroundColor: AppColors.background,
-                  labelStyle: const TextStyle(
+                  backgroundColor: surfaceContainerFor(context),
+                  labelStyle: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textPrimary,
+                    color: textPrimaryFor(context),
                   ),
-                  side: const BorderSide(color: AppColors.border),
+                  side: BorderSide(color: borderFor(context)),
                 ),
               )
               .toList(),
@@ -410,33 +411,33 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildLocation(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.promocionDetailLocationHeading,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textPrimaryFor(context),
           ),
         ),
         const SizedBox(height: 8),
         Text(
           _locationLine(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: AppColors.textSecondary,
+            color: textSecondaryFor(context),
           ),
         ),
         if (_hasValidCoords) ...[
           const SizedBox(height: 4),
           Text(
             '${development.latitude}, ${development.longitude}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.textHint,
+              color: textSecondaryFor(context),
             ),
           ),
           const SizedBox(height: 12),
@@ -474,21 +475,21 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
     List<Typology> typologies,
     String? currency,
   ) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.promocionDetailTypologyHeading,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textPrimaryFor(context),
           ),
         ),
         const SizedBox(height: 8),
         Table(
-          border: TableBorder.all(color: AppColors.border, width: 1),
+          border: TableBorder.all(color: borderFor(context), width: 1),
           columnWidths: const {
             0: FlexColumnWidth(1.2),
             1: FlexColumnWidth(1.2),
@@ -497,7 +498,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
           },
           children: [
             TableRow(
-              decoration: const BoxDecoration(color: AppColors.background),
+              decoration: BoxDecoration(color: surfaceContainerFor(context)),
               children: [
                 _TypologyHeaderCell(l10n.promocionDetailTypologyRooms),
                 _TypologyHeaderCell(l10n.promocionDetailTypologyCount),
@@ -530,7 +531,7 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
         amount.truncateToDouble() == amount ? 0 : 2,
       );
     }
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return formatPrice(amount, currency, l10n.localeName);
   }
 
@@ -541,16 +542,16 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
   }
 
   Widget _buildUnitsGrid(BuildContext context, List<Listing> units) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.promocionDetailUnitsHeading,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textPrimaryFor(context),
           ),
         ),
         const SizedBox(height: 8),
@@ -559,9 +560,9 @@ class _PromocionDetailBodyState extends ConsumerState<_PromocionDetailBody> {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               l10n.promocionDetailUnitsEmpty,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
             ),
           )
@@ -600,10 +601,10 @@ class _TypologyHeaderCell extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+          color: textPrimaryFor(context),
         ),
       ),
     );
@@ -621,9 +622,9 @@ class _TypologyCell extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
-          color: AppColors.textSecondary,
+          color: textSecondaryFor(context),
         ),
       ),
     );

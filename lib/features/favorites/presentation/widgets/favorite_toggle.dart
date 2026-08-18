@@ -8,6 +8,7 @@
 // favorites providers right away so the heart flips on tap without
 // waiting for the round-trip.
 
+import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,8 +31,9 @@ FavoriteBinding favoriteBinding(WidgetRef ref, String listingId) {
     onFavorite: () {
       // Async fire-and-forget: don't await — the optimistic invalidation
       // flips the heart immediately.
-      // ignore: discarded_futures
-      ref.read(favoriteServiceProvider).toggleFavorite(user.id, listingId);
+      unawaited(
+        ref.read(favoriteServiceProvider).toggleFavorite(user.id, listingId),
+      );
       ref.invalidate(userFavoritesProvider);
       ref.invalidate(favoritesListProvider);
     },

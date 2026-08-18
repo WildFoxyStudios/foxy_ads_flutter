@@ -2,9 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:foxy_ads/core/services/listing_service.dart';
 
 const _u = '11111111-1111-1111-1111-111111111111';
-// Kept for parity with the brief's test scaffold (future tests will use it).
-// ignore: unused_element
-const _v = '22222222-2222-2222-2222-222222222222';
 
 void main() {
   group('parseIds', () {

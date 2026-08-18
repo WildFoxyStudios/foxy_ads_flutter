@@ -70,7 +70,7 @@ import '../../data/agency_service.dart';
 
 /// Localized listing-status label map — wire codes stay English.
 String _statusLabel(BuildContext context, String s) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   switch (s) {
     case 'active':
       return l10n.bulkListingsStatusActive;
@@ -162,7 +162,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
   }
 
   String _errorCopy(PanelActionError? e) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (e) {
       case PanelActionError.unauthenticated:
         return l10n.bulkListingsErrorUnauthenticated;
@@ -195,7 +195,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
   }
 
   Future<void> _onBulkSetStatus(String status) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final ids = _selected.toList(growable: false);
     final service = ref.read(listingServiceProvider);
     await _runBulkAction(
@@ -213,7 +213,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
   }
 
   Future<void> _onBulkRenew() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final ids = _selected.toList(growable: false);
     final service = ref.read(listingServiceProvider);
     await _runBulkAction(
@@ -224,7 +224,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
   }
 
   Future<void> _onBulkDelete() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final ids = _selected.toList(growable: false);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -256,7 +256,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
   }
 
   Future<void> _onBulkPrice() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final ids = _selected.toList(growable: false);
     final params = await showDialog<_PriceResult>(
       context: context,
@@ -291,7 +291,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
   /// successful redirect (no provider invalidation is needed here).
   Future<void> _onBulkFeature() async {
     if (_selected.isEmpty || _pendingAction != null) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final ids = _selected.toList(growable: false);
 
     final days = await showDialog<int>(
@@ -332,7 +332,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
 
   Future<void> _onExportCsv(List<Listing> rows) async {
     if (_exporting) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     setState(() => _exporting = true);
     try {
       final service = ref.read(listingServiceProvider);
@@ -367,7 +367,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final listingsAsync = ref.watch(myPanelListingsProvider);
 
     return Container(
@@ -375,7 +375,7 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -419,9 +419,9 @@ class _BulkListingsPanelState extends ConsumerState<BulkListingsPanel> {
                   child: Center(
                     child: Text(
                       l10n.bulkListingsEmpty,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
+                        color: textSecondaryFor(context),
                       ),
                     ),
                   ),
@@ -467,15 +467,15 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Text(
           l10n.bulkListingsHeader,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textPrimaryFor(context),
           ),
         ),
         if (selectedCount > 0) ...[
@@ -539,7 +539,7 @@ class _BulkToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isBusy = pendingAction != null;
     Widget btn(String key, IconData icon, String label, VoidCallback onTap,
         {Color? color}) {
@@ -576,7 +576,7 @@ class _BulkToolbar extends StatelessWidget {
     return Material(
       elevation: 1,
       borderRadius: BorderRadius.circular(8),
-      color: AppColors.background,
+      color: surfaceContainerFor(context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Wrap(
@@ -613,7 +613,7 @@ class _SelectAllRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return InkWell(
       onTap: onToggle,
       child: Padding(
@@ -631,10 +631,10 @@ class _SelectAllRow extends StatelessWidget {
               allSelected
                   ? l10n.bulkListingsDeselectAll
                   : l10n.bulkListingsSelectAll,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
             ),
           ],
@@ -682,10 +682,10 @@ class _ListingRow extends StatelessWidget {
                     l.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: textPrimaryFor(context),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -698,9 +698,9 @@ class _ListingRow extends StatelessWidget {
                           l.city!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.textSecondary,
+                            color: textSecondaryFor(context),
                           ),
                         ),
                     ],
@@ -708,10 +708,10 @@ class _ListingRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
               size: 18,
-              color: AppColors.textSecondary,
+              color: textSecondaryFor(context),
             ),
           ],
         ),
@@ -770,7 +770,7 @@ class _ErrorBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -831,7 +831,7 @@ class _PriceDialogState extends State<_PriceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hint = _mode == 'set' ? '€' : '%';
     return AlertDialog(
       title: Text(l10n.bulkListingsPriceDialogTitle),
@@ -917,7 +917,7 @@ class _FeatureDialogState extends State<_FeatureDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final unitPrice = featurePricesEuros[_selectedDays] ?? 0.0;
     final total = unitPrice * widget.count;
 
@@ -927,19 +927,23 @@ class _FeatureDialogState extends State<_FeatureDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ...featurePricesEuros.entries.map((entry) {
-            final days = entry.key;
-            final price = entry.value;
-            return RadioListTile<int>(
-              value: days,
-              groupValue: _selectedDays,
-              onChanged: (v) => setState(() => _selectedDays = v ?? days),
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.paymentsDaysCount(days)),
-              subtitle: Text(formatPrice(price, 'EUR', l10n.localeName)),
-            );
-          }),
+          RadioGroup<int>(
+            groupValue: _selectedDays,
+            onChanged: (v) => setState(() => _selectedDays = v ?? _selectedDays),
+            child: Column(
+              children: featurePricesEuros.entries.map((entry) {
+                final days = entry.key;
+                final price = entry.value;
+                return RadioListTile<int>(
+                  value: days,
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.paymentsDaysCount(days)),
+                  subtitle: Text(formatPrice(price, 'EUR', l10n.localeName)),
+                );
+              }).toList(),
+            ),
+          ),
           const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

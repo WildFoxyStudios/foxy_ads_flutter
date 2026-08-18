@@ -189,7 +189,7 @@ void main() {
       reason:
           'Hardcoded Spanish UI copy found. Move each string into lib/l10n/'
           'app_es.arb (+ app_en.arb, app_it.arb) and read it via '
-          'AppLocalizations.of(context)!.<key>:\n  ${offenders.join('\n  ')}',
+          'AppLocalizations.of(context).<key>:\n  ${offenders.join('\n  ')}',
     );
   });
 }

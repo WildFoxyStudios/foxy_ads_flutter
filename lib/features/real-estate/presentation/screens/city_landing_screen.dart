@@ -35,7 +35,7 @@ class _CityLandingScreenState extends ConsumerState<CityLandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final decodedCity = Uri.decodeComponent(widget.city);
     final country = ref.watch(selectedCountryProvider);
     final results = ref.watch(_cityListingsProvider(
@@ -148,13 +148,13 @@ class _OpChip extends StatelessWidget {
           color: selected ? AppColors.primary : surfaceFor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
+            color: selected ? AppColors.primary : borderFor(context),
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : AppColors.textPrimary,
+            color: selected ? Colors.white : textPrimaryFor(context),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -171,7 +171,7 @@ class _ResultsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return results.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(

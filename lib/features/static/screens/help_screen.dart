@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import 'faq_filter.dart';
 
@@ -24,7 +25,7 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
+    final l = AppLocalizations.of(context);
     final faqs = <Faq>[
       Faq(l.helpFaq1Category, l.helpFaq1Question, l.helpFaq1Answer),
       Faq(l.helpFaq2Category, l.helpFaq2Question, l.helpFaq2Answer),
@@ -59,7 +60,7 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Text(
               l.helpSubtitle,
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: textSecondaryFor(context)),
             ),
           ),
           Padding(
@@ -99,7 +100,7 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Expanded(
             child: filtered.isEmpty
                 ? Center(
@@ -107,36 +108,31 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
                       padding: const EdgeInsets.all(24),
                       child: Text(
                         l.helpNoResults,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          color: textSecondaryFor(context),
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: filtered.length,
-                    itemBuilder: (context, i) {
-                      final f = filtered[i];
+                    itemBuilder: (context, index) {
+                      final f = filtered[index];
                       return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        margin: const EdgeInsets.only(bottom: 8),
                         child: ExpansionTile(
                           title: Text(
                             f.question,
                             style: const TextStyle(
-                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                          subtitle: Text(f.category),
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                16,
-                                0,
-                                16,
-                                16,
-                              ),
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                               child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(f.answer),
@@ -170,7 +166,7 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
                   const SizedBox(height: 4),
                   Text(
                     l.helpCtaBody,
-                    style: const TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: textSecondaryFor(context)),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(

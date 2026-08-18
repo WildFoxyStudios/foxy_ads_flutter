@@ -8,13 +8,13 @@
 // framework imports beyond `dart:core`. It is imported by widgets,
 // services, and tests.
 
-const List<String> RE_OPERATIONS = [
+const List<String> reOperations = [
   'venta',
   'alquiler',
   'alquiler_temporal',
 ];
 
-const List<String> RE_PROPERTY_TYPES = [
+const List<String> rePropertyTypes = [
   'piso',
   'casa',
   'atico',
@@ -28,20 +28,20 @@ const List<String> RE_PROPERTY_TYPES = [
   'garaje',
 ];
 
-const List<String> RE_CONDITIONS = [
+const List<String> reConditions = [
   'obra_nueva',
   'buen_estado',
   'a_reformar',
 ];
 
-const List<String> RE_ORIENTATIONS = [
+const List<String> reOrientations = [
   'norte',
   'sur',
   'este',
   'oeste',
 ];
 
-const List<String> RE_ENERGY_CERTS = [
+const List<String> reEnergyCerts = [
   'A',
   'B',
   'C',
@@ -51,7 +51,7 @@ const List<String> RE_ENERGY_CERTS = [
   'G',
 ];
 
-const List<String> RE_FEATURE_KEYS = [
+const List<String> reFeatureKeys = [
   'elevator',
   'parking',
   'terrace',
@@ -68,7 +68,7 @@ const List<String> RE_FEATURE_KEYS = [
   'luxury',
 ];
 
-const List<String> RE_SORTS = [
+const List<String> reSorts = [
   'relevance',
   'recent',
   'price_asc',
@@ -77,7 +77,7 @@ const List<String> RE_SORTS = [
   'price_m2',
 ];
 
-const List<String> RE_FLOOR_BUCKETS = [
+const List<String> reFloorBuckets = [
   'bajos',
   'intermedias',
   'ultima',
@@ -85,12 +85,12 @@ const List<String> RE_FLOOR_BUCKETS = [
 
 // --- Create-form RAW option lists (canonical `attributes` schema) ---------
 //
-// The lists above (`RE_FLOOR_BUCKETS`, `RE_ENERGY_CERTS`) double as SEARCH
-// filter values — do not change them. `RE_FLOOR_RAW` is the separate list of
+// The lists above (`reFloorBuckets`, `reEnergyCerts`) double as SEARCH
+// filter values — do not change them. `reFloorRaw` is the separate list of
 // raw per-listing floor values the create form writes to `attributes.floor`
 // (a single string), mirrored from the web's floor `<select>` options. Not
-// used by search (the search RPC buckets floors via `RE_FLOOR_BUCKETS`).
-const List<String> RE_FLOOR_RAW = [
+// used by search (the search RPC buckets floors via `reFloorBuckets`).
+const List<String> reFloorRaw = [
   'bajo',
   '1',
   '2',

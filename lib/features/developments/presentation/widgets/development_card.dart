@@ -18,7 +18,7 @@ class DevelopmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final images = development.images;
     final priceFrom = development.priceFrom;
     final currency = development.currency;
@@ -57,32 +57,32 @@ class DevelopmentCard extends StatelessWidget {
                             imageUrl: images.first,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
-                              color: AppColors.shimmer,
-                              child: const Center(
+                              color: shimmerFor(context),
+                              child: Center(
                                 child: Icon(
                                   Icons.home_work_outlined,
-                                  color: AppColors.textSecondary,
+                                  color: textSecondaryFor(context),
                                   size: 32,
                                 ),
                               ),
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: AppColors.shimmer,
-                              child: const Center(
+                              color: shimmerFor(context),
+                              child: Center(
                                 child: Icon(
                                   Icons.home_work_outlined,
-                                  color: AppColors.textSecondary,
+                                  color: textSecondaryFor(context),
                                   size: 32,
                                 ),
                               ),
                             ),
                           )
                         : Container(
-                            color: AppColors.shimmer,
-                            child: const Center(
+                            color: shimmerFor(context),
+                            child: Center(
                               child: Icon(
                                 Icons.home_work_outlined,
-                                color: AppColors.textSecondary,
+                                color: textSecondaryFor(context),
                                 size: 32,
                               ),
                             ),
@@ -139,10 +139,10 @@ class DevelopmentCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         development.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
+                          color: textPrimaryFor(context),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -152,18 +152,18 @@ class DevelopmentCard extends StatelessWidget {
                     if (development.city != null) ...[
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.location_on_outlined,
                             size: 12,
-                            color: AppColors.textSecondary,
+                            color: textSecondaryFor(context),
                           ),
                           const SizedBox(width: 2),
                           Expanded(
                             child: Text(
                               development.city!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11,
-                                color: AppColors.textSecondary,
+                                color: textSecondaryFor(context),
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,

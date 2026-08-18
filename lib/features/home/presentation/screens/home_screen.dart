@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/models/category_model.dart';
 import '../../../../core/models/listing_model.dart';
@@ -62,7 +63,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final categories = ref.watch(categoriesProvider);
     final featuredListings = ref.watch(featuredListingsProvider);
     final recentListings = ref.watch(recentListingsProvider);
@@ -165,7 +166,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               horizontal: 16,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: surfaceFor(context),
                               borderRadius: BorderRadius.circular(30),
                               boxShadow: [
                                 BoxShadow(
@@ -179,7 +180,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               children: [
                                 Icon(
                                   Icons.search,
-                                  color: AppColors.textSecondary,
+                                  color: textSecondaryFor(context),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
@@ -187,13 +188,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     controller: _searchController,
                                     textInputAction: TextInputAction.search,
                                     onSubmitted: _submitHeroSearch,
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: textPrimaryFor(context),
+                                    ),
                                     decoration: InputDecoration(
                                       isDense: true,
                                       border: InputBorder.none,
                                       hintText: l10n.homeSearchHint,
                                       hintStyle: TextStyle(
-                                        color: AppColors.textSecondary,
+                                        color: textSecondaryFor(context),
                                         fontSize: 16,
                                       ),
                                     ),
@@ -348,7 +352,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   );
                 },
                 loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
 

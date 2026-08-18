@@ -22,8 +22,8 @@ class AgencyListingsArgs {
   const AgencyListingsArgs(this.userId, this.page);
 
   @override
-  bool operator ==(Object o) =>
-      o is AgencyListingsArgs && o.userId == userId && o.page == page;
+  bool operator ==(Object other) =>
+      other is AgencyListingsArgs && other.userId == userId && other.page == page;
 
   @override
   int get hashCode => Object.hash(userId, page);

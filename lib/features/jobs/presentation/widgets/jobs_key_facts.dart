@@ -99,7 +99,7 @@ class JobsKeyFacts extends StatelessWidget {
     final attrs = listing.attributes;
     if (attrs == null || attrs.isEmpty) return const SizedBox.shrink();
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final contractType = _asString(attrs['contract_type']);
     final modality = _asString(attrs['modality']);

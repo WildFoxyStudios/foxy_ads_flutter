@@ -67,7 +67,7 @@ class _AgencyProfileEditScreenState
 
   Future<void> _pickAndUploadLogo() async {
     if (_uploadingLogo) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final auth = ref.read(authStateProvider);
     final user = auth.value?.id;
     if (user == null) return;
@@ -98,7 +98,7 @@ class _AgencyProfileEditScreenState
   }
 
   String _errorMessage(AgencyValidationError error) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (error) {
       case AgencyValidationError.name:
         return l10n.agencyEditErrorName;
@@ -111,7 +111,7 @@ class _AgencyProfileEditScreenState
 
   Future<void> _save() async {
     if (_saving) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final auth = ref.read(authStateProvider);
     final userId = auth.value?.id;
     if (userId == null) return;
@@ -180,7 +180,7 @@ class _AgencyProfileEditScreenState
   /// `_form`), so this never fires on the "create" path.
   Future<void> _deleteAgencyProfile() async {
     if (_deleting || _saving) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final auth = ref.read(authStateProvider);
     final userId = auth.value?.id;
     if (userId == null) return;
@@ -233,7 +233,7 @@ class _AgencyProfileEditScreenState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final auth = ref.watch(authStateProvider);
     final userId = auth.when(
       loading: () => null,
@@ -260,8 +260,6 @@ class _AgencyProfileEditScreenState
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.agencyEditTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -285,9 +283,9 @@ class _AgencyProfileEditScreenState
                 Text(
                   l10n.agencyEditLoadError(e.toString()),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -306,7 +304,7 @@ class _AgencyProfileEditScreenState
   }
 
   Widget _form(BuildContext context, {required bool hasExistingProfile}) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Form(
       key: _formKey,
       child: ListView(
@@ -431,7 +429,7 @@ class _LogoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         children: [
@@ -491,12 +489,10 @@ class _LogoSection extends StatelessWidget {
 class _NotSignedInScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.agencyEditTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
       ),
       body: Center(
         child: Padding(
@@ -504,19 +500,19 @@ class _NotSignedInScaffold extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.lock_outline,
                 size: 56,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
               const SizedBox(height: 12),
               Text(
                 l10n.agencyEditNotSignedInTitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: textPrimaryFor(context),
                 ),
               ),
               const SizedBox(height: 16),

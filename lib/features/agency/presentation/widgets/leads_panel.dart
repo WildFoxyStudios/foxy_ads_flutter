@@ -90,7 +90,7 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
   Future<void> _onStatusChange(Lead lead, String? newStatus) async {
     if (newStatus == null || newStatus == lead.status) return;
     final previous = lead.status;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     // Optimistic in-list update.
     setState(() {
       final idx = _leads.indexWhere((l) => l.id == lead.id);
@@ -155,7 +155,7 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
   Future<void> _onSaveNotes(Lead lead) async {
     final draft = _notesDrafts[lead.id];
     if (draft == null) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final service = ref.read(leadsServiceProvider);
     final outcome = await service.updateLeadNotes(lead.id, draft.text);
     if (!mounted) return;
@@ -214,7 +214,7 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final leadsAsync = ref.watch(agencyLeadsProvider(_status));
     final newCountAsync = ref.watch(newLeadsCountProvider);
     final statusLabels = _statusLabels(l10n);
@@ -224,7 +224,7 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -268,9 +268,9 @@ class _LeadsPanelState extends ConsumerState<LeadsPanel> {
                   child: Center(
                     child: Text(
                       l10n.leadsPanelEmpty,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
+                        color: textSecondaryFor(context),
                       ),
                     ),
                   ),
@@ -313,15 +313,15 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Text(
           l10n.leadsPanelHeader,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textPrimaryFor(context),
           ),
         ),
         const SizedBox(width: 8),
@@ -383,7 +383,7 @@ class _ErrorBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -424,13 +424,13 @@ class _LeadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: surfaceContainerFor(context),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,17 +443,17 @@ class _LeadCard extends StatelessWidget {
                   lead.buyerName.isEmpty
                       ? l10n.leadsPanelNoName
                       : lead.buyerName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: textPrimaryFor(context),
                   ),
                 ),
               ),
               DropdownButton<String>(
                 value: lead.status,
                 onChanged: onStatusChange,
-                items: LEAD_STATUSES.map((s) {
+                items: leadStatuses.map((s) {
                   return DropdownMenuItem<String>(
                     value: s,
                     child: Text(statusLabels[s] ?? s),
@@ -480,18 +480,18 @@ class _LeadCard extends StatelessWidget {
           else
             Text(
               lead.listingTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
             ),
           const SizedBox(height: 8),
           // Message (pre-wrap so newlines from the buyer survive).
           Text(
             lead.message,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
-              color: AppColors.textPrimary,
+              color: textPrimaryFor(context),
               height: 1.3,
             ),
             softWrap: true,
@@ -513,7 +513,6 @@ class _LeadCard extends StatelessWidget {
                     Uri.parse('mailto:${lead.buyerEmail}'),
                     mode: LaunchMode.externalApplication,
                   ).catchError((_) {
-                    // ignore: avoid_print
                     debugPrint('mailto failed');
                     return false;
                   });
@@ -537,7 +536,6 @@ class _LeadCard extends StatelessWidget {
                       Uri.parse('tel:${lead.buyerPhone}'),
                       mode: LaunchMode.externalApplication,
                     ).catchError((_) {
-                      // ignore: avoid_print
                       debugPrint('tel failed');
                       return false;
                     });
@@ -553,9 +551,9 @@ class _LeadCard extends StatelessWidget {
                 ),
               Text(
                 formatDate(lead.createdAt),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: textSecondaryFor(context),
                 ),
               ),
             ],

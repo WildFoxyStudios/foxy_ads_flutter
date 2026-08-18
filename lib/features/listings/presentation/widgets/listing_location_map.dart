@@ -30,7 +30,7 @@ class ListingLocationMap extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final point = LatLng(listing.latitude!, listing.longitude!);
 
     return Column(

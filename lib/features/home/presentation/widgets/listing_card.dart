@@ -22,7 +22,10 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    final secondaryText = textSecondaryFor(context);
+    final shimmerBg = shimmerFor(context);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -55,32 +58,32 @@ class ListingCard extends StatelessWidget {
                             imageUrl: listing.mainImage,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
-                              color: AppColors.shimmer,
-                              child: const Center(
+                              color: shimmerBg,
+                              child: Center(
                                 child: Icon(
                                   Icons.image,
-                                  color: AppColors.textSecondary,
+                                  color: secondaryText,
                                   size: 32,
                                 ),
                               ),
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: AppColors.shimmer,
-                              child: const Center(
+                              color: shimmerBg,
+                              child: Center(
                                 child: Icon(
                                   Icons.broken_image,
-                                  color: AppColors.textSecondary,
+                                  color: secondaryText,
                                   size: 32,
                                 ),
                               ),
                             ),
                           )
                         : Container(
-                            color: AppColors.shimmer,
-                            child: const Center(
+                            color: shimmerBg,
+                            child: Center(
                               child: Icon(
                                 Icons.image,
-                                color: AppColors.textSecondary,
+                                color: secondaryText,
                                 size: 32,
                               ),
                             ),
@@ -131,11 +134,11 @@ class ListingCard extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: surfaceFor(context),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
+                                color: Colors.black.withValues(alpha: 0.15),
                                 blurRadius: 4,
                               ),
                             ],
@@ -144,7 +147,7 @@ class ListingCard extends StatelessWidget {
                             isFavorite ? Icons.favorite : Icons.favorite_border,
                             color: isFavorite
                                 ? AppColors.error
-                                : AppColors.textSecondary,
+                                : secondaryText,
                             size: 18,
                           ),
                         ),
@@ -206,10 +209,10 @@ class ListingCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         listing.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
+                          color: textPrimaryFor(context),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -222,7 +225,7 @@ class ListingCard extends StatelessWidget {
                           Icon(
                             Icons.location_on_outlined,
                             size: 12,
-                            color: AppColors.textSecondary,
+                            color: secondaryText,
                           ),
                           const SizedBox(width: 2),
                           Expanded(
@@ -230,7 +233,7 @@ class ListingCard extends StatelessWidget {
                               listing.city!,
                               style: TextStyle(
                                 fontSize: 11,
-                                color: AppColors.textSecondary,
+                                color: secondaryText,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -245,15 +248,15 @@ class ListingCard extends StatelessWidget {
                         Icon(
                           Icons.schedule,
                           size: 12,
-                          color: AppColors.textSecondary,
+                          color: secondaryText,
                         ),
                         const SizedBox(width: 2),
                         Expanded(
                           child: Text(
                             formatCardDate(listing.createdAt, l10n),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
-                              color: AppColors.textSecondary,
+                              color: secondaryText,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

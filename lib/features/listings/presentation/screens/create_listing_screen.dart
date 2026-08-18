@@ -210,7 +210,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                AppLocalizations.of(context)!.listingCreateMaxImages,
+                AppLocalizations.of(context).listingCreateMaxImages,
               ),
               backgroundColor: AppColors.warning,
             ),
@@ -251,7 +251,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                AppLocalizations.of(context)!.listingCreateMaxFloorPlans,
+                AppLocalizations.of(context).listingCreateMaxFloorPlans,
               ),
               backgroundColor: AppColors.warning,
             ),
@@ -280,7 +280,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   // empty; any request failure (network, rate limit, non-200) surfaces a
   // generic "couldn't improve" snackbar rather than propagating.
   Future<void> _improveDescription() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final text = _descriptionController.text.trim();
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -328,7 +328,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
   Future<void> _submitListing() async {
     if (!_formKey.currentState!.validate()) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -567,7 +567,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.commonErrorWithMessage(e.toString()),
+              AppLocalizations.of(context).commonErrorWithMessage(e.toString()),
             ),
             backgroundColor: AppColors.error,
           ),
@@ -582,7 +582,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authStateProvider);
     final categoriesAsync = ref.watch(createListingCategoriesProvider);
     // Categories-with-subcategories fetch (service layer, shared with the
@@ -697,7 +697,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                         color: surfaceFor(context),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.border,
+                          color: borderFor(context),
                           style: BorderStyle.solid,
                         ),
                       ),
@@ -844,7 +844,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -875,7 +875,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               data: (categories) {
                 _maybePrefillCategory(categories);
                 return DropdownButtonFormField<Category>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 isExpanded: true,
                 decoration: InputDecoration(
                   hintText: l10n.listingCreateSelectCategoryHint,
@@ -954,7 +954,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 // subcategory the DB no longer returns under this category)
                 // must not be handed to the dropdown as `value` — Flutter
                 // asserts that the value match one of the `items`.
-                value: subcategoryOptions.any((s) => s.id == _subcategoryId)
+                initialValue: subcategoryOptions.any((s) => s.id == _subcategoryId)
                     ? _subcategoryId
                     : null,
                 isExpanded: true,
@@ -1082,7 +1082,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                       onChanged: (value) {
                         setState(() => _isNegotiable = value);
                       },
-                      activeColor: AppColors.primary,
+                      activeThumbColor: AppColors.primary,
                     ),
                   ],
                 ),
@@ -1183,7 +1183,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                           color: surfaceFor(context),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: AppColors.border,
+                            color: borderFor(context),
                             style: BorderStyle.solid,
                           ),
                         ),
@@ -1286,7 +1286,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),

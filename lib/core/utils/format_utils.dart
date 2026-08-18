@@ -32,7 +32,7 @@ String formatPrice(num amount, String currencyCode, String locale) {
   ).format(amount);
 }
 
-/// Formats a date as "<localized month> <year>" (e.g. "Ene 2026") for
+/// Formats a date as `<localized month> <year>` (e.g. "Ene 2026") for
 /// member-since displays. Mirrors the private `_formatDate` helper in
 /// `listing_detail_screen.dart` — the app avoids `DateFormat` for this
 /// because it needs the app's own translated month abbreviations rather

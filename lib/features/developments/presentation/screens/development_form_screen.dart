@@ -122,7 +122,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
 
   Future<void> _pickAndUploadImages() async {
     if (_uploadingImages) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final picker = ImagePicker();
     final picked = await picker.pickMultiImage(
       maxWidth: 1600,
@@ -161,7 +161,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   String _errorMessage(DevelopmentValidationError error) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (error) {
       case DevelopmentValidationError.name:
         return l10n.developmentFormErrorName;
@@ -177,7 +177,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   String _statusLabel(BuildContext context, String s) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (s) {
       case 'planning':
         return l10n.promocionStatusPlanning;
@@ -191,7 +191,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
 
   Future<void> _save() async {
     if (_saving) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final auth = ref.read(authStateProvider);
     final userId = auth.value?.id;
     if (userId == null) return;
@@ -305,7 +305,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final auth = ref.watch(authStateProvider);
     final userId = auth.when(
       loading: () => null,
@@ -358,7 +358,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   Widget _buildEditScaffold() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final detailAsync =
         ref.watch(developmentDetailProvider(widget.developmentId!));
     return Scaffold(
@@ -411,13 +411,11 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   PreferredSizeWidget _appBar() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return AppBar(
       title: Text(_isEdit
           ? l10n.developmentFormEdit
           : l10n.developmentFormNew),
-      backgroundColor: surfaceFor(context),
-      foregroundColor: AppColors.textPrimary,
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios),
@@ -427,7 +425,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
   }
 
   Widget _form() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final auth = ref.watch(authStateProvider);
     return Form(
       key: _formKey,
@@ -613,10 +611,10 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
           const SizedBox(height: 24),
           Text(
             l10n.developmentFormImagesHeading,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: textPrimaryFor(context),
             ),
           ),
           const SizedBox(height: 8),
@@ -662,7 +660,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
               prefixIcon: const Icon(Icons.timeline_outlined),
             ),
             items: [
-              for (final s in DEVELOPMENT_STATUSES)
+              for (final s in developmentStatuses)
                 DropdownMenuItem(
                   value: s,
                   child: Text(_statusLabel(context, s)),
@@ -671,7 +669,7 @@ class _DevelopmentFormScreenState extends ConsumerState<DevelopmentFormScreen> {
             onChanged: (v) => setState(() => _status = v),
             validator: (v) {
               if (v == null) return null;
-              if (!DEVELOPMENT_STATUSES.contains(v)) {
+              if (!developmentStatuses.contains(v)) {
                 return l10n.developmentFormStatusInvalid;
               }
               return null;
@@ -749,13 +747,13 @@ class _ImageGrid extends StatelessWidget {
             imageUrl: url,
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(
-              color: AppColors.shimmer,
+              color: shimmerFor(context),
               child: const Center(
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
             ),
             errorWidget: (context, url, error) => Container(
-              color: AppColors.shimmer,
+              color: shimmerFor(context),
               child: const Icon(Icons.broken_image_outlined),
             ),
           ),
@@ -786,12 +784,10 @@ class _NotSignedInScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.developmentFormTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
       ),
       body: Center(
         child: Padding(
@@ -799,19 +795,19 @@ class _NotSignedInScaffold extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.lock_outline,
                 size: 56,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
               const SizedBox(height: 12),
               Text(
                 l10n.developmentFormNotSignedInTitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: textPrimaryFor(context),
                 ),
               ),
               const SizedBox(height: 16),
@@ -836,12 +832,10 @@ class _NotVerifiedScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.developmentFormTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
@@ -853,28 +847,28 @@ class _NotVerifiedScaffold extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.verified_outlined,
                 size: 56,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
               const SizedBox(height: 12),
               Text(
                 l10n.developmentFormNotVerifiedTitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: textPrimaryFor(context),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 l10n.developmentFormNotVerifiedSubtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: textSecondaryFor(context),
                 ),
               ),
               const SizedBox(height: 16),

@@ -21,7 +21,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
   Future<void> _resend(String email) async {
     if (_sending) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     setState(() => _sending = true);
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -57,7 +57,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final auth = ref.watch(authStateProvider);
     final user = auth.value;
     final redirect = widget.redirect;

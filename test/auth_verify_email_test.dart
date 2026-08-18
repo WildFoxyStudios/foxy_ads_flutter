@@ -149,20 +149,6 @@ class _FakeUser implements User {
   }
 }
 
-Widget _wrap(StreamController<User?> controller, {String? redirect}) {
-  return ProviderScope(
-    overrides: [
-      authStateProvider.overrideWith((ref) => controller.stream),
-    ],
-    child: MaterialApp.router(
-      locale: const Locale('es'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      routerConfig: _router(redirect),
-    ),
-  );
-}
-
 GoRouter _router(String? redirect) {
   return GoRouter(
     initialLocation: '/verify-email',

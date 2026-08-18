@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/utils/password_policy.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -35,7 +36,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +96,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.commonErrorWithMessage(e.toString()),
+              AppLocalizations.of(context).commonErrorWithMessage(e.toString()),
             ),
             backgroundColor: AppColors.error,
           ),
@@ -110,7 +111,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -151,10 +152,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 // Title
                 Text(
                   l10n.authCreateAccountTitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: textPrimaryFor(context),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -163,7 +164,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   l10n.authRegisterSubtitle,
                   style: TextStyle(
                     fontSize: 16,
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -217,7 +218,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             : Icons.visibility_off_outlined,
                       ),
                       onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
                       },
                     ),
                   ),
@@ -246,10 +249,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             : Icons.visibility_off_outlined,
                       ),
                       onPressed: () {
-                        setState(
-                          () => _obscureConfirmPassword =
-                              !_obscureConfirmPassword,
-                        );
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
                       },
                     ),
                   ),
@@ -282,7 +284,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           child: RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                color: AppColors.textSecondary,
+                                color: textSecondaryFor(context),
                                 fontSize: 14,
                               ),
                               children: [
@@ -336,7 +338,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         l10n.authOrRegisterWith,
-                        style: TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: textSecondaryFor(context)),
                       ),
                     ),
                     const Expanded(child: Divider()),
@@ -361,7 +363,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   children: [
                     Text(
                       l10n.authHasAccountPrompt,
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: textSecondaryFor(context)),
                     ),
                     TextButton(
                       onPressed: () => context.pop(),

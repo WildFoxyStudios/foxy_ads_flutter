@@ -23,7 +23,7 @@ class ReMapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final withCoords = listings.where((l) => l.hasCoordinates).toList();
 
     if (withCoords.isEmpty) {

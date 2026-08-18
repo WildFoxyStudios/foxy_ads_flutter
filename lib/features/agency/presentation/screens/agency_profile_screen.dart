@@ -44,15 +44,13 @@ class _AgencyProfileScreenState extends ConsumerState<AgencyProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final profileAsync =
         ref.watch(agencyProfileProvider(widget.agencyId));
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.agencyTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
       body: profileAsync.when(
@@ -97,7 +95,7 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final listingsAsync = ref.watch(
       agencyListingsProvider(AgencyListingsArgs(agencyId, page)),
     );
@@ -116,10 +114,10 @@ class _Body extends ConsumerWidget {
           const SizedBox(height: 24),
           Text(
             l10n.agencyListingsHeading,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: textPrimaryFor(context),
             ),
           ),
           const SizedBox(height: 12),
@@ -145,8 +143,8 @@ class _Body extends ConsumerWidget {
                   child: Center(
                     child: Text(
                       l10n.agencyListingsEmpty,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: textSecondaryFor(context),
                         fontSize: 14,
                       ),
                     ),
@@ -193,7 +191,7 @@ class _HeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -218,10 +216,10 @@ class _HeaderCard extends StatelessWidget {
                   children: [
                     Text(
                       profile.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: textPrimaryFor(context),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -238,9 +236,9 @@ class _HeaderCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               profile.description!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textPrimary,
+                color: textPrimaryFor(context),
                 height: 1.4,
               ),
             ),
@@ -346,14 +344,14 @@ class _ContactLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final row = Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
+        Icon(icon, size: 16, color: textSecondaryFor(context)),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textPrimary,
+              color: textPrimaryFor(context),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -412,7 +410,7 @@ class _PaginationRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -423,9 +421,9 @@ class _PaginationRow extends StatelessWidget {
         ),
         Text(
           l10n.agencyPageOf(page + 1),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
-            color: AppColors.textSecondary,
+            color: textSecondaryFor(context),
           ),
         ),
         _PagingButton(
@@ -486,34 +484,34 @@ class _NotFoundState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.business_outlined,
               size: 56,
-              color: AppColors.textSecondary,
+              color: textSecondaryFor(context),
             ),
             const SizedBox(height: 12),
             Text(
               l10n.agencyNotFoundTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: textPrimaryFor(context),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               l10n.agencyNotFoundSubtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
             ),
           ],
@@ -531,7 +529,7 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -547,9 +545,9 @@ class _ErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
             ),
             const SizedBox(height: 16),

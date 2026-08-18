@@ -31,7 +31,7 @@ class PanelScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     // Auth gate first — the panel is meaningless for signed-out users and
     // `myAgencyProfileProvider` collapses to `null` for them anyway, but
     // surfacing a dedicated "Inicia sesión" CTA (mirroring
@@ -69,9 +69,8 @@ class PanelScreen extends ConsumerWidget {
 class _LoadingScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: const Center(child: CircularProgressIndicator()),
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }
@@ -83,13 +82,10 @@ class _ErrorScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.panelTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
       body: Center(
@@ -107,9 +103,9 @@ class _ErrorScaffold extends StatelessWidget {
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: textSecondaryFor(context),
                 ),
               ),
               const SizedBox(height: 16),
@@ -134,13 +130,10 @@ class _GateScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.panelTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
       body: Center(
@@ -165,19 +158,19 @@ class _GateScaffold extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 l10n.panelTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: textPrimaryFor(context),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 l10n.panelGateDescription,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: textSecondaryFor(context),
                   height: 1.4,
                 ),
               ),
@@ -208,13 +201,10 @@ class _NotSignedInScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.panelTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
       body: Center(
@@ -223,19 +213,19 @@ class _NotSignedInScaffold extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.lock_outline,
                 size: 56,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
               const SizedBox(height: 12),
               Text(
                 l10n.panelNotSignedInTitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: textPrimaryFor(context),
                 ),
               ),
               const SizedBox(height: 16),
@@ -265,16 +255,13 @@ class _DashboardScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final listingsAsync = ref.watch(myPanelListingsProvider);
     final favsAsync = ref.watch(panelFavoritesProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.panelTitle),
-        backgroundColor: surfaceFor(context),
-        foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
       body: RefreshIndicator(
@@ -356,7 +343,7 @@ class _DashboardHeader extends StatelessWidget {
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Row(
         children: [
@@ -394,10 +381,10 @@ class _DashboardHeader extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: textPrimaryFor(context),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -421,24 +408,24 @@ class _ViewsChartSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final viewsAsync = ref.watch(viewsSeriesProvider);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l10n.panelViewsLast30,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: textPrimaryFor(context),
             ),
           ),
           const SizedBox(height: 12),
@@ -458,9 +445,9 @@ class _ViewsChartSection extends ConsumerWidget {
               child: Center(
                 child: Text(
                   l10n.panelNoData,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                     fontWeight: FontWeight.w500,
                   ),
                 ),

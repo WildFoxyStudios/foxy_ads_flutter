@@ -28,6 +28,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import 're_energy_label.dart' show reEnergyLabel;
 import 're_filter_labels.dart';
@@ -91,7 +92,7 @@ class ReKeyFacts extends StatelessWidget {
     final attrs = listing.attributes;
     if (attrs == null || attrs.isEmpty) return const SizedBox.shrink();
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final m2 = _asNum(attrs['m2']);
     final m2Useful = _asNum(attrs['m2_useful']);
@@ -206,15 +207,15 @@ class ReKeyFacts extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.place_outlined,
                         size: 16,
-                        color: AppColors.textSecondary,
+                        color: textSecondaryFor(context),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${l10n.realEstateNeighborhoodLabel}: $neighborhood',
-                        style: TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: textSecondaryFor(context)),
                       ),
                     ],
                   ),
@@ -367,7 +368,7 @@ class _ExtrasSection extends StatelessWidget {
                   item,
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                   ),
                 ),
               for (final item in checkItems) _CheckBullet(label: item),
@@ -400,7 +401,7 @@ class _EnergySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -465,7 +466,7 @@ class _EnergyBadge extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 12, color: textSecondaryFor(context)),
         ),
         const SizedBox(height: 4),
         Row(
@@ -502,7 +503,7 @@ class _EnergyBadge extends StatelessWidget {
                     '${_fmtNum(value!)} $unit',
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: textSecondaryFor(context),
                     ),
                   ),
               ],

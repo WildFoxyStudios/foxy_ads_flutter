@@ -74,7 +74,7 @@ class SavedSearchesScreen extends ConsumerWidget {
     WidgetRef ref,
     SavedSearch search,
   ) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final label = search.label?.isNotEmpty == true
         ? search.label!
         : l10n.savedSearchesDeleteFallback;
@@ -141,7 +141,7 @@ class SavedSearchesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final savedSearchesAsync = ref.watch(savedSearchesProvider);
 
     return Scaffold(

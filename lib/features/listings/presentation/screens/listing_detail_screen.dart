@@ -54,7 +54,7 @@ class ListingDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final listingAsync = ref.watch(listingDetailProvider(listingId));
     final authState = ref.watch(authStateProvider);
     final favorites = ref.watch(userFavoritesProvider);
@@ -71,7 +71,7 @@ class ListingDetailScreen extends ConsumerWidget {
         final isFavorite = favorites.when(
           data: (favs) => favs.contains(listing.id),
           loading: () => false,
-          error: (_, __) => false,
+          error: (_, _) => false,
         );
 
         return Scaffold(
@@ -86,12 +86,18 @@ class ListingDetailScreen extends ConsumerWidget {
                   icon: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: surfaceFor(context),
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 4,
+                        ),
+                      ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.arrow_back,
-                      color: AppColors.textPrimary,
+                      color: textPrimaryFor(context),
                     ),
                   ),
                   onPressed: () => context.pop(),
@@ -101,14 +107,20 @@ class ListingDetailScreen extends ConsumerWidget {
                     icon: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: surfaceFor(context),
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
                       child: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
                         color: isFavorite
                             ? AppColors.error
-                            : AppColors.textPrimary,
+                            : textPrimaryFor(context),
                       ),
                     ),
                     onPressed: () async {
@@ -126,12 +138,18 @@ class ListingDetailScreen extends ConsumerWidget {
                     icon: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: surfaceFor(context),
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.more_vert,
-                        color: AppColors.textPrimary,
+                        color: textPrimaryFor(context),
                       ),
                     ),
                     onSelected: (value) async {
@@ -168,20 +186,34 @@ class ListingDetailScreen extends ConsumerWidget {
                     icon: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: surfaceFor(context),
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                          ),
+                        ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.share,
-                        color: AppColors.textPrimary,
+                        color: textPrimaryFor(context),
                       ),
                     ),
                     onPressed: () {
-                      Share.share(
-                        l10n.listingDetailShareMessage(
-                          listing.title,
-                          listing.formattedPrice,
-                          siteUrl(listingUrl(listing.id)),
+                      final box =
+                          context.findRenderObject() as RenderBox?;
+                      SharePlus.instance.share(
+                        ShareParams(
+                          text: l10n.listingDetailShareMessage(
+                            listing.title,
+                            listing.formattedPrice,
+                            siteUrl(listingUrl(listing.id)),
+                          ),
+                          sharePositionOrigin: box != null
+                              ? box.localToGlobal(Offset.zero) &
+                                  box.size
+                              : null,
                         ),
                       );
                     },
@@ -348,12 +380,12 @@ class ListingDetailScreen extends ConsumerWidget {
                           Icon(
                             Icons.visibility,
                             size: 16,
-                            color: AppColors.textSecondary,
+                            color: textSecondaryFor(context),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             l10n.listingDetailViews(listing.views),
-                            style: TextStyle(color: AppColors.textSecondary),
+                            style: TextStyle(color: textSecondaryFor(context)),
                           ),
                         ],
                       ),
@@ -372,7 +404,7 @@ class ListingDetailScreen extends ConsumerWidget {
                         listing.description,
                         style: TextStyle(
                           fontSize: 15,
-                          color: AppColors.textSecondary,
+                          color: textSecondaryFor(context),
                           height: 1.5,
                         ),
                       ),
@@ -451,7 +483,7 @@ class ListingDetailScreen extends ConsumerWidget {
                                     _formatDate(listing.createdAt, l10n),
                                   ),
                                   style: TextStyle(
-                                    color: AppColors.textSecondary,
+                                    color: textSecondaryFor(context),
                                     fontSize: 13,
                                   ),
                                 ),
@@ -732,9 +764,9 @@ class _ListingGalleryState extends State<_ListingGallery> {
                       imageUrl: images[index],
                       fit: BoxFit.cover,
                       placeholder: (context, url) =>
-                          Container(color: AppColors.shimmer),
+                          Container(color: shimmerFor(context)),
                       errorWidget: (context, url, error) => Container(
-                        color: AppColors.shimmer,
+                        color: shimmerFor(context),
                         child: const Icon(Icons.broken_image),
                       ),
                     ),
@@ -802,7 +834,7 @@ class _ListingGalleryState extends State<_ListingGallery> {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: images.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 6),
+              separatorBuilder: (_, _) => const SizedBox(width: 6),
               itemBuilder: (context, index) {
                 final isActive = index == _currentIndex;
                 return GestureDetector(
@@ -825,9 +857,9 @@ class _ListingGalleryState extends State<_ListingGallery> {
                         imageUrl: images[index],
                         fit: BoxFit.cover,
                         placeholder: (context, url) =>
-                            Container(color: AppColors.shimmer),
+                            Container(color: shimmerFor(context)),
                         errorWidget: (context, url, error) =>
-                            Container(color: AppColors.shimmer),
+                            Container(color: shimmerFor(context)),
                       ),
                     ),
                   ),

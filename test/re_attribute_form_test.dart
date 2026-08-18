@@ -26,7 +26,7 @@ import 'package:foxy_ads/l10n/app_localizations.dart';
 /// chips, and text fields). The form has no providers it reads directly, but
 /// ProviderScope is the convention the rest of the codebase's widget tests
 /// use. AppLocalizations delegates are required since the form reads
-/// `AppLocalizations.of(context)!` for the section headings, field labels,
+/// `AppLocalizations.of(context)` for the section headings, field labels,
 /// hints, and the 'No especificado' / pets-allowed strings. Locale is pinned
 /// to Spanish since the assertions below match on the Spanish ARB strings
 /// (e.g. 'Habitaciones', 'Baños') rather than the test harness's default

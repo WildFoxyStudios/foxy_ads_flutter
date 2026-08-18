@@ -96,7 +96,7 @@ class _ReFilterSheetState extends ConsumerState<_ReFilterSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final filters = ref.watch(reSearchFiltersProvider);
     final country = ref.watch(selectedCountryProvider);
     final facetCounts = ref.watch(reFacetCountsProvider);

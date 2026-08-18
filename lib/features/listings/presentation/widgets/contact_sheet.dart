@@ -63,7 +63,7 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_messagePrefilled) {
-      _messageController.text = AppLocalizations.of(context)!
+      _messageController.text = AppLocalizations.of(context)
           .contactSheetDefaultMessage(widget.listing.title);
       _messagePrefilled = true;
     }
@@ -81,7 +81,7 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     setState(() => _submitting = true);
 
     final outcome = await ref.read(leadsServiceProvider).submitLead(
@@ -134,7 +134,7 @@ class _ContactSheetState extends ConsumerState<_ContactSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),

@@ -32,7 +32,7 @@ import '../../../../l10n/app_localizations.dart';
 /// `foxy_ads_web/src/app/[locale]/publicar/_attributes/schema.ts`
 /// (JOB_CONTRACT_TYPES / JOB_MODALITIES / JOB_SCHEDULES /
 /// JOB_EXPERIENCE_LEVELS / JOB_SALARY_PERIODS).
-const List<String> JOBS_CONTRACT_TYPES = [
+const List<String> jobsContractTypes = [
   'tiempo_completo',
   'medio_tiempo',
   'freelance',
@@ -40,27 +40,27 @@ const List<String> JOBS_CONTRACT_TYPES = [
   'temporal',
 ];
 
-const List<String> JOBS_MODALITIES = [
+const List<String> jobsModalities = [
   'presencial',
   'remoto',
   'hibrido',
 ];
 
-const List<String> JOBS_SCHEDULES = [
+const List<String> jobsSchedules = [
   'a_convenir',
   'diurno',
   'nocturno',
   'fines_semana',
 ];
 
-const List<String> JOBS_EXPERIENCE_LEVELS = [
+const List<String> jobsExperienceLevels = [
   'sin_experiencia',
   'junior',
   'senior',
   'experto',
 ];
 
-const List<String> JOBS_SALARY_PERIODS = [
+const List<String> jobsSalaryPeriods = [
   'mes',
   'hora',
   'año',
@@ -213,7 +213,7 @@ class _JobsAttributeFormState extends State<JobsAttributeForm> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final contractTypes = _contractTypeLabels(l10n);
     final modalities = _modalityLabels(l10n);
     final schedules = _scheduleLabels(l10n);
@@ -240,7 +240,7 @@ class _JobsAttributeFormState extends State<JobsAttributeForm> {
         Wrap(
           spacing: 8,
           runSpacing: 4,
-          children: JOBS_CONTRACT_TYPES.map((c) {
+          children: jobsContractTypes.map((c) {
             final selected = _contractType == c;
             return ChoiceChip(
               label: Text(contractTypes[c] ?? c),
@@ -263,7 +263,7 @@ class _JobsAttributeFormState extends State<JobsAttributeForm> {
         Wrap(
           spacing: 8,
           runSpacing: 4,
-          children: JOBS_MODALITIES.map((m) {
+          children: jobsModalities.map((m) {
             final selected = _modality == m;
             return ChoiceChip(
               label: Text(modalities[m] ?? m),
@@ -290,7 +290,7 @@ class _JobsAttributeFormState extends State<JobsAttributeForm> {
               value: null,
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
-            ...JOBS_SCHEDULES.map(
+            ...jobsSchedules.map(
               (s) => DropdownMenuItem<String>(
                 value: s,
                 child: Text(schedules[s] ?? s),
@@ -352,7 +352,7 @@ class _JobsAttributeFormState extends State<JobsAttributeForm> {
               value: null,
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
-            ...JOBS_SALARY_PERIODS.map(
+            ...jobsSalaryPeriods.map(
               (p) => DropdownMenuItem<String>(
                 value: p,
                 child: Text(salaryPeriods[p] ?? p),
@@ -379,7 +379,7 @@ class _JobsAttributeFormState extends State<JobsAttributeForm> {
               value: null,
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
-            ...JOBS_EXPERIENCE_LEVELS.map(
+            ...jobsExperienceLevels.map(
               (e) => DropdownMenuItem<String>(
                 value: e,
                 child: Text(experienceLevels[e] ?? e),

@@ -47,8 +47,10 @@ Widget _buildTestApp(AsyncValue<List<Listing>> listingsOverride) {
     overrides: [
       myListingsProvider.overrideWith((ref) async {
         if (listingsOverride.hasError) {
-          // ignore: only_throw_errors
-          throw listingsOverride.error!;
+          Error.throwWithStackTrace(
+            listingsOverride.error!,
+            listingsOverride.stackTrace ?? StackTrace.empty,
+          );
         }
         return listingsOverride.value!;
       }),

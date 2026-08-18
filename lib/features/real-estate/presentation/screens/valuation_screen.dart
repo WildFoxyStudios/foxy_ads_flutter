@@ -43,7 +43,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
   }
 
   void _submit() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) return;
     if (_city == null || _operation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +87,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final country = ref.watch(selectedCountryProvider);
     final citiesAsync = ref.watch(citiesProvider(country.code));
 
@@ -106,7 +106,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
             children: [
               Text(
                 l10n.valuationIntro,
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                style: TextStyle(color: textSecondaryFor(context), fontSize: 14),
               ),
               const SizedBox(height: 16),
 
@@ -120,7 +120,7 @@ class _ValuationScreenState extends ConsumerState<ValuationScreen> {
                   decoration: BoxDecoration(
                     color: surfaceFor(context),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: borderFor(context)),
                   ),
                   child: const SizedBox(
                     width: 18,
@@ -276,7 +276,7 @@ class _CityDropdownBody extends StatelessWidget {
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
@@ -322,13 +322,13 @@ class _OpChoice extends StatelessWidget {
           color: selected ? AppColors.primary : surfaceFor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
+            color: selected ? AppColors.primary : borderFor(context),
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : AppColors.textPrimary,
+            color: selected ? Colors.white : textPrimaryFor(context),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -370,7 +370,7 @@ class _ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return estimate.when(
       loading: () => const Padding(
         padding: EdgeInsets.symmetric(vertical: 32),
@@ -392,7 +392,7 @@ class _ResultCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: surfaceFor(context),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: borderFor(context)),
             ),
             child: Column(
               children: [
@@ -402,7 +402,7 @@ class _ResultCard extends StatelessWidget {
                   l10n.valuationInsufficientData,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                     fontSize: 14,
                   ),
                 ),
@@ -425,7 +425,7 @@ class _ResultCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: surfaceFor(context),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: borderFor(context)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -433,7 +433,7 @@ class _ResultCard extends StatelessWidget {
               Text(
                 heading,
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: textSecondaryFor(context),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -450,7 +450,7 @@ class _ResultCard extends StatelessWidget {
               Text(
                 operationNote,
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: textSecondaryFor(context),
                   fontSize: 12,
                 ),
               ),
@@ -478,7 +478,7 @@ class _ResultCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: surfaceContainerFor(context),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -490,7 +490,7 @@ class _ResultCard extends StatelessWidget {
                           Text(
                             l10n.valuationAvgPerM2,
                             style: TextStyle(
-                              color: AppColors.textSecondary,
+                              color: textSecondaryFor(context),
                               fontSize: 12,
                             ),
                           ),
@@ -511,7 +511,7 @@ class _ResultCard extends StatelessWidget {
                         Text(
                           l10n.valuationSample,
                           style: TextStyle(
-                            color: AppColors.textSecondary,
+                            color: textSecondaryFor(context),
                             fontSize: 12,
                           ),
                         ),

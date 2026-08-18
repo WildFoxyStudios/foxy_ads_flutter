@@ -21,7 +21,7 @@ class PaymentCancelledScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
+    final l = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l.paymentCancelledPageTitle)),

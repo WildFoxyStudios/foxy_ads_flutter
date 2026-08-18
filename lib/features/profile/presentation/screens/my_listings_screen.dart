@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/services/auth_service.dart';
@@ -80,7 +81,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final listingsAsync = ref.watch(myListingsProvider);
 
     return Scaffold(
@@ -115,7 +116,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                   const SizedBox(height: 8),
                   Text(
                     l10n.myListingsEmptySubtitle,
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: textSecondaryFor(context)),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
@@ -172,7 +173,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                             Center(
                               child: Text(
                                 l10n.myListingsNoneInStatus,
-                                style: TextStyle(color: AppColors.textSecondary),
+                                style: TextStyle(color: textSecondaryFor(context)),
                               ),
                             ),
                           ],
@@ -206,12 +207,13 @@ class _ListingCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final badge = _statusBadge(l10n, listing.status);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
+        onTap: () => context.push(AppRoutes.listingDetail(listing.id)),
         contentPadding: const EdgeInsets.all(12),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
@@ -225,7 +227,7 @@ class _ListingCard extends ConsumerWidget {
               : Container(
                   width: 70,
                   height: 70,
-                  color: AppColors.shimmer,
+                  color: shimmerFor(context),
                   child: const Icon(Icons.image),
                 ),
         ),
@@ -299,14 +301,14 @@ class _ListingCard extends ConsumerWidget {
                 Icon(
                   Icons.visibility,
                   size: 14,
-                  color: AppColors.textSecondary,
+                  color: textSecondaryFor(context),
                 ),
                 const SizedBox(width: 4),
                 Text(
                   '${listing.views}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                   ),
                 ),
               ],
@@ -444,7 +446,6 @@ class _ListingCard extends ConsumerWidget {
             }
           },
         ),
-        onTap: () => context.push('/listing/${listing.id}'),
       ),
     );
   }
@@ -455,7 +456,7 @@ class _ListingCard extends ConsumerWidget {
     Listing listing,
     String status,
   ) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final listingService = ref.read(listingServiceProvider);
     final outcome = await listingService.bulkSetStatus([listing.id], status);
     if (!context.mounted) return;
@@ -476,7 +477,7 @@ class _ListingCard extends ConsumerWidget {
     WidgetRef ref,
     Listing listing,
   ) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -500,7 +501,7 @@ class _ListingCard extends ConsumerWidget {
   }
 
   void _showDeleteDialog(BuildContext context, WidgetRef ref, Listing listing) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

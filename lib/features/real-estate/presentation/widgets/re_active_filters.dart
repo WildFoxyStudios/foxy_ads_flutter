@@ -71,7 +71,7 @@ class ReActiveFilters extends ConsumerWidget {
     final filters = ref.watch(reSearchFiltersProvider);
     if (!filters.isActive) return const SizedBox.shrink();
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final notifier = ref.read(reSearchFiltersProvider.notifier);
     final country = ref.watch(selectedCountryProvider);
 

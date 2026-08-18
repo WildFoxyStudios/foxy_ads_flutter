@@ -90,7 +90,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Future<void> _saveSearch() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (ref.read(authStateProvider).value == null) {
       context.push('/login');
       return;
@@ -110,7 +110,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final label = filters.query.isNotEmpty
         ? filters.query
         : [
-            if (categoryLabel != null) categoryLabel,
+            ?categoryLabel,
             country.name,
           ].join(' · ');
 
@@ -138,7 +138,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final searchResults = ref.watch(searchResultsProvider);
     final filters = ref.watch(searchFiltersProvider);
     final selectedCategory = filters.categoryId;

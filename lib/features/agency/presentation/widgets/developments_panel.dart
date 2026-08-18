@@ -45,14 +45,14 @@ class DevelopmentsPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final devAsync = ref.watch(myDevelopmentsProvider);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -77,9 +77,9 @@ class DevelopmentsPanel extends ConsumerWidget {
                   child: Center(
                     child: Text(
                       l10n.developmentsPanelEmpty,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
+                        color: textSecondaryFor(context),
                       ),
                     ),
                   ),
@@ -108,15 +108,15 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Text(
           l10n.developmentsPanelHeader,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textPrimaryFor(context),
           ),
         ),
         const Spacer(),
@@ -140,7 +140,7 @@ class _ErrorBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -165,7 +165,7 @@ class _ErrorBlock extends StatelessWidget {
 /// Localized status label map — wire codes stay English, UI strings come
 /// from AppLocalizations.
 String _statusLabel(BuildContext context, String s) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   switch (s) {
     case 'planning':
       return l10n.promocionStatusPlanning;
@@ -183,13 +183,13 @@ class _DevRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: surfaceContainerFor(context),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,19 +203,19 @@ class _DevRow extends ConsumerWidget {
                   children: [
                     Text(
                       dev.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: textPrimaryFor(context),
                       ),
                     ),
                     if (dev.city != null && dev.city!.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
                         dev.city!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.textSecondary,
+                          color: textSecondaryFor(context),
                         ),
                       ),
                     ],
@@ -254,7 +254,7 @@ class _DevRow extends ConsumerWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -390,7 +390,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
 
   Future<void> _save() async {
     if (_saving) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final service = ref.read(developmentsServiceProvider);
     final listingsAsync = ref.read(myPanelListingsProvider);
     final listings = listingsAsync.value ?? const <Listing>[];
@@ -458,7 +458,7 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final dev = widget.dev;
     final listingsAsync = ref.watch(myPanelListingsProvider);
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/models/listing_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class FeaturedListingCard extends StatelessWidget {
@@ -16,7 +17,7 @@ class FeaturedListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -25,7 +26,7 @@ class FeaturedListingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.3),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -42,13 +43,13 @@ class FeaturedListingCard extends StatelessWidget {
                       imageUrl: listing.mainImage,
                       fit: BoxFit.cover,
                       placeholder: (context, url) =>
-                          Container(color: AppColors.shimmer),
+                          Container(color: shimmerFor(context)),
                       errorWidget: (context, url, error) => Container(
-                        color: AppColors.shimmer,
-                        child: const Center(
+                        color: shimmerFor(context),
+                        child: Center(
                           child: Icon(
                             Icons.image,
-                            color: AppColors.textSecondary,
+                            color: textSecondaryFor(context),
                             size: 48,
                           ),
                         ),

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Real contact address ported from the web (`src/app/[locale]/terminos/
@@ -35,7 +36,7 @@ class TermsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
+    final l = AppLocalizations.of(context);
     final lastUpdated = DateFormat('d/M/yyyy').format(DateTime.now());
 
     return Scaffold(
@@ -99,8 +100,8 @@ class TermsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             l.termsLastUpdated(lastUpdated),
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: textSecondaryFor(context),
               fontSize: 12,
             ),
           ),

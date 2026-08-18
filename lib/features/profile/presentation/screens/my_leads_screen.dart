@@ -30,7 +30,7 @@ class MyLeadsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final leadsAsync = ref.watch(myLeadsProvider);
 
     return Scaffold(
@@ -65,19 +65,19 @@ class MyLeadsScreen extends ConsumerWidget {
                   Text(
                     l10n.leadsEmpty,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: textPrimaryFor(context),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.leadsEmptyHint,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.textSecondary,
+                      color: textSecondaryFor(context),
                     ),
                   ),
                 ],
@@ -118,7 +118,7 @@ class _NewCountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -147,7 +147,7 @@ class _ErrorBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -189,7 +189,7 @@ class _MyLeadCard extends ConsumerWidget {
   }
 
   Future<void> _markContacted(BuildContext context, WidgetRef ref) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final service = ref.read(leadsServiceProvider);
     final outcome = await service.updateLeadStatus(lead.id, 'contacted');
     if (!context.mounted) return;
@@ -205,7 +205,7 @@ class _MyLeadCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isNew = lead.status == 'new';
     final statusLabel =
         isNew ? l10n.leadsPanelStatusNew : l10n.leadsPanelStatusContacted;
@@ -215,7 +215,7 @@ class _MyLeadCard extends ConsumerWidget {
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,10 +227,10 @@ class _MyLeadCard extends ConsumerWidget {
                   lead.buyerName.isEmpty
                       ? l10n.leadsPanelNoName
                       : lead.buyerName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: textPrimaryFor(context),
                   ),
                 ),
               ),
@@ -240,7 +240,7 @@ class _MyLeadCard extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: isNew
                       ? AppColors.primary
-                      : AppColors.textSecondary.withValues(alpha: 0.15),
+                      : textSecondaryFor(context).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -248,7 +248,7 @@ class _MyLeadCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: isNew ? Colors.white : AppColors.textSecondary,
+                    color: isNew ? Colors.white : textSecondaryFor(context),
                   ),
                 ),
               ),
@@ -284,17 +284,17 @@ class _MyLeadCard extends ConsumerWidget {
           else
             Text(
               lead.listingTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: textSecondaryFor(context),
               ),
             ),
           const SizedBox(height: 8),
           Text(
             lead.message,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
-              color: AppColors.textPrimary,
+              color: textPrimaryFor(context),
               height: 1.3,
             ),
             softWrap: true,
@@ -363,9 +363,9 @@ class _MyLeadCard extends ConsumerWidget {
               ],
               Text(
                 _formatDate(lead.createdAt),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: textSecondaryFor(context),
                 ),
               ),
             ],

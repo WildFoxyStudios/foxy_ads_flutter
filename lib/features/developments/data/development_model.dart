@@ -123,7 +123,7 @@ class Typology {
 /// Status lifecycle for developments. Mirrors the web's `DevelopmentStatus`
 /// union in `foxy_ads_web/src/lib/developments.ts`. Used by the agency
 /// development edit form (Tasks 4, 5).
-const List<String> DEVELOPMENT_STATUSES = ['planning', 'building', 'ready'];
+const List<String> developmentStatuses = ['planning', 'building', 'ready'];
 
 /// Edit-input shape for the development create/update form. `toColumns()`
 /// yields the snake_case column map accepted by the Supabase `developments`
@@ -195,7 +195,7 @@ DevelopmentValidationError? validateDevelopmentInput(DevelopmentInput input) {
   if (cc.length < 2 || cc.length > 5) {
     return DevelopmentValidationError.country;
   }
-  if (input.status != null && !DEVELOPMENT_STATUSES.contains(input.status)) {
+  if (input.status != null && !developmentStatuses.contains(input.status)) {
     return DevelopmentValidationError.status;
   }
   if ((input.description?.length ?? 0) > 5000) {

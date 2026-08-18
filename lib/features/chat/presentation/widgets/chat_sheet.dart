@@ -12,6 +12,7 @@ import '../../../../core/models/listing_model.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/listing_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../home/presentation/widgets/listing_card.dart';
 import '../../data/chat_models.dart';
@@ -62,7 +63,7 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
     super.didChangeDependencies();
     if (!_welcomeSeeded) {
       _welcomeSeeded = true;
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       _messages.add(_UiMessage(role: 'assistant', text: l10n.chatWelcome));
     }
   }
@@ -89,7 +90,7 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
     final text = _inputController.text.trim();
     if (text.isEmpty || _sending) return;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final chatService = ref.read(chatServiceProvider);
     final listingService = ref.read(listingServiceProvider);
 
@@ -169,7 +170,7 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final mediaQuery = MediaQuery.of(context);
 
     return Padding(
@@ -232,6 +233,8 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
   Widget _buildMessageBubble(BuildContext context, _UiMessage message) {
     final isUser = message.role == 'user';
     final maxWidth = MediaQuery.of(context).size.width * 0.75;
+    final botBg = surfaceContainerFor(context);
+    final botTextColor = textPrimaryFor(context);
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -244,13 +247,13 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             constraints: BoxConstraints(maxWidth: maxWidth),
             decoration: BoxDecoration(
-              color: isUser ? AppColors.primary : AppColors.shimmer,
+              color: isUser ? AppColors.primary : botBg,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
               message.text,
               style: TextStyle(
-                color: isUser ? Colors.white : AppColors.textPrimary,
+                color: isUser ? Colors.white : botTextColor,
                 fontSize: 14,
               ),
             ),
@@ -297,7 +300,7 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.shimmer,
+          color: surfaceContainerFor(context),
           borderRadius: BorderRadius.circular(16),
         ),
         child: const SizedBox(
@@ -324,10 +327,12 @@ class _ChatSheetState extends ConsumerState<ChatSheet> {
             child: TextField(
               controller: _inputController,
               enabled: !_sending,
+              style: TextStyle(color: textPrimaryFor(context)),
               decoration: InputDecoration(
                 hintText: l10n.chatInputHint,
+                hintStyle: TextStyle(color: textSecondaryFor(context)),
                 filled: true,
-                fillColor: AppColors.shimmer,
+                fillColor: surfaceContainerFor(context),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,

@@ -38,7 +38,7 @@ class _AllListingsScreenState extends ConsumerState<AllListingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final listingsAsync = ref.watch(allListingsProvider(_sort));
 
     return Scaffold(

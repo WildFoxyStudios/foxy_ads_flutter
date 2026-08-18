@@ -1,7 +1,7 @@
 /// Lead type + status enum. Mirrors the web's `Lead` interface in
 /// `foxy_ads_web/src/lib/leads.ts`. The agency dashboard inbox (Task 7)
 /// and lead-detail sheet (Task 12) consume this.
-const List<String> LEAD_STATUSES = ['new', 'contacted', 'closed'];
+const List<String> leadStatuses = ['new', 'contacted', 'closed'];
 
 class Lead {
   final String id;

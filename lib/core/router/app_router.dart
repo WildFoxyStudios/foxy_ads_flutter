@@ -512,7 +512,7 @@ class _ReAliasWrapperState extends ConsumerState<_ReAliasWrapper> {
     // mutate state during `build` (Riverpod asserts in profile mode).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (!RE_PROPERTY_TYPES.contains(widget.subId)) return;
+      if (!rePropertyTypes.contains(widget.subId)) return;
       ref
           .read(reSearchFiltersProvider.notifier)
           .toggleString('propertyTypes', value: widget.subId);

@@ -19,9 +19,6 @@ final promoteListingProvider = FutureProvider.family<Listing?, String>((
   return await listingService.getListingById(id);
 });
 
-/// Convert the user-visible euro total to cents for Stripe / payments table.
-int _eurosToCents(double euros) => (euros * 100).round();
-
 class PromoteListingScreen extends ConsumerStatefulWidget {
   final String listingId;
 
@@ -40,7 +37,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final listingAsync = ref.watch(promoteListingProvider(widget.listingId));
 
     return Scaffold(
@@ -92,7 +89,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                         _formatDate(listing.featuredUntil!),
                       ),
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: textSecondaryFor(context),
                         fontSize: 16,
                       ),
                     ),
@@ -112,7 +109,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Listing Preview
+                // Listing Preview Card
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -130,7 +127,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                               : Container(
                                   width: 80,
                                   height: 80,
-                                  color: AppColors.shimmer,
+                                  color: shimmerFor(context),
                                   child: const Icon(Icons.image),
                                 ),
                         ),
@@ -204,114 +201,117 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 12),
-                ...featurePricesEuros.entries.map((entry) {
-                  final days = entry.key;
-                  final price = entry.value;
-                  final isSelected = _selectedDays == days;
-                  final discount = days > 1
-                      ? (1 - (price / days / 2.0)) * 100
-                      : 0;
+                RadioGroup<int>(
+                  groupValue: _selectedDays,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _selectedDays = value);
+                    }
+                  },
+                  child: Column(
+                    children: featurePricesEuros.entries.map((entry) {
+                      final days = entry.key;
+                      final price = entry.value;
+                      final isSelected = _selectedDays == days;
+                      final discount = days > 1
+                          ? (1 - (price / days / 2.0)) * 100
+                          : 0;
 
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedDays = days),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.primary.withValues(alpha: 0.1)
-                            : surfaceFor(context),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.primary
-                              : Colors.transparent,
-                          width: 2,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Radio<int>(
-                            value: days,
-                            groupValue: _selectedDays,
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() => _selectedDays = value);
-                              }
-                            },
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedDays = days),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.primary.withValues(alpha: 0.1)
+                                : surfaceFor(context),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                          child: Row(
+                            children: [
+                              Radio<int>(
+                                value: days,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          l10n.paymentsDaysCount(days),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: isSelected
+                                                ? AppColors.primary
+                                                : null,
+                                          ),
+                                        ),
+                                        if (discount > 0) ...[
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.success,
+                                              borderRadius: BorderRadius.circular(
+                                                4,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              '-${discount.toInt()}%',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
                                     Text(
-                                      l10n.paymentsDaysCount(days),
+                                      l10n.paymentsPerDayRate(
+                                        formatPrice(
+                                          price / days,
+                                          'EUR',
+                                          l10n.localeName,
+                                        ),
+                                      ),
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: isSelected
-                                            ? AppColors.primary
-                                            : null,
+                                        color: textSecondaryFor(context),
+                                        fontSize: 12,
                                       ),
                                     ),
-                                    if (discount > 0) ...[
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.success,
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          '-${discount.toInt()}%',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
                                   ],
                                 ),
-                                Text(
-                                  l10n.paymentsPerDayRate(
-                                    formatPrice(
-                                      price / days,
-                                      'EUR',
-                                      l10n.localeName,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 12,
-                                  ),
+                              ),
+                              Text(
+                                formatPrice(price, 'EUR', l10n.localeName),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: isSelected ? AppColors.primary : null,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            formatPrice(price, 'EUR', l10n.localeName),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: isSelected ? AppColors.primary : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
                 const SizedBox(height: 24),
 
                 // Total + single Stripe Checkout CTA per the brief: payment
@@ -407,7 +407,7 @@ class _PromoteListingScreenState extends ConsumerState<PromoteListingScreen> {
   Future<void> _processPayment() async {
     setState(() => _isProcessing = true);
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final PaymentsService svc = ref.read(paymentsServiceProvider);
     try {
       final r = await svc.createCheckout(
@@ -474,7 +474,7 @@ class _BenefitItem extends StatelessWidget {
                 Text(
                   description,
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                     fontSize: 12,
                   ),
                 ),

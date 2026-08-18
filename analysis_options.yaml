@@ -8,20 +8,6 @@
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
 analyzer:
-  errors:
-    unnecessary_non_null_assertion: ignore
-    depend_on_referenced_packages: ignore
-    deprecated_member_use: ignore
-    use_null_aware_elements: ignore
-    unused_element: ignore
-    unnecessary_cast: ignore
-    unintended_html_in_doc_comment: ignore
-    avoid_renaming_method_parameters: ignore
-    constant_identifier_names: ignore
-    curly_braces_in_flow_control_structures: ignore
-    unnecessary_underscores: ignore
-    sized_box_for_whitespace: ignore
-    unnecessary_to_list_in_spreads: ignore
   exclude:
     - build/**
     - android/**

@@ -127,7 +127,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
       _energyEmissions = init['energy_emissions'] as String?;
       _energyEmissionsValueController.text =
           _numToText(init['energy_emissions_value']);
-      for (final f in RE_FEATURE_KEYS) {
+      for (final f in reFeatureKeys) {
         if (init[f] == true) _features.add(f);
       }
       _petsAllowed = init['pets_allowed'] == true;
@@ -247,7 +247,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final operationLabels = _operationLabels(l10n);
     final orientations = orientationLabels(l10n);
     return Column(
@@ -269,7 +269,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
-          children: RE_OPERATIONS.map((op) {
+          children: reOperations.map((op) {
             final selected = _operation == op;
             return ChoiceChip(
               label: Text(operationLabels[op] ?? op),
@@ -291,7 +291,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
             labelText: '${l10n.realEstatePropertyTypeLabel} *',
             border: const OutlineInputBorder(),
           ),
-          items: RE_PROPERTY_TYPES
+          items: rePropertyTypes
               .map((t) => DropdownMenuItem<String>(value: t, child: Text(t)))
               .toList(),
           onChanged: (v) {
@@ -375,7 +375,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
               value: null,
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
-            ...RE_CONDITIONS.map(
+            ...reConditions.map(
               (c) => DropdownMenuItem<String>(
                 value: c,
                 child: Text(_conditionLabel(l10n, c)),
@@ -402,7 +402,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
               value: null,
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
-            ...RE_FLOOR_RAW.map(
+            ...reFloorRaw.map(
               (f) => DropdownMenuItem<String>(
                 value: f,
                 child: Text(_floorLabel(l10n, f)),
@@ -425,7 +425,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         Wrap(
           spacing: 8,
           runSpacing: 4,
-          children: RE_ORIENTATIONS.map((o) {
+          children: reOrientations.map((o) {
             final selected = _orientation.contains(o);
             return FilterChip(
               label: Text(orientations[o] ?? o),
@@ -478,7 +478,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
         Wrap(
           spacing: 8,
           runSpacing: 4,
-          children: RE_FEATURE_KEYS.map((f) {
+          children: reFeatureKeys.map((f) {
             final selected = _features.contains(f);
             return FilterChip(
               label: Text(_featureLabel(l10n, f)),
@@ -516,7 +516,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
               value: null,
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
-            ...RE_ENERGY_CERTS.map(
+            ...reEnergyCerts.map(
               (e) => DropdownMenuItem<String>(
                 value: e,
                 child: Text(reEnergyLabel(e, l10n) ?? e),
@@ -551,7 +551,7 @@ class _ReAttributeFormState extends ConsumerState<ReAttributeForm> {
               value: null,
               child: Text(l10n.realEstateEnergyLetterNone),
             ),
-            ...RE_ENERGY_CERTS.map(
+            ...reEnergyCerts.map(
               (e) => DropdownMenuItem<String>(
                 value: e,
                 child: Text(reEnergyLabel(e, l10n) ?? e),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -53,7 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.commonErrorWithMessage(e.toString()),
+              AppLocalizations.of(context).commonErrorWithMessage(e.toString()),
             ),
             backgroundColor: AppColors.error,
           ),
@@ -89,7 +90,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.commonErrorWithMessage(e.toString()),
+              AppLocalizations.of(context).commonErrorWithMessage(e.toString()),
             ),
             backgroundColor: AppColors.error,
           ),
@@ -103,7 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _forgotPassword() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final email = _emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -136,7 +137,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -172,10 +173,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Title
                 Text(
                   l10n.authWelcomeBack,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: textPrimaryFor(context),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -184,7 +185,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   l10n.authLoginSubtitle,
                   style: TextStyle(
                     fontSize: 16,
-                    color: AppColors.textSecondary,
+                    color: textSecondaryFor(context),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -222,7 +223,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             : Icons.visibility_off_outlined,
                       ),
                       onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
                       },
                     ),
                   ),
@@ -246,7 +249,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Sign In Button
+                // Login Button
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signInWithEmail,
                   child: _isLoading
@@ -271,7 +274,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         l10n.authOrContinueWith,
-                        style: TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: textSecondaryFor(context)),
                       ),
                     ),
                     const Expanded(child: Divider()),
@@ -296,7 +299,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Text(
                       l10n.authNoAccountPrompt,
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: textSecondaryFor(context)),
                     ),
                     TextButton(
                       onPressed: () => context.push('/register'),
@@ -310,7 +313,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onPressed: () => context.go('/'),
                   child: Text(
                     l10n.authContinueWithoutLogin,
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: textSecondaryFor(context)),
                   ),
                 ),
               ],

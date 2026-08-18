@@ -65,7 +65,7 @@ class _DevelopmentContactSheetState
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_messagePrefilled) {
-      _messageController.text = AppLocalizations.of(context)!
+      _messageController.text = AppLocalizations.of(context)
           .developmentContactSheetDefaultMessage(widget.development.name);
       _messagePrefilled = true;
     }
@@ -82,7 +82,7 @@ class _DevelopmentContactSheetState
   }
 
   Future<void> _submit() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
 
@@ -119,7 +119,7 @@ class _DevelopmentContactSheetState
   }
 
   String _errorMessage(LeadSubmitError error) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (error) {
       case LeadSubmitError.invalidInput:
         return l10n.developmentContactSheetErrorInvalid;
@@ -137,7 +137,7 @@ class _DevelopmentContactSheetState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),

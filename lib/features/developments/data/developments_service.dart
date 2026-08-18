@@ -172,8 +172,9 @@ class DevelopmentsService {
     DevelopmentInput input,
   ) async {
     final uid = _supabase.auth.currentUser?.id;
-    if (uid == null)
+    if (uid == null) {
       return const DevActionOutcome.err(DevActionError.unauthenticated);
+    }
     if (validateDevelopmentInput(input) != null) {
       return const DevActionOutcome.err(DevActionError.invalidInput);
     }
@@ -194,8 +195,9 @@ class DevelopmentsService {
     DevelopmentInput input,
   ) async {
     final uid = _supabase.auth.currentUser?.id;
-    if (uid == null)
+    if (uid == null) {
       return const DevActionOutcome.err(DevActionError.unauthenticated);
+    }
     if (!_uuidRe.hasMatch(id) || validateDevelopmentInput(input) != null) {
       return const DevActionOutcome.err(DevActionError.invalidInput);
     }
@@ -213,10 +215,12 @@ class DevelopmentsService {
 
   Future<DevActionOutcome<void>> deleteDevelopment(String id) async {
     final uid = _supabase.auth.currentUser?.id;
-    if (uid == null)
+    if (uid == null) {
       return const DevActionOutcome.err(DevActionError.unauthenticated);
-    if (!_uuidRe.hasMatch(id))
+    }
+    if (!_uuidRe.hasMatch(id)) {
       return const DevActionOutcome.err(DevActionError.invalidInput);
+    }
     try {
       await _supabase
           .from('developments')
@@ -251,11 +255,13 @@ class DevelopmentsService {
     List<String> listingIds,
   ) async {
     final uid = _supabase.auth.currentUser?.id;
-    if (uid == null)
+    if (uid == null) {
       return const DevActionOutcome.err(DevActionError.unauthenticated);
+    }
     final ids = parseIds(listingIds);
-    if (ids == null)
+    if (ids == null) {
       return const DevActionOutcome.err(DevActionError.invalidInput);
+    }
     try {
       final owned = await _supabase
           .from('listings')

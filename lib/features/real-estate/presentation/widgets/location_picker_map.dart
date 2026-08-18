@@ -103,7 +103,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final center = _picked ?? widget.initialCenter ?? defaultMapCenter;
 
     return Column(

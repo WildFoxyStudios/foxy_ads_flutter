@@ -14,7 +14,7 @@ class PromocionesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final developmentsAsync = ref.watch(developmentsForCountryProvider);
     final country = ref.watch(selectedCountryProvider);
 

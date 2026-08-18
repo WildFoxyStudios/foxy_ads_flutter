@@ -98,7 +98,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
+    final l = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -209,7 +209,7 @@ class _InfoCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: borderFor(context)),
           ),
           child: Row(
             children: [
@@ -233,8 +233,8 @@ class _InfoCard extends StatelessWidget {
                     ),
                     Text(
                       value,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: textSecondaryFor(context),
                         fontSize: 13,
                       ),
                     ),
@@ -274,7 +274,7 @@ class _SentState extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               l.contactSentBody,
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: textSecondaryFor(context)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),

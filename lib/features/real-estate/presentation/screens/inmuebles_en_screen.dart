@@ -82,8 +82,8 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
     ref.read(reSearchFiltersProvider.notifier).clear();
   }
 
-  /// Human label pre-filled in the save-search dialog: "<operation> ·
-  /// <city>", falling back to whichever half is present, or a generic
+  /// Human label pre-filled in the save-search dialog: `<operation> · <city>`,
+  /// falling back to whichever half is present, or a generic
   /// Spanish default when neither is set.
   String _defaultSaveLabel(ReSearchFilters filters, AppLocalizations l10n) {
     final opLabel = switch (filters.operation) {
@@ -101,7 +101,7 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
   }
 
   Future<void> _saveSearch(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final user = ref.read(authStateProvider).value;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -165,7 +165,7 @@ class _InmueblesEnScreenState extends ConsumerState<InmueblesEnScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final filters = ref.watch(reSearchFiltersProvider);
     final country = ref.watch(selectedCountryProvider);
     final results = ref.watch(reSearchResultsProvider);
@@ -382,7 +382,7 @@ class _CountryChip extends ConsumerWidget {
         decoration: BoxDecoration(
           color: surfaceFor(context),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: borderFor(context)),
         ),
         child: Row(
           children: [
@@ -416,7 +416,7 @@ class _CityDropdown extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final citiesAsync = ref.watch(citiesProvider(countryCode));
     return citiesAsync.when(
       loading: () => Container(
@@ -426,7 +426,7 @@ class _CityDropdown extends ConsumerWidget {
         decoration: BoxDecoration(
           color: surfaceFor(context),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: borderFor(context)),
         ),
         child: const SizedBox(
           width: 18,
@@ -468,7 +468,7 @@ class _CityDropdownBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     // Match the dropdown value to an actual City entry so changing the
     // country (which resets the stored string) doesn't crash the lookup.
     City? matched;
@@ -485,7 +485,7 @@ class _CityDropdownBody extends StatelessWidget {
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
@@ -533,7 +533,7 @@ class _OperationChip extends StatelessWidget {
       onSelected: (_) => onSelected(),
       selectedColor: AppColors.primary,
       labelStyle: TextStyle(
-        color: selected ? Colors.white : AppColors.textPrimary,
+        color: selected ? Colors.white : textPrimaryFor(context),
         fontWeight: FontWeight.w600,
       ),
       checkmarkColor: Colors.white,
@@ -569,13 +569,13 @@ class _FiltersExpansionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
         color: surfaceFor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderFor(context)),
       ),
       child: Theme(
         // Remove the default expansion-tile divider line.
@@ -617,7 +617,7 @@ class _SortDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Text(
@@ -631,7 +631,7 @@ class _SortDropdown extends StatelessWidget {
             decoration: BoxDecoration(
               color: surfaceFor(context),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: borderFor(context)),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<ReSort>(
@@ -681,7 +681,7 @@ class _ResultsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return results.when(
       loading: () => const Padding(
         padding: EdgeInsets.symmetric(vertical: 48),
@@ -767,7 +767,7 @@ class _PromotionsBand extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final developmentsAsync = ref.watch(developmentsForCountryProvider);
     final country = ref.watch(selectedCountryProvider);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return developmentsAsync.maybeWhen(
       data: (developments) {
@@ -817,7 +817,7 @@ class _ResultsMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return results.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(
@@ -844,7 +844,7 @@ class _Prompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 48),
       child: Column(

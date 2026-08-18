@@ -48,7 +48,7 @@ class _CountrySelectionScreenState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final selectedCountry = ref.watch(selectedCountryProvider);
     final countriesAsync = ref.watch(countriesProvider);
 

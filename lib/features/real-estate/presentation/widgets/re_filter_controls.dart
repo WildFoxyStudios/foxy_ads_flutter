@@ -18,7 +18,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/re_attributes.dart';
 import '../../data/re_models.dart';
@@ -52,7 +52,7 @@ class ReFilterControls extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final notifier = ref.read(reSearchFiltersProvider.notifier);
     final counts = facetCounts.maybeWhen(
       data: (c) => c,
@@ -65,7 +65,7 @@ class ReFilterControls extends ConsumerWidget {
       children: [
         ReSectionLabel(l10n.realEstatePropertyTypeLabel),
         ReCountedChipWrap<String>(
-          values: RE_PROPERTY_TYPES,
+          values: rePropertyTypes,
           labels: propertyTypeLabels(l10n),
           selected: filters.propertyTypes,
           counts: counts.propertyType,
@@ -179,7 +179,7 @@ class ReFilterControls extends ConsumerWidget {
         const SizedBox(height: 12),
         ReSectionLabel(l10n.realEstateConditionLabel),
         ReCountedChipWrap<String>(
-          values: RE_CONDITIONS,
+          values: reConditions,
           labels: conditionLabels(l10n),
           selected: filters.conditions,
           counts: counts.condition,
@@ -188,7 +188,7 @@ class ReFilterControls extends ConsumerWidget {
         const SizedBox(height: 12),
         ReSectionLabel(l10n.realEstateFeaturesLabel),
         ReCountedChipWrap<String>(
-          values: RE_FEATURE_KEYS,
+          values: reFeatureKeys,
           labels: featureLabels(l10n),
           selected: filters.features,
           counts: null, // facets not exposed for features
@@ -197,7 +197,7 @@ class ReFilterControls extends ConsumerWidget {
         const SizedBox(height: 12),
         ReSectionLabel(l10n.realEstateOrientationLabel),
         ReSimpleChipWrap<String>(
-          values: RE_ORIENTATIONS,
+          values: reOrientations,
           labels: orientationLabels(l10n),
           selected: filters.orientation,
           onToggle: (v) => notifier.toggleString('orientation', value: v),
@@ -205,7 +205,7 @@ class ReFilterControls extends ConsumerWidget {
         const SizedBox(height: 12),
         ReSectionLabel(l10n.realEstateFloorLabel),
         ReSimpleChipWrap<String>(
-          values: RE_FLOOR_BUCKETS,
+          values: reFloorBuckets,
           labels: floorBucketLabels(l10n),
           selected: filters.floorBuckets,
           onToggle: (v) => notifier.toggleString('floorBuckets', value: v),
@@ -223,7 +223,7 @@ class ReFilterControls extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: borderFor(context)),
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButtonHideUnderline(
@@ -236,7 +236,7 @@ class ReFilterControls extends ConsumerWidget {
                   value: null,
                   child: Text(l10n.realEstateEnergyLetterNone),
                 ),
-                ...RE_ENERGY_CERTS.map(
+                ...reEnergyCerts.map(
                   (l) => DropdownMenuItem<String?>(
                     value: l,
                     child: Text(reEnergyLabel(l, l10n) ?? l),

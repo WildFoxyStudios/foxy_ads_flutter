@@ -270,7 +270,7 @@ class LeadsService {
     if (uid == null) {
       return const LeadActionOutcome.err(LeadActionError.unauthenticated);
     }
-    if (!_uuidRe.hasMatch(id) || !LEAD_STATUSES.contains(status)) {
+    if (!_uuidRe.hasMatch(id) || !leadStatuses.contains(status)) {
       return const LeadActionOutcome.err(LeadActionError.invalidInput);
     }
     try {

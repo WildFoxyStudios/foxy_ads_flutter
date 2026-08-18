@@ -14,8 +14,12 @@
       },
       "oauth_client": [
         {
-          "client_id": "306853215674-r4d0tl2sol50k1chms3jssk6742pe6md.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "306853215674-uip24eu2fjoqndsrgdtcc2r8ago6rk1c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wildfoxy.foxy_ads",
+            "certificate_hash": "c73f5fabdf7fde5750e591ef968bce93ecf35669"
+          }
         }
       ],
       "api_key": [
@@ -27,8 +31,15 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "306853215674-r4d0tl2sol50k1chms3jssk6742pe6md.apps.googleusercontent.com",
+              "client_id": "306853215674-cpr373rrdh45t917e0a8sdm37vndd2dp.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "306853215674-fuu2isjh94cll9s7m8udngsivn3e784t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wildfoxy.foxyAds"
+              }
             }
           ]
         }

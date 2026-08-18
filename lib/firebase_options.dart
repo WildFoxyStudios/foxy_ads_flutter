@@ -33,10 +33,7 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -63,7 +60,18 @@ class DefaultFirebaseOptions {
     messagingSenderId: '306853215674',
     projectId: 'foxyads-66291',
     storageBucket: 'foxyads-66291.firebasestorage.app',
+    androidClientId: '306853215674-uip24eu2fjoqndsrgdtcc2r8ago6rk1c.apps.googleusercontent.com',
     iosClientId: '306853215674-fuu2isjh94cll9s7m8udngsivn3e784t.apps.googleusercontent.com',
     iosBundleId: 'com.wildfoxy.foxyAds',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDe9ucPtlUIK6ANitNXbyc8b2h95GyTKsw',
+    appId: '1:306853215674:web:4968c188bff7b515acf183',
+    messagingSenderId: '306853215674',
+    projectId: 'foxyads-66291',
+    authDomain: 'foxyads-66291.firebaseapp.com',
+    storageBucket: 'foxyads-66291.firebasestorage.app',
+    measurementId: 'G-CLV8125XNL',
   );
 }

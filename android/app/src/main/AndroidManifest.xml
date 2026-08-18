@@ -29,7 +29,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https" android:host="foxyads.app"/>
-                <data android:scheme="https" android:host="foxyads.vercel.app"/>
                 <data android:pathPrefix="/anuncio/"/>
                 <data android:pathPrefix="/agencia/"/>
                 <data android:pathPrefix="/promocion/"/>

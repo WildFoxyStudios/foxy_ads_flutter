@@ -424,8 +424,7 @@ class AppRoutes {
     String categoryId,
     String subcategoryId,
     String name,
-  ) =>
-      '/category/$categoryId/$subcategoryId?name=$name';
+  ) => '/category/$categoryId/$subcategoryId?name=$name';
   static String promoteListing(String listingId) => '/promote/$listingId';
   static String cityLanding(String city) => '/inmuebles-en/$city';
   static String valuation() => '/valorar';
@@ -469,7 +468,7 @@ class _EditListingRoute extends ConsumerWidget {
       data: (listing) {
         final currentUserId = ref.watch(authStateProvider).value?.id;
         if (listing == null || listing.userId != currentUserId) {
-          final l10n = AppLocalizations.of(context)!;
+          final l10n = AppLocalizations.of(context);
           return Scaffold(
             appBar: AppBar(),
             body: Center(child: Text(l10n.listingCreateUnauthorizedEdit)),
@@ -514,10 +513,9 @@ class _ReAliasWrapperState extends ConsumerState<_ReAliasWrapper> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (!RE_PROPERTY_TYPES.contains(widget.subId)) return;
-      ref.read(reSearchFiltersProvider.notifier).toggleString(
-            'propertyTypes',
-            value: widget.subId,
-          );
+      ref
+          .read(reSearchFiltersProvider.notifier)
+          .toggleString('propertyTypes', value: widget.subId);
     });
   }
 
